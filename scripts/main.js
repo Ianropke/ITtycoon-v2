@@ -2,7 +2,9 @@
 import { openModal, closeModal } from './modal.js';
 import { shuffleArray, getIcon } from './utils.js';
 
-// Global state
+/**
+ * Global state
+ */
 const gameState = {
   time: 30,
   security: 0,
@@ -14,23 +16,39 @@ const gameState = {
   architectHelpUsed: false,
   allTasks: [],
   tasks: [],
-  choiceHistory: [],      // Hvert trin -> { title, advanced }
-  revisionCount: [],      // Antal revideringer pr. trin
+  choiceHistory: [],   // For hvert trin -> { title, advanced }
+  revisionCount: [],   // Revision pr. trin
   revisionMode: false
 };
 
-// Saml opgaver (hospitalTasks, infrastrukturTasks, cybersikkerhedTasks ligger på window)
+// 1) Hent opgaver fra tasks-filerne (hospitalTasks, infrastrukturTasks, cybersikkerhedTasks på window)
 gameState.allTasks = [].concat(
   window.hospitalTasks,
   window.infrastrukturTasks,
   window.cybersikkerhedTasks
 );
 
-// Bland opgaverne
+// 2) Bland opgaverne
 shuffleArray(gameState.allTasks);
 
-// Tag 7 som potentielle
+// 3) Tag 7 som potentielle
 gameState.tasks = gameState.allTasks.splice(0, 7);
+
+// 4) Giv 10% af de syv opgaver "isHastende: true" (tilfældigt)
+assignRandomHastende(gameState.tasks);
+
+/**
+ * Hvis dine tasks-filer slet ikke har "category" eller "focus",
+ * kan du selv tilføje dem i en random-ish måde. Men typisk har
+ * du fx "task.focus = 'sikkerhed'" eller "task.focus = 'udvikling'".
+ * Her antager vi, at tasks-filerne allerede har "focus" og "category".
+ */
+function assignRandomHastende(taskArray) {
+  taskArray.forEach(t => {
+    // 10% chance
+    t.isHastende = (Math.random() < 0.1);
+  });
+}
 
 // Chart.js til KPI
 const ctx = document.getElementById('kpiChart').getContext('2d');
@@ -69,16 +87,19 @@ function updateDashboard() {
 }
 
 function updateTaskProgress() {
-  document.getElementById('taskProgress').textContent = `Opgave ${gameState.tasksCompleted} / 10`;
+  const prog = document.getElementById('taskProgress');
+  prog.textContent = `Opgave ${gameState.tasksCompleted} / 10`;
 }
 updateTaskProgress();
 
-// Render lokationer i venstre side
-const locations = ["hospital","dokumentation","leverandør","infrastruktur","it‑jura","cybersikkerhed"];
+/**
+ * Render lokationer i venstre side
+ */
+const locationList = ["hospital","dokumentation","leverandør","infrastruktur","it‑jura","cybersikkerhed"];
 function renderLocations() {
   const locDiv = document.getElementById('locations');
   locDiv.innerHTML = "";
-  locations.forEach(loc => {
+  locationList.forEach(loc => {
     const btn = document.createElement('button');
     btn.className = 'location-button';
     btn.innerHTML = loc.toUpperCase() + " " + getIcon(loc);
@@ -88,29 +109,31 @@ function renderLocations() {
 }
 renderLocations();
 
-// Hjælp-knap
+/**
+ * Få hjælp-knap i øverste højre hjørne
+ */
 document.getElementById('helpButton').addEventListener('click', showHelp);
 function showHelp() {
-  const content = `
+  const helpTxt = `
     <h2>Få Hjælp</h2>
-    <p>Du er IT-forvalter og skal balancere Tid, Sikkerhed, og Udvikling. 
-       Vælg opgaver klogt (knappen “Vælg ny opgave”), og gennemfør trin.
-       Avancerede valg koster mere tid, men giver flere KPI-point.</p>
-    <p>Efter alle trin i en opgave skal CAB godkende ændringerne.</p>
+    <p>Du er IT-forvalter, og hver opgave har flere trin. 
+       Avancerede valg giver bedre KPI men koster 2 tid. 
+       Hurtige valg koster 0 tid men giver færre KPI-point. 
+       Opgaver kan være hastende (10% chance) – vær opmærksom på at du stadig har tid nok!</p>
   `;
-  openModal(content, `<button id="closeHelp" class="modern-btn">Luk</button>`);
+  openModal(helpTxt, `<button id="closeHelp" class="modern-btn">Luk</button>`);
   document.getElementById('closeHelp').addEventListener('click', () => closeModal());
 }
 
-// Intro / tutorial
+/**
+ * Intro, SprintGoal, Tutorial
+ */
 function showIntro() {
   const introHTML = `
     <h2>Velkommen til IT‑Tycoon</h2>
-    <p>Du er IT-forvalter i en stor organisation. 
-       Din opgave er at holde Sikkerhed og Udvikling højt (mindst 22), 
-       mens du når 10 opgaver, inden tiden (30) løber ud!</p>
-    <p>Venstre side: KPI-graf og lokationer. 
-       Højre side: Aktiv opgave + knap “Vælg ny opgave”.</p>
+    <p>Du er IT-forvalter: tid, sikkerhed og udvikling er dine KPI’er. 
+       Opgaver kommer fra Hospital, Cyber eller Infra. 
+       Løs 10 opgaver før tiden (30) løber ud, og fasthold KPI’erne over 22!</p>
   `;
   openModal(introHTML, `<button id="startGame" class="modern-btn">Start Spillet</button>`);
   document.getElementById('startGame').addEventListener('click', () => closeModal(() => showSprintGoal()));
@@ -119,8 +142,9 @@ function showIntro() {
 function showSprintGoal() {
   const sprintHTML = `
     <h2>PI Planning</h2>
-    <p>Målet er at opnå mindst 22 i både Sikkerhed og Udvikling, 
-       mens du løser 10 opgaver, før tiden (30) løber ud.</p>
+    <p>Dine KPI-mål: Mindst 22 i sikkerhed og udvikling.
+       Du starter med tid 30. Løs 10 opgaver, men husk: 
+       Avancerede valg koster mere tid!</p>
   `;
   openModal(sprintHTML, `<button id="continueTutorial" class="modern-btn">Fortsæt</button>`);
   document.getElementById('continueTutorial').addEventListener('click', () => closeModal(() => startTutorial()));
@@ -129,48 +153,66 @@ function showSprintGoal() {
 function startTutorial() {
   const tutHTML = `
     <h2>Tutorial</h2>
-    <p>Tryk på “Vælg ny opgave” for at se potentielle opgaver. 
-       Hver opgave kan være markeret med kategori (“Hospital”, “Cyber” eller “Infra”) 
-       og muligvis “Haster!”. 
-       Forpligt opgaven og gennemfør trin ved at vælge lokation og løsning.</p>
-    <p>Avanceret løsning: −2 tid, men + flere KPI. 
-       Hurtig løsning: 0 tid, men + færre KPI.
-       CAB evaluerer dine valg. Du kan gå tilbage og revidere, men kun én gang pr. trin.</p>
+    <p>Tryk "Vælg ny opgave" for at se opgavelisten. 
+       Nogle er hastende (10% tilfældigt) – vælg med omhu. 
+       Lokationsvalg pr. trin, 
+       Avanceret valg: +flere KPI, −2 tid 
+       Hurtigt valg: +færre KPI, 0 tid.
+       CAB tjekker dine ændringer. Du kan revidere et trin én gang.</p>
   `;
   openModal(tutHTML, `<button id="endTutorial" class="modern-btn">Luk</button>`);
   document.getElementById('endTutorial').addEventListener('click', () => closeModal());
 }
 
 /**
- * Avanceret opgavevalg - modal
+ * Opgavevalg i en tabel
  */
 function openTaskSelectionModal() {
-  let body = `<h2>Vælg en opgave</h2><ul class="task-selection-list">`;
-  
+  let modalBody = `<h2>Vælg en opgave</h2>
+  <table class="task-table" style="width:100%; border-collapse: collapse;">
+    <thead>
+      <tr>
+        <th style="width:25%">Titel</th>
+        <th style="width:15%">Opgiver</th>
+        <th style="width:20%">Type</th>
+        <th style="width:10%">Haster</th>
+        <th style="width:30%">Valg</th>
+      </tr>
+    </thead>
+    <tbody>`;
+
   gameState.tasks.forEach((task, index) => {
-    // Viser hvem der har stillet opgaven (category) + “Haster!”
-    let catBadge = task.category ? ` [${task.category.toUpperCase()}]` : "";
-    let haste = task.isHastende ? `<span class="haster-badge">Haster!</span>` : "";
-    body += `
-      <li class="task-selection-item">
-        <h3>${task.title}${catBadge} ${haste}</h3>
-        <p>${task.shortDesc}</p>
-        <button class="commit-task-btn modern-btn" data-taskindex="${index}">
-          <i class="fas fa-check"></i> Forpligt opgave
-        </button>
-        <button class="help-task-btn modern-btn" data-taskindex="${index}">
-          <i class="fas fa-info-circle"></i> Arkitekthjælp
-        </button>
-      </li>
+    // Opgiver er fx "Hospital", "Cyber", "Infra"
+    const opgiver = mapCategoryToOpgiver(task.category);
+    const type = (task.focus === 'sikkerhed') ? "Sikkerhedsopgave" : "Udviklingsopgave";
+    const hastende = task.isHastende ? "Ja" : "Nej";
+
+    modalBody += `
+      <tr style="border-bottom:1px solid #ddd">
+        <td>${task.title}</td>
+        <td>${opgiver}</td>
+        <td>${type}</td>
+        <td>${hastende}</td>
+        <td>
+          <button class="commit-task-btn modern-btn" data-taskindex="${index}">
+            <i class="fas fa-check"></i> Forpligt
+          </button>
+          <button class="help-task-btn modern-btn" data-taskindex="${index}">
+            <i class="fas fa-info-circle"></i> Arkitekthjælp
+          </button>
+        </td>
+      </tr>
     `;
   });
-  body += '</ul>';
-  
-  const footer = `<button id="closeTaskSelection" class="modern-btn">Luk</button>`;
-  
-  openModal(body, footer);
+
+  modalBody += `</tbody></table>`;
+
+  const modalFooter = `<button id="closeTaskSelection" class="modern-btn">Luk</button>`;
+  openModal(modalBody, modalFooter);
+
+  // Luk
   document.getElementById('closeTaskSelection').addEventListener('click', () => closeModal());
-  
+
   // Forpligt
   document.querySelectorAll('.commit-task-btn').forEach(btn => {
     btn.addEventListener('click', e => {
@@ -181,7 +223,7 @@ function openTaskSelectionModal() {
       }
     });
   });
-  
+
   // Arkitekthjælp
   document.querySelectorAll('.help-task-btn').forEach(btn => {
     btn.addEventListener('click', e => {
@@ -200,29 +242,44 @@ function openTaskSelectionModal() {
   });
 }
 
+// Knap
 document.getElementById('newTaskButton')?.addEventListener('click', openTaskSelectionModal);
+
+// Kort mapper
+function mapCategoryToOpgiver(cat) {
+  if (!cat) return "Ukendt";
+  switch(cat.toLowerCase()) {
+    case 'hospital': return 'Hospital';
+    case 'cyber': return 'Cybersikkerhed';
+    case 'infra': return 'Infrastruktur';
+    default: return 'Andet';
+  }
+}
 
 // Start opgave
 function startTask(task) {
   gameState.currentTask = task;
   gameState.currentStepIndex = 0;
   gameState.architectHelpUsed = false;
-  
-  // Revisionsflow
+
   gameState.choiceHistory = new Array(task.steps.length);
   gameState.revisionCount = new Array(task.steps.length).fill(0);
   gameState.revisionMode = false;
-  
+
   renderActiveTask(task);
-  closeModal(); // Luk opgavevalg-vinduet
+  closeModal(); // Luk opgavevalgs-modal
 }
 
+/**
+ * Viser den aktive opgave i højre side
+ */
 function renderActiveTask(task) {
-  const actDiv = document.getElementById('activeTask');
-  actDiv.innerHTML = `<h2>${task.title}</h2><p>${task.shortDesc}</p>`;
+  const activeTaskDiv = document.getElementById('activeTask');
+  activeTaskDiv.innerHTML = `<h2>${task.title}</h2><p>${task.shortDesc}</p>`;
+
   if (task.steps && task.steps.length > 0) {
     const ul = document.createElement('ul');
-    ul.id = "taskLocations";
+    ul.id = 'taskLocations';
     task.steps.forEach((step, idx) => {
       const li = document.createElement('li');
       if (idx < gameState.currentStepIndex) {
@@ -232,60 +289,59 @@ function renderActiveTask(task) {
       }
       ul.appendChild(li);
     });
-    actDiv.appendChild(ul);
+    activeTaskDiv.appendChild(ul);
 
     const currentStep = task.steps[gameState.currentStepIndex];
     const instruction = document.createElement('p');
     instruction.innerHTML = `<strong>Vælg lokation:</strong> ${currentStep.location.toUpperCase()} ${getIcon(currentStep.location)}`;
-    actDiv.appendChild(instruction);
+    activeTaskDiv.appendChild(instruction);
   }
 }
 
 /**
  * Lokationsklik
  */
-function handleLocationClick(clickedLoc) {
+function handleLocationClick(clickedLocation) {
   if (!gameState.currentTask) {
-    openModal("<h2>Advarsel</h2><p>Ingen aktiv opgave!</p>", `<button id="alertOk" class="modern-btn">OK</button>`);
+    openModal("<h2>Advarsel</h2><p>Ingen aktiv opgave – vælg en opgave først!</p>", `<button id="alertOk" class="modern-btn">OK</button>`);
     document.getElementById('alertOk').addEventListener('click', () => closeModal());
     return;
   }
-  const curStep = gameState.currentTask.steps[gameState.currentStepIndex];
-  if (clickedLoc.toLowerCase() === curStep.location.toLowerCase()) {
-    showStepChoices(curStep);
+  const step = gameState.currentTask.steps[gameState.currentStepIndex];
+  if (clickedLocation.toLowerCase() === step.location.toLowerCase()) {
+    showStepChoices(step);
   } else {
     openModal(
-      `<h2>Fejl</h2>
-       <p>Du valgte ${clickedLoc.toUpperCase()}, men ${curStep.location.toUpperCase()} kræves.</p>`,
-      `<button id="errorOk" class="modern-btn">OK</button>`
+      `<h2>Forkert Lokation</h2><p>Du valgte ${clickedLocation.toUpperCase()}, men skal til ${step.location.toUpperCase()}.</p>`,
+      `<button id="errOk" class="modern-btn">OK</button>`
     );
-    document.getElementById('errorOk').addEventListener('click', () => closeModal());
+    document.getElementById('errOk').addEventListener('click', () => closeModal());
   }
 }
 
-/**
- * showStepChoices
- */
+// Viser step-valg
 function showStepChoices(step) {
+  // ...
+  // (Koden for showStepChoices fra tidligere – med Fortryd, Arkitekthjælp, Choice A/B)
+  // Bare for at alt er samlet, gentager vi:
   const body = `<h2>${step.stepDescription}</h2>` + (step.stepContext || '');
   
-  let choiceAText = step.choiceA.text.replace(/-?\d+\s*tid/, "<span style='color:#800000;'>−2 tid</span>");
-  let choiceBText = step.choiceB.text.replace(/-?\d+\s*tid/, "<span style='color:#006400;'>0 tid</span>");
-  
+  let choiceATxt = step.choiceA.text.replace(/-?\d+\s*tid/, "<span style='color:#800000;'>−2 tid</span>");
+  let choiceBTxt = step.choiceB.text.replace(/-?\d+\s*tid/, "<span style='color:#006400;'>0 tid</span>");
   if (gameState.currentTask.focus === 'sikkerhed') {
-    // Skjul +udvikling
-    choiceAText = choiceAText.replace(/[\+\-]?\d+\s*udvikling/gi, '').trim();
-    choiceBText = choiceBText.replace(/[\+\-]?\d+\s*udvikling/gi, '').trim();
+    choiceATxt = choiceATxt.replace(/[\+\-]?\d+\s*udvikling/gi, '').trim();
+    choiceBTxt = choiceBTxt.replace(/[\+\-]?\d+\s*udvikling/gi, '').trim();
   }
   
   let footer = `
-    <button id="choiceA" class="modern-btn">${step.choiceA.label} (${choiceAText})</button>
-    <button id="choiceB" class="modern-btn">${step.choiceB.label} (${choiceBText})</button>
-    <button id="architectHelp" class="modern-btn">${gameState.architectHelpUsed ? "Arkitekthjælp brugt" : "Brug Arkitekthjælp"}</button>
+    <button id="choiceA" class="modern-btn">${step.choiceA.label} (${choiceATxt})</button>
+    <button id="choiceB" class="modern-btn">${step.choiceB.label} (${choiceBTxt})</button>
+    <button id="architectHelp" class="modern-btn">${gameState.architectHelpUsed ? 'Arkitekthjælp brugt' : 'Brug Arkitekthjælp'}</button>
   `;
   if (gameState.revisionCount[gameState.currentStepIndex] < 1) {
     footer += ` <button id="undoChoice" class="modern-btn">Fortryd</button>`;
   }
+
   openModal(body, footer);
 
   // Fortryd
@@ -300,8 +356,8 @@ function showStepChoices(step) {
 
   // Choice A
   document.getElementById('choiceA').addEventListener('click', () => {
-    const modChoice = { ...step.choiceA, applyEffect: { ...step.choiceA.applyEffect, timeCost: 2 } };
-    applyChoice(modChoice);
+    const modA = { ...step.choiceA, applyEffect: { ...step.choiceA.applyEffect, timeCost: 2 } };
+    applyChoice(modA);
     gameState.choiceHistory[gameState.currentStepIndex] = { title: step.choiceA.label, advanced: true };
     closeModal(() => {
       if (gameState.revisionMode) {
@@ -317,8 +373,8 @@ function showStepChoices(step) {
 
   // Choice B
   document.getElementById('choiceB').addEventListener('click', () => {
-    const modChoice = { ...step.choiceB, applyEffect: { ...step.choiceB.applyEffect, timeCost: 0 } };
-    applyChoice(modChoice);
+    const modB = { ...step.choiceB, applyEffect: { ...step.choiceB.applyEffect, timeCost: 0 } };
+    applyChoice(modB);
     gameState.choiceHistory[gameState.currentStepIndex] = { title: step.choiceB.label, advanced: false };
     closeModal(() => {
       if (gameState.revisionMode) {
@@ -336,7 +392,7 @@ function showStepChoices(step) {
   document.getElementById('architectHelp').addEventListener('click', () => {
     if (!gameState.architectHelpUsed) {
       gameState.architectHelpUsed = true;
-      let hint = "Avanceret valg giver bedre KPI men koster tid";
+      let hint = "Avanceret valg giver bedre KPI men koster mere tid (2).";
       openModal(
         `<h2>Arkitekthjælp</h2><p>Anbefalet valg: ${step.choiceA.label}</p><p>${hint}</p>`,
         `<button id="closeArchitect" class="modern-btn">Luk</button>`
@@ -348,7 +404,6 @@ function showStepChoices(step) {
   });
 }
 
-// applyChoice
 function applyChoice(choice) {
   gameState.time -= choice.applyEffect.timeCost;
   if (gameState.time < 0) gameState.time = 0;
@@ -364,38 +419,38 @@ function applyChoice(choice) {
   }
 }
 
-// proceedToNextStep
 function proceedToNextStep() {
-  const task = gameState.currentTask;
-  if (gameState.currentStepIndex < task.steps.length - 1) {
+  const t = gameState.currentTask;
+  if (gameState.currentStepIndex < t.steps.length - 1) {
     gameState.currentStepIndex++;
-    renderActiveTask(task);
+    renderActiveTask(t);
   } else {
     cabApproval();
   }
 }
 
-// checkGameOverCondition
 function checkGameOverCondition() {
   if (gameState.tasksCompleted < 10 &&
       gameState.security >= gameState.missionGoals.security &&
       gameState.development >= gameState.missionGoals.development) {
-    openModal("<h2>Din tid er opbrugt!</h2><p>Men du nåede ikke 10 opgaver!</p>");
+    openModal("<h2>Tiden er opbrugt!</h2><p>KPI-mål er nået, men du mangler 10 opgaver.</p>");
   } else if (gameState.tasksCompleted >= 10 &&
              (gameState.security < gameState.missionGoals.security ||
               gameState.development < gameState.missionGoals.development)) {
-    openModal("<h2>Din tid er opbrugt!</h2><p>Du nåede 10 opgaver, men KPI'erne ikke!</p>");
+    openModal("<h2>Tiden er opbrugt!</h2><p>Du nåede 10 opgaver, men KPI’erne er ikke nået.</p>");
   } else if (gameState.tasksCompleted < 10 &&
              (gameState.security < gameState.missionGoals.security ||
               gameState.development < gameState.missionGoals.development)) {
-    openModal("<h2>Din tid er opbrugt!</h2><p>Både antal opgaver og KPI’er er utilstrækkelige.</p>");
+    openModal("<h2>Tiden er opbrugt!</h2><p>Både opgaver og KPI’er er utilstrækkelige.</p>");
   } else {
-    openModal("<h2>Din tid er opbrugt!</h2><p>Du nåede målet, men sluttede på tiden alligevel!</p>");
+    openModal("<h2>Tiden er opbrugt!</h2><p>Spillet slutter.</p>");
   }
   setTimeout(() => location.reload(), 4000);
 }
 
-// CAB
+/**
+ * CAB - med rework
+ */
 function cabApproval() {
   closeModal(() => {
     let focusKPI, missionGoal;
@@ -407,26 +462,26 @@ function cabApproval() {
       missionGoal = gameState.missionGoals.development;
     }
     const allAdvanced = gameState.choiceHistory.every(ch => ch && ch.advanced === true);
-    const approvalPct = allAdvanced ? 100 : Math.floor((focusKPI / missionGoal) * 100);
+    const approvalPct = allAdvanced ? 100 : Math.floor((focusKPI / missionGoal)*100);
     const riskPct = 100 - approvalPct;
-    
+
     const cabHTML = `
       <h2>CAB (Change Advisory Board)</h2>
       <p>Godkendelsesprocent: ${approvalPct}%</p>
       <p>Risiko for afvisning: ${riskPct}%</p>
     `;
-    let buttons = `<button id="evaluateCAB" class="modern-btn">Evaluér nu</button>`;
+    let btns = `<button id="evaluateCAB" class="modern-btn">Evaluér nu</button>`;
     if (!allAdvanced) {
-      buttons += ` <button id="goBackCAB" class="modern-btn">Gå tilbage</button>`;
+      btns += ` <button id="goBackCAB" class="modern-btn">Gå tilbage</button>`;
     }
+    openModal(cabHTML, btns);
 
-    openModal(cabHTML, buttons);
-    
     document.getElementById('evaluateCAB').addEventListener('click', () => {
-      let chance = allAdvanced ? 1 : Math.min(1, focusKPI / missionGoal);
+      let chance = allAdvanced ? 1 : Math.min(1, focusKPI/missionGoal);
       if (Math.random() < chance) {
         showTaskSummary();
       } else {
+        // Afvisning
         openModal("<h2>CAB Afvisning</h2><p>Rework koster 3 tidspoint.</p>", `<button id="continueRework" class="modern-btn">OK</button>`);
         document.getElementById('continueRework').addEventListener('click', () => {
           gameState.time -= 3;
@@ -445,61 +500,65 @@ function cabApproval() {
 // Revision
 function showRevisionOptions() {
   let revisable = [];
-  for (let i=0; i<gameState.choiceHistory.length; i++){
-    if (gameState.choiceHistory[i] && !gameState.choiceHistory[i].advanced && gameState.revisionCount[i] < 1){
+  for (let i=0; i<gameState.choiceHistory.length; i++) {
+    if (gameState.choiceHistory[i] &&
+        gameState.choiceHistory[i].advanced === false &&
+        gameState.revisionCount[i] < 1) {
       revisable.push(i);
     }
   }
   if (revisable.length === 0) {
-    openModal("<h2>Ingen revidérbare trin</h2><p>Enten er alle trin allerede avancerede eller revideret.</p>", `<button id="noRevOk" class="modern-btn">OK</button>`);
+    openModal("<h2>Ingen revidérbare trin</h2><p>Alle trin er enten avancerede eller allerede revideret.</p>", `<button id="noRevOk" class="modern-btn">OK</button>`);
     document.getElementById('noRevOk').addEventListener('click', () => closeModal(() => cabApproval()));
     return;
   }
-  let revList = "<h2>Vælg et trin at revidere</h2><ul>";
+  let revHTML = "<h2>Vælg et trin at revidere</h2><ul>";
   revisable.forEach(idx => {
-    let title = gameState.currentTask.steps[idx].stepDescription;
-    revList += `<li><button class="revisionBtn modern-btn" data-idx="${idx}">Trin ${idx+1}: ${title}</button></li>`;
+    let desc = gameState.currentTask.steps[idx].stepDescription;
+    revHTML += `<li><button class="revisionBtn modern-btn" data-idx="${idx}">Trin ${idx+1}: ${desc}</button></li>`;
   });
-  revList += "</ul>";
+  revHTML += "</ul>";
 
-  openModal(revList, "");
+  openModal(revHTML, "");
   document.querySelectorAll('.revisionBtn').forEach(btn => {
     btn.addEventListener('click', e => {
-      let chosenIdx = parseInt(e.target.getAttribute('data-idx'));
+      let chosen = parseInt(e.target.getAttribute('data-idx'));
       gameState.revisionMode = true;
-      gameState.revisionCount[chosenIdx]++;
+      gameState.revisionCount[chosen]++;
       closeModal(() => {
-        gameState.currentStepIndex = chosenIdx;
-        showStepChoices(gameState.currentTask.steps[chosenIdx]);
+        gameState.currentStepIndex = chosen;
+        showStepChoices(gameState.currentTask.steps[chosen]);
       });
     });
   });
 }
 
-// Opsummering
+/**
+ * Opsummering - slut
+ */
 function showTaskSummary() {
-  let summary = "<h2>Opsummering af dine valg</h2><ul>";
+  let sumHTML = "<h2>Opsummering af dine valg</h2><ul>";
   gameState.choiceHistory.forEach((ch, i) => {
     if (ch) {
-      summary += `<li>Trin ${i+1}: ${ch.title}</li>`;
+      sumHTML += `<li>Trin ${i+1}: ${ch.title}</li>`;
     }
   });
-  summary += "</ul>";
-  
-  openModal(summary, `<button id="continueAfterSummary" class="modern-btn">Fortsæt</button>`);
+  sumHTML += "</ul>";
+  openModal(sumHTML, `<button id="continueAfterSummary" class="modern-btn">Fortsæt</button>`);
   document.getElementById('continueAfterSummary').addEventListener('click', () => closeModal(() => finishTask()));
 }
 
-// Afslut opgave
 function finishTask() {
   gameState.tasksCompleted++;
   updateTaskProgress();
   openModal("<h2>Info</h2><p>Opgaven er fuldført!</p>", `<button id="finishOk" class="modern-btn">OK</button>`);
   document.getElementById('finishOk').addEventListener('click', () => {
     closeModal(() => {
+      // Fjern opgaven
       gameState.tasks = gameState.tasks.filter(t => t !== gameState.currentTask);
-      const newOnes = gameState.allTasks.splice(0,2);
-      gameState.tasks = gameState.tasks.concat(newOnes);
+      // Tilføj 1-2 nye
+      const newly = gameState.allTasks.splice(0,2);
+      gameState.tasks = gameState.tasks.concat(newly);
       document.getElementById('activeTask').innerHTML = '<h2>Aktiv Opgave</h2>';
       gameState.currentTask = null;
       gameState.currentStepIndex = 0;
@@ -507,13 +566,13 @@ function finishTask() {
   });
 }
 
-// “Vælg ny opgave”-knap
+// "Vælg ny opgave"-knap
 document.getElementById('newTaskButton')?.addEventListener('click', openTaskSelectionModal);
 
-// Start spil
+// Start spil – Intro
 showIntro();
 
-// Eksporter alt, hvis nødvendigt
+// Eksporter alt, hvis du skal bruge det i andre moduler
 export {
   gameState,
   updateDashboard,
