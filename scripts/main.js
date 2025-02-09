@@ -17,8 +17,7 @@ const gameState = {
   choiceHistory: [] // Her gemmes en tekstbeskrivelse af hvert valg
 };
 
-// Saml alle opgaver fra de tre task-filer
-// Forudsæt, at hospitalTasks, infrastrukturTasks og cybersikkerhedTasks er defineret globalt via window
+// Saml alle opgaver fra de tre task-filer (forudsæt at hospitalTasks, infrastrukturTasks og cybersikkerhedTasks er defineret globalt via window)
 gameState.allTasks = [].concat(window.hospitalTasks, window.infrastrukturTasks, window.cybersikkerhedTasks);
 
 // Bland opgaverne tilfældigt
@@ -103,7 +102,7 @@ function showIntro() {
     <p>Hvert valg i et trin viser sin tidsomkostning – komplet løsning koster 2 tidspoint og giver en større bonus; hurtig løsning koster 0 tidspoint og giver en mindre bonus.</p>
   `;
   const modalContent = document.querySelector('.modal-content');
-  modalContent.style.height = '48vh'; // Øger introduktionspop-up højden med 20%
+  modalContent.style.height = '48vh'; // Øger introduktionspop-up højden
   openModal(introContent, `<button id="startGame">Start Spillet</button>`);
   document.getElementById('startGame').addEventListener('click', () => {
     modalContent.style.height = '40vh'; // Reset til standardhøjde
@@ -131,7 +130,7 @@ function startTutorial() {
     <p><strong>Spillets Mekanik:</strong><br>
     Når du forpligter en opgave, gennemfører du hvert trin ved at vælge den korrekte lokation. Komplet løsning koster 2 tidspoint og giver en større bonus; hurtig løsning koster 0 tidspoint og giver en mindre bonus.</p>
     <p><strong>Efter alle trin:</strong><br>
-    Dine ændringer sendes til CAB for evaluering. Her betyder <em>Sikkerhedsvurdering</em> den risiko, at dine ændringer ikke bliver godkendt af CAB. Hvis dine ændringer opfylder målene, godkender CAB dem. Er der fejl, afviser de ændringen, og du skal udføre rework – hvilket trækker ekstra tid. Brug denne feedback til at justere din strategi.</p>
+    Dine ændringer sendes til CAB for evaluering. <em>Sikkerhedsvurdering</em> her angiver den risiko, at dine ændringer ikke bliver godkendt. Hvis målene opfyldes, godkender CAB ændringerne; er der mangler, afviser de dem, og du skal udføre rework – hvilket trækker ekstra tid. Brug CAB-feedbacken til at justere din strategi.</p>
   `;
   openModal(tutorialContent, `<button id="endTutorial">Næste</button>`);
   document.getElementById('endTutorial').addEventListener('click', () => closeModal(() => renderPotentialTasks()));
@@ -325,23 +324,30 @@ function checkGameOverCondition() {
 function cabApproval() {
   // Luk den nuværende modal og vis CAB-modalen
   closeModal(() => {
-    // Hvis alle valg var de mest omfattende (dvs. indeholder "-2 tid"), sættes risikoen til 0%
+    // Hvis alle valg var de mest omfattende (indeholder "-2 tid"), lås evalueringen til 100%
     let allComprehensive = gameState.choiceHistory.every(item => item.includes("-2 tid"));
     let bonus = 0;
     if (allComprehensive) {
-      // Garanter 100% score ved at udligne forskellen
       bonus = gameState.missionGoals.security - gameState.security;
     }
     let cabScore = Math.floor((gameState.security + bonus) / gameState.missionGoals.security * 100);
-    // Forklar, at "Sikkerhedsvurdering" er en indikation af risikoen for, at dine ændringer ikke bliver godkendt
+    
+    // CAB-forklaring: Forklar kort, at sikkerhedsvurdering angiver risikoen for, at ændringerne ikke bliver godkendt.
     const cabExplanation = `
       <h2>CAB (Change Advisory Board)</h2>
-      <p>CAB er et panel af eksperter, der vurderer dine ændringer, før de implementeres. <em>Sikkerhedsvurdering</em> angiver den risiko, at dine ændringer ikke bliver godkendt.</p>
-      <p><strong>Sikkerhedsvurdering:</strong> ${cabScore}% – ${cabScore < 75 ? "Der er en høj risiko for, at opgaven ikke bliver godkendt. Overvej at vælge mere omfattende løsninger." : "Risikoen for afvisning er minimal."}</p>
-      <p>Hvis dine ændringer opfylder målene, godkender CAB dem. Er der mangler, afviser de ændringen, og du skal udføre rework – hvilket trækker ekstra tid.</p>
-      <p>Du kan fortsætte evalueringen eller gå tilbage og revidere dine valg.</p>
+      <p>CAB er et panel af eksperter, der vurderer dine ændringer, før de implementeres.</p>
+      <p><strong>Sikkerhedsvurdering:</strong> ${cabScore}% – ${cabScore < 75 ? "Der er en høj risiko for afvisning. Overvej at vælge mere detaljerede løsninger." : "Risikoen for afvisning er minimal."}</p>
+      <p>Denne vurdering angiver den risiko, at dine ændringer ikke bliver godkendt af CAB. Hvis dine ændringer opfylder målene, godkender CAB dem; ellers afviser de dem, og du skal udføre rework – hvilket trækker ekstra tid.</p>
+      ${allComprehensive ? "" : "<p>Hvis du ønsker at ændre dine valg, kan du gå tilbage og revidere dem.</p>"}
     `;
-    openModal(cabExplanation, `<button id="evaluateCAB">Evaluér nu</button> <button id="goBackCAB">Gå tilbage</button>`);
+    
+    // Hvis alle valg er avancerede, vises kun "Evaluér nu"; ellers er der også mulighed for at "Gå tilbage"
+    let buttonsHTML = allComprehensive 
+      ? `<button id="evaluateCAB">Evaluér nu</button>` 
+      : `<button id="evaluateCAB">Evaluér nu</button> <button id="goBackCAB">Gå tilbage</button>`;
+    
+    openModal(cabExplanation, buttonsHTML);
+    
     document.getElementById('evaluateCAB').addEventListener('click', () => {
       let chance = allComprehensive ? 1 : Math.min(1, (gameState.security + bonus) / gameState.missionGoals.security);
       if (Math.random() < chance) {
@@ -357,9 +363,12 @@ function cabApproval() {
         });
       }
     });
-    document.getElementById('goBackCAB').addEventListener('click', () => {
-      closeModal(() => showStepChoices(gameState.currentTask.steps[gameState.currentStepIndex]));
-    });
+    
+    if (!allComprehensive) {
+      document.getElementById('goBackCAB').addEventListener('click', () => {
+        closeModal(() => showStepChoices(gameState.currentTask.steps[gameState.currentStepIndex]));
+      });
+    }
   });
 }
 
@@ -390,7 +399,7 @@ function finishTask() {
   document.getElementById('continueAfterFinish').addEventListener('click', () => {
     closeModal(() => {
       gameState.tasks = gameState.tasks.filter(task => task !== gameState.currentTask);
-      // Tilføj op til 2 nye opgaver fra allTasks
+      // Tilføj op til 2 nye opgaver fra allTasks, hvis tilgængelige
       const newTasks = gameState.allTasks.splice(0, 2);
       gameState.tasks = gameState.tasks.concat(newTasks);
       document.getElementById('activeTask').innerHTML = '<h2>Aktiv Opgave</h2>';
