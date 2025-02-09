@@ -15,11 +15,13 @@ const gameState = {
   allTasks: [],
   tasks: [],
   // choiceHistory gemmer for hvert trin et boolean flag:
-  // true for avanceret valg, false for hurtig valg; hvis der er et element her, er trinnet låst.
+  // true for avanceret valg (–2 tid) og false for hurtig valg (0 tid).
+  // Når et valg er truffet, bliver det "låst" i dette array.
   choiceHistory: []
 };
 
-// Saml alle opgaver fra de tre task-filer (forudsæt, at hospitalTasks, infrastrukturTasks og cybersikkerhedTasks er defineret globalt via window)
+// Saml alle opgaver fra de tre task-filer
+// Forudsæt at hospitalTasks, infrastrukturTasks og cybersikkerhedTasks er defineret globalt (fx på window)
 gameState.allTasks = [].concat(window.hospitalTasks, window.infrastrukturTasks, window.cybersikkerhedTasks);
 
 // Bland opgaverne tilfældigt
@@ -222,7 +224,7 @@ function handleLocationClick(clickedLocation) {
     document.getElementById('alertOk').addEventListener('click', () => closeModal());
     return;
   }
-  // Hvis løsningen for det aktuelle trin allerede er valgt, lås trinnet
+  // Hvis løsningen for det aktuelle trin allerede er låst, forhindres yderligere ændring
   if (gameState.choiceHistory[gameState.currentStepIndex] !== undefined) {
     openModal("<h2>Information</h2><p>Du har allerede valgt en løsning for dette trin, og valget kan ikke ændres.</p>", `<button id="lockedOk">OK</button>`);
     document.getElementById('lockedOk').addEventListener('click', () => closeModal());
@@ -241,30 +243,30 @@ function handleLocationClick(clickedLocation) {
 }
 
 function showStepChoices(step) {
+  // Opdel modalindhold: Body med beskrivelse, Footer med knapper
+  const bodyContent = `<h2>${step.stepDescription}</h2>${step.stepContext ? `<p>${step.stepContext}</p>` : ""}`;
+  
   let choiceAText = step.choiceA.text.replace(/-?\d+\s*tid/, "<span style='color:#800000;'>−2 tid</span>");
   let choiceBText = step.choiceB.text.replace(/-?\d+\s*tid/, "<span style='color:#006400;'>0 tid</span>");
   if (gameState.currentTask.focus === "sikkerhed") {
     choiceAText = choiceAText.replace(/[\+\-]?\d+\s*udvikling/gi, "").trim();
     choiceBText = choiceBText.replace(/[\+\-]?\d+\s*udvikling/gi, "").trim();
   }
-  const choiceContent = `
-    <h2>${step.stepDescription}</h2>
-    ${step.stepContext ? `<p>${step.stepContext}</p>` : ""}
-    <div class="choice-buttons">
-      <button id="choiceA">${step.choiceA.label} (${choiceAText})</button>
-      <button id="choiceB">${step.choiceB.label} (${choiceBText})</button>
-      <button id="architectHelp">${gameState.architectHelpUsed ? 'Arkitekthjælp brugt' : 'Brug Arkitekthjælp'}</button>
-      <button id="undoChoice">Fortryd</button>
-    </div>
+  const footerContent = `
+    <button id="choiceA">${step.choiceA.label} (${choiceAText})</button>
+    <button id="choiceB">${step.choiceB.label} (${choiceBText})</button>
+    <button id="architectHelp">${gameState.architectHelpUsed ? 'Arkitekthjælp brugt' : 'Brug Arkitekthjælp'}</button>
+    <button id="undoChoice">Fortryd</button>
   `;
-  openModal(choiceContent);
-  // Lad nu "undoChoice" være tilgængelig kun hvis intet valg er låst endnu (dette modal er kun vist, hvis intet valg er truffet)
+  
+  openModal(bodyContent, footerContent);
+  
   document.getElementById('undoChoice').addEventListener('click', () => closeModal(() => showStepChoices(step)));
   
   document.getElementById('choiceA').addEventListener('click', () => {
     let modifiedChoice = { ...step.choiceA, applyEffect: { ...step.choiceA.applyEffect, timeCost: 2 } };
     applyChoice(modifiedChoice);
-    // Lås dette trin: true for avanceret valg
+    // Lås dette trin med avanceret valg (true)
     gameState.choiceHistory[gameState.currentStepIndex] = true;
     closeModal(() => {
       if (gameState.currentStepIndex === gameState.currentTask.steps.length - 1) {
@@ -278,7 +280,7 @@ function showStepChoices(step) {
   document.getElementById('choiceB').addEventListener('click', () => {
     let modifiedChoice = { ...step.choiceB, applyEffect: { ...step.choiceB.applyEffect, timeCost: 0 } };
     applyChoice(modifiedChoice);
-    // Lås dette trin: false for hurtig valg
+    // Lås dette trin med hurtig valg (false)
     gameState.choiceHistory[gameState.currentStepIndex] = false;
     closeModal(() => {
       if (gameState.currentStepIndex === gameState.currentTask.steps.length - 1) {
@@ -360,12 +362,10 @@ function cabApproval() {
       <p><strong>Godkendelsesprocent:</strong> ${approvalPercentage}%</p>
       <p><strong>Risiko for afvisning:</strong> ${riskPercentage}%</p>
       <p>Denne vurdering angiver, hvor stor en chance der er for, at dine ændringer ikke bliver godkendt af CAB.</p>
-      ${allComprehensive ? "" : "<p>Hvis du ønsker at ændre dine valg, kan du gå tilbage og revidere dem.</p>"}
     `;
     
-    let buttonsHTML = allComprehensive 
-      ? `<button id="evaluateCAB">Evaluér nu</button>` 
-      : `<button id="evaluateCAB">Evaluér nu</button> <button id="goBackCAB">Gå tilbage</button>`;
+    // Når CAB er kaldt, er alle trin låst – derfor vises kun "Evaluér nu"
+    let buttonsHTML = `<button id="evaluateCAB">Evaluér nu</button>`;
     
     openModal(cabExplanation, buttonsHTML);
     
@@ -384,19 +384,12 @@ function cabApproval() {
         });
       }
     });
-    
-    if (!allComprehensive) {
-      document.getElementById('goBackCAB').addEventListener('click', () => {
-        closeModal(() => showStepChoices(gameState.currentTask.steps[gameState.currentStepIndex]));
-      });
-    }
   });
 }
 
 function showTaskSummary() {
   let summaryHTML = "<h2>Opsummering af dine valg</h2><ul>";
   gameState.choiceHistory.forEach((choice, index) => {
-    // Vis en post per trin: "Avanceret løsning" eller "Hurtig løsning"
     summaryHTML += `<li>Trin ${index + 1}: ${choice === true ? "Avanceret løsning" : "Hurtig løsning"}</li>`;
   });
   summaryHTML += "</ul>";
@@ -421,7 +414,7 @@ function finishTask() {
   document.getElementById('continueAfterFinish').addEventListener('click', () => {
     closeModal(() => {
       gameState.tasks = gameState.tasks.filter(task => task !== gameState.currentTask);
-      // Tilføj op til 2 nye opgaver fra allTasks, hvis der er nogen
+      // Tilføj op til 2 nye opgaver fra allTasks, hvis tilgængelige
       const newTasks = gameState.allTasks.splice(0, 2);
       gameState.tasks = gameState.tasks.concat(newTasks);
       document.getElementById('activeTask').innerHTML = '<h2>Aktiv Opgave</h2>';
