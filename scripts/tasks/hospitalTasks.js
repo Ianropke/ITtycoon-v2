@@ -10,7 +10,7 @@ window.hospitalTasks = [
       {
         location: "hospital",
         stepDescription: "Analyser den nuværende patientjournal for at identificere ineffektive processer.",
-        stepContext: "Gennemgå patientjournalerne grundigt for at finde områder med fejl og ineffektivitet.",
+        stepContext: "Gennemgå patientjournalerne for at finde fejl og ineffektivitet.",
         choiceA: {
           label: "Detaljeret analyse",
           text: "+3 udvikling, -2 tid",
@@ -27,7 +27,7 @@ window.hospitalTasks = [
       {
         location: "leverandør",
         stepDescription: "Forhandle med leverandøren om integrationen af det nye system.",
-        stepContext: "En god forhandling er nødvendig for en problemfri integration med eksisterende IT-løsninger.",
+        stepContext: "En god forhandling sikrer en problemfri integration med eksisterende IT-løsninger.",
         choiceA: {
           label: "Detaljeret forhandling",
           text: "+3 udvikling, -2 tid",
@@ -72,7 +72,7 @@ window.hospitalTasks = [
       {
         location: "hospital",
         stepDescription: "Vurder det nuværende EHR-system og identificer forbedringsmuligheder.",
-        stepContext: "En grundig evaluering er nødvendig for at sikre, at den nye løsning dækker alle behov.",
+        stepContext: "En grundig evaluering sikrer, at den nye løsning dækker alle behov.",
         choiceA: {
           label: "Detaljeret evaluering",
           text: "+3 udvikling, -2 tid",
@@ -88,7 +88,7 @@ window.hospitalTasks = [
       },
       {
         location: "it‑jura",
-        stepDescription: "Sikre, at den nye opgradering overholder gældende IT-reguleringer.",
+        stepDescription: "Sikre, at opgraderingen overholder gældende IT-reguleringer.",
         stepContext: "Juridiske aspekter skal tages i betragtning for at undgå fremtidige problemer.",
         choiceA: {
           label: "Grundig juridisk gennemgang",
@@ -134,7 +134,7 @@ window.hospitalTasks = [
       {
         location: "hospital",
         stepDescription: "Identificér nøgleområder, hvor telemedicin kan erstatte fysiske konsultationer.",
-        stepContext: "Analyser patientdata for at bestemme, hvor telemedicin vil have størst effekt.",
+        stepContext: "Analyser patientdata for at afgøre, hvor telemedicin har størst effekt.",
         choiceA: {
           label: "Omfattende analyse",
           text: "+3 udvikling, -2 tid",
@@ -166,17 +166,17 @@ window.hospitalTasks = [
         }
       },
       {
-        location: "hospital",
-        stepDescription: "Uddan sundhedspersonale i brug af telemedicin.",
-        stepContext: "Korrekt træning sikrer bedre implementering og accept hos personalet.",
+        location: "cybersikkerhed",
+        stepDescription: "Implementér sikkerhedsforanstaltninger til telemedicin-løsningen.",
+        stepContext: "Beskyt patientdata under videokonsultationer og fjernovervågning.",
         choiceA: {
-          label: "Omfattende træning",
+          label: "Avanceret sikkerhed",
           text: "+2 udvikling, -2 tid",
           recommended: false,
           applyEffect: { timeCost: 2, statChange: { development: 2 } }
         },
         choiceB: {
-          label: "Kort træning",
+          label: "Basis sikkerhed",
           text: "+1 udvikling, 0 tid",
           recommended: false,
           applyEffect: { timeCost: 0, statChange: { development: 1 } }
@@ -185,7 +185,7 @@ window.hospitalTasks = [
       {
         location: "dokumentation",
         stepDescription: "Udarbejd retningslinjer for brug af telemedicin.",
-        stepContext: "Sikre, at alle sundhedspersonale er bekendte med procedurerne for telemedicin.",
+        stepContext: "Sikre, at alle sundhedspersonale kender procedurerne for telemedicin.",
         choiceA: {
           label: "Detaljeret retningslinje",
           text: "+2 udvikling, -2 tid",
@@ -230,7 +230,7 @@ window.hospitalTasks = [
       {
         location: "infrastruktur",
         stepDescription: "Opgrader IT-systemerne til bedre at spore patientbevægelser.",
-        stepContext: "Bedre IT-løsninger kan lette registreringen af patientdata og bevægelser.",
+        stepContext: "Bedre IT-løsninger letter registreringen af patientdata og bevægelser.",
         choiceA: {
           label: "Omfattende opgradering",
           text: "+2 udvikling, -2 tid",
@@ -245,17 +245,17 @@ window.hospitalTasks = [
         }
       },
       {
-        location: "hospital",
-        stepDescription: "Indfør triage-principper for hurtigere patientvisitation.",
-        stepContext: "Ensartede triage-processer kan reducere ventetider ved at prioritere patienter efter behov.",
+        location: "leverandør",
+        stepDescription: "Involver eksterne konsulenter til at forbedre patientflow-design.",
+        stepContext: "Eksperter kan hjælpe med at optimere layout, logistik og planlægning.",
         choiceA: {
-          label: "Omfattende triage-system",
+          label: "Fuldt samarbejde",
           text: "+2 udvikling, -2 tid",
           recommended: false,
           applyEffect: { timeCost: 2, statChange: { development: 2 } }
         },
         choiceB: {
-          label: "Basis triage",
+          label: "Kort samarbejde",
           text: "+1 udvikling, 0 tid",
           recommended: false,
           applyEffect: { timeCost: 0, statChange: { development: 1 } }
@@ -290,7 +290,7 @@ window.hospitalTasks = [
     focus: "udvikling",
     steps: [
       {
-        location: "dokumentation",
+        location: "hospital",
         stepDescription: "Analyser de nuværende processer for receptudskrivning.",
         stepContext: "Identificér, hvor digitalisering kan reducere fejl og spildt tid.",
         choiceA: {
@@ -309,7 +309,7 @@ window.hospitalTasks = [
       {
         location: "infrastruktur",
         stepDescription: "Implementér et digitalt system for receptudstedelse.",
-        stepContext: "Systemet skal integreres med eksisterende IT-løsninger for at sikre effektivitet.",
+        stepContext: "Systemet skal integreres med eksisterende løsninger for at sikre effektivitet.",
         choiceA: {
           label: "Omfattende implementering",
           text: "+2 udvikling, -2 tid",
@@ -324,17 +324,17 @@ window.hospitalTasks = [
         }
       },
       {
-        location: "it‑jura",
-        stepDescription: "Sikre, at det digitale receptsystem overholder gældende lovgivning.",
-        stepContext: "En juridisk gennemgang er nødvendig for at undgå fremtidige tvister.",
+        location: "dokumentation",
+        stepDescription: "Sikre overholdelse af lovgivning og dokumentér receptprocessen.",
+        stepContext: "En juridisk gennemgang og ajourført dokumentation minimerer fremtidige tvister.",
         choiceA: {
-          label: "Detaljeret juridisk review",
+          label: "Detaljeret review",
           text: "+3 udvikling, -2 tid",
           recommended: true,
           applyEffect: { timeCost: 2, statChange: { development: 3 } }
         },
         choiceB: {
-          label: "Hurtig review",
+          label: "Hurtigt review",
           text: "+1 udvikling, 0 tid",
           recommended: false,
           applyEffect: { timeCost: 0, statChange: { development: 1 } }
@@ -347,7 +347,7 @@ window.hospitalTasks = [
   {
     title: "Forbedring af laboratoriedata",
     shortDesc: "Opgrader laboratorieinformationssystemet for bedre datahåndtering.",
-    narrativeIntro: "Et optimeret laboratorieinformationssystem vil sikre hurtigere og mere nøjagtig dataudveksling.",
+    narrativeIntro: "Et optimeret laboratorieinformationssystem sikrer hurtigere og mere nøjagtig dataudveksling.",
     riskProfile: 3,
     focus: "udvikling",
     steps: [
@@ -371,7 +371,7 @@ window.hospitalTasks = [
       {
         location: "hospital",
         stepDescription: "Test og valider det opgraderede system i praksis.",
-        stepContext: "Udfør tests for at sikre, at systemet fungerer optimalt før fuld implementering.",
+        stepContext: "Udfør tests, så systemet fungerer optimalt, før det implementeres fuldt.",
         choiceA: {
           label: "Omfattende test",
           text: "+3 udvikling, -2 tid",
@@ -409,14 +409,14 @@ window.hospitalTasks = [
   {
     title: "Integration af wearable enheder",
     shortDesc: "Integrér wearable enheder for at monitorere patienters vitale data.",
-    narrativeIntro: "Wearables kan levere kontinuerlig data om patientens tilstand, hvilket kan forbedre behandling og forebyggelse.",
+    narrativeIntro: "Wearables kan levere kontinuerlig data om patientens tilstand og forbedre forebyggelse og behandling.",
     riskProfile: 3,
     focus: "udvikling",
     steps: [
       {
         location: "hospital",
         stepDescription: "Vurder potentialet for wearable integration i patientovervågning.",
-        stepContext: "Undersøg hvordan wearables kan forbedre patientplejen og identificér de vigtigste parametre.",
+        stepContext: "Undersøg hvordan wearables kan forbedre plejen og identificér relevante parametre.",
         choiceA: {
           label: "Detaljeret vurdering",
           text: "+3 udvikling, -2 tid",
@@ -448,17 +448,17 @@ window.hospitalTasks = [
         }
       },
       {
-        location: "hospital",
-        stepDescription: "Indfør alarmer og monitorering i realtid for wearable-data.",
-        stepContext: "Hurtige alarmer kan advare personalet om kritiske værdier.",
+        location: "cybersikkerhed",
+        stepDescription: "Implementér sikkerhedsforanstaltninger for wearable-data.",
+        stepContext: "Data fra wearables skal krypteres og sikres mod uautoriseret adgang.",
         choiceA: {
-          label: "Avancerede alarmflows",
+          label: "Avanceret datasikkerhed",
           text: "+2 udvikling, -2 tid",
           recommended: false,
           applyEffect: { timeCost: 2, statChange: { development: 2 } }
         },
         choiceB: {
-          label: "Enkle notifikationer",
+          label: "Basis datasikkerhed",
           text: "+1 udvikling, 0 tid",
           recommended: false,
           applyEffect: { timeCost: 0, statChange: { development: 1 } }
@@ -467,7 +467,7 @@ window.hospitalTasks = [
       {
         location: "dokumentation",
         stepDescription: "Udarbejd retningslinjer for anvendelse af wearables.",
-        stepContext: "Retningslinjer sikrer, at dataene håndteres korrekt og sikkert.",
+        stepContext: "Retningslinjer sikrer korrekt og sikker håndtering af patientdata.",
         choiceA: {
           label: "Detaljeret retningslinje",
           text: "+3 udvikling, -2 tid",
@@ -493,7 +493,7 @@ window.hospitalTasks = [
     focus: "udvikling",
     steps: [
       {
-        location: "dokumentation",
+        location: "hospital",
         stepDescription: "Analyser nuværende manuelle processer i journalføring.",
         stepContext: "Find de områder, hvor automatisering kan spare tid og minimere fejl.",
         choiceA: {
@@ -527,17 +527,17 @@ window.hospitalTasks = [
         }
       },
       {
-        location: "hospital",
-        stepDescription: "Test og justér automatiseringssystemet i klinisk drift.",
-        stepContext: "Sørg for, at systemet fungerer effektivt og præcist under reelle forhold.",
+        location: "dokumentation",
+        stepDescription: "Test systemet i klinisk drift og opdater procedurerne.",
+        stepContext: "Sørg for, at alt er veldokumenteret og personalet er informeret.",
         choiceA: {
-          label: "Omfattende test",
+          label: "Omfattende test og dokumentation",
           text: "+3 udvikling, -2 tid",
           recommended: true,
           applyEffect: { timeCost: 2, statChange: { development: 3 } }
         },
         choiceB: {
-          label: "Kort test",
+          label: "Kort test og dokumentation",
           text: "+1 udvikling, 0 tid",
           recommended: false,
           applyEffect: { timeCost: 0, statChange: { development: 1 } }
@@ -557,7 +557,7 @@ window.hospitalTasks = [
       {
         location: "dokumentation",
         stepDescription: "Kortlæg nuværende kommunikationskanaler og identificér mangler.",
-        stepContext: "En analyse af kommunikationsflowet vil vise, hvor forbedringer er mulige.",
+        stepContext: "En analyse af kommunikationen vil vise, hvor forbedringer er mulige.",
         choiceA: {
           label: "Detaljeret kortlægning",
           text: "+3 udvikling, -2 tid",
@@ -574,7 +574,7 @@ window.hospitalTasks = [
       {
         location: "it‑jura",
         stepDescription: "Sikre, at de nye kommunikationsløsninger opfylder lovkravene.",
-        stepContext: "Juridisk compliance er afgørende for at beskytte patientdata og undgå sanktioner.",
+        stepContext: "Juridisk compliance er afgørende for at beskytte patientdata.",
         choiceA: {
           label: "Omfattende review",
           text: "+2 udvikling, -2 tid",
@@ -591,7 +591,7 @@ window.hospitalTasks = [
       {
         location: "hospital",
         stepDescription: "Implementér og test det nye kommunikationssystem.",
-        stepContext: "Systemet skal testes i en klinisk kontekst for at sikre, at det forbedrer kommunikationen effektivt.",
+        stepContext: "Systemet skal testes i en klinisk kontekst for at sikre effektiv forbedring.",
         choiceA: {
           label: "Omfattende implementering",
           text: "+3 udvikling, -2 tid",
@@ -606,9 +606,9 @@ window.hospitalTasks = [
         }
       },
       {
-        location: "hospital",
+        location: "leverandør",
         stepDescription: "Indfør feedback-mekanismer, så patienter kan vurdere kommunikationen.",
-        stepContext: "Feedback hjælper med løbende at forbedre og tilpasse løsningen.",
+        stepContext: "Feedback hjælper med løbende at justere og forbedre løsningen.",
         choiceA: {
           label: "Avanceret feedbacksystem",
           text: "+2 udvikling, -2 tid",
@@ -624,7 +624,7 @@ window.hospitalTasks = [
       },
       {
         location: "dokumentation",
-        stepDescription: "Opdater retningslinjer og dokumentation med den nye kommunikationsløsning.",
+        stepDescription: "Opdater vejledninger med den nye kommunikationsløsning.",
         stepContext: "Sikre, at personalet har klare procedurer og vejledninger.",
         choiceA: {
           label: "Omfattende dokumentation",
@@ -685,34 +685,34 @@ window.hospitalTasks = [
         }
       },
       {
-        location: "hospital",
-        stepDescription: "Træn AI-modellen på historiske patientdata.",
-        stepContext: "En korrekt trænet AI kan præcist forudsige diagnoser.",
+        location: "cybersikkerhed",
+        stepDescription: "Sørg for sikker datahåndtering i forbindelse med AI-træning.",
+        stepContext: "Beskyt data mod uautoriseret adgang under træning og modeludvikling.",
         choiceA: {
-          label: "Omfattende træning",
-          text: "+3 udvikling, -2 tid",
+          label: "Avanceret datasikkerhed",
+          text: "+2 udvikling, -2 tid",
           recommended: false,
-          applyEffect: { timeCost: 2, statChange: { development: 3 } }
+          applyEffect: { timeCost: 2, statChange: { development: 2 } }
         },
         choiceB: {
-          label: "Minimal træning",
+          label: "Basis datasikkerhed",
           text: "+1 udvikling, 0 tid",
           recommended: false,
           applyEffect: { timeCost: 0, statChange: { development: 1 } }
         }
       },
       {
-        location: "hospital",
-        stepDescription: "Afprøv AI-diagnoser på en mindre patientgruppe.",
-        stepContext: "En pilotfase kan afsløre fejl, inden løsningen rulles bredt ud.",
+        location: "leverandør",
+        stepDescription: "Forhandle med AI-leverandør om licenser og support.",
+        stepContext: "Sikre gode betingelser for løbende vedligehold og opdatering af AI-modellen.",
         choiceA: {
-          label: "Grundig pilotfase",
-          text: "+2 udvikling, -2 tid",
+          label: "Detaljeret forhandling",
+          text: "+3 udvikling, -2 tid",
           recommended: false,
-          applyEffect: { timeCost: 2, statChange: { development: 2 } }
+          applyEffect: { timeCost: 2, statChange: { development: 3 } }
         },
         choiceB: {
-          label: "Kort pilotfase",
+          label: "Hurtig forhandling",
           text: "+1 udvikling, 0 tid",
           recommended: false,
           applyEffect: { timeCost: 0, statChange: { development: 1 } }
@@ -720,16 +720,16 @@ window.hospitalTasks = [
       },
       {
         location: "it‑jura",
-        stepDescription: "Sikre juridisk compliance og datasikkerhed ved AI-anvendelse.",
-        stepContext: "Undgå brud på databeskyttelsesregler, og beskyt patienternes privatliv.",
+        stepDescription: "Sikre juridisk compliance for AI-diagnoser og databehandling.",
+        stepContext: "Overhold databeskyttelsesregler og patientsamtykke i forbindelse med AI.",
         choiceA: {
-          label: "Omfattende juridisk review",
+          label: "Grundig juridisk review",
           text: "+2 udvikling, -2 tid",
           recommended: false,
           applyEffect: { timeCost: 2, statChange: { development: 2 } }
         },
         choiceB: {
-          label: "Hurtig review",
+          label: "Overfladisk review",
           text: "+1 udvikling, 0 tid",
           recommended: false,
           applyEffect: { timeCost: 0, statChange: { development: 1 } }
