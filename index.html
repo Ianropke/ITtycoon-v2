@@ -6,10 +6,10 @@
   <title>IT‑Tycoon</title>
   <!-- Google Font: Montserrat -->
   <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
+  <!-- Hoved CSS -->
   <link rel="stylesheet" href="style.css">
-  <!-- Chart.js via CDN -->
+  <!-- Eksterne biblioteker -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- GSAP til animationer -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
 </head>
 <body>
@@ -30,22 +30,23 @@
       </div>
       <div id="locationsContainer">
         <h2>Lokationer</h2>
-        <div id="locations"><!-- Lokationer indsættes via main.js --></div>
+        <!-- Lokation-knapper indsættes dynamisk -->
+        <div id="locations"></div>
       </div>
     </div>
     <!-- Højre side: Aktiv opgave og potentielle opgaver -->
     <div class="right-column">
       <div id="activeTask">
         <h2>Aktiv Opgave</h2>
-        <!-- Den aktive opgave og dens trin vises her -->
+        <!-- Den aktuelle opgave og dens trin vises her -->
       </div>
       <div id="potentialTasks">
         <h2>Potentielle Opgaver</h2>
-        <!-- Potentielle opgaver indsættes her -->
+        <!-- Listen med potentielle opgaver indsættes her -->
       </div>
     </div>
   </div>
-  <!-- Modal-vindue -->
+  <!-- Modal-vindue til pop-ups -->
   <div id="modal" class="modal hidden">
     <div class="modal-content">
       <div class="modal-body" id="modalBody"></div>
@@ -53,6 +54,10 @@
       <span id="modalClose" class="close">&times;</span>
     </div>
   </div>
+  <!-- Indlæs task-filer (de skal køres før main.js, så de tilføjer de globale variabler, hvis nødvendigt) -->
+  <script src="scripts/tasks/hospitalTasks.js"></script>
+  <script src="scripts/tasks/infrastrukturTasks.js"></script>
+  <script src="scripts/tasks/cybersikkerhedTasks.js"></script>
   <!-- Indlæs hovedscriptet som et ES6 modul -->
   <script type="module" src="scripts/main.js"></script>
 </body>
