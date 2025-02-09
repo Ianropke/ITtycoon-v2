@@ -17,7 +17,8 @@ const gameState = {
   choiceHistory: []
 };
 
-// Saml alle opgaver fra de tre task-filer (antaget at de er tilgængelige som globale variable via window)
+// Saml alle opgaver fra de tre task-filer
+// Sørg for, at hospitalTasks, infrastrukturTasks og cybersikkerhedTasks er tilgængelige globalt via window
 gameState.allTasks = [].concat(window.hospitalTasks, window.infrastrukturTasks, window.cybersikkerhedTasks);
 
 // Bland opgaverne tilfældigt
@@ -47,7 +48,9 @@ const kpiChart = new Chart(ctx, {
       pointRadius: 0
     }]
   },
-  options: { scales: { y: { beginAtZero: true } } }
+  options: {
+    scales: { y: { beginAtZero: true } }
+  }
 });
 
 function updateDashboard() {
@@ -86,7 +89,7 @@ function showHelp() {
     <p><strong>Din Rolle som IT-forvalter</strong><br>
     Du skal balancere KPI’erne Tid, Sikkerhed og Udvikling. Træf de rette beslutninger for at optimere din organisations sikkerhed og udvikling, mens du holder øje med din tid.</p>
     <p><strong>Spillets Struktur:</strong><br>
-    Hver opgave består af flere trin, hvor du skal vælge mellem to muligheder – en komplet løsning (som koster 2 tidspoint og giver en større bonus) og en hurtig løsning (som koster 0 tidspoint og giver en mindre bonus). Dashboardet viser løbende din tid og din opgaveprogress (f.eks. "Opgave 3/10").</p>
+    Hver opgave består af flere trin, hvor du skal vælge mellem to muligheder – komplet løsning (2 tidspoint, større bonus) og hurtig løsning (0 tidspoint, mindre bonus). Dashboardet viser din tid og opgaveprogress (f.eks. "Opgave 3/10").</p>
     <p>Held og lykke!</p>
   `;
   openModal(helpContent, `<button id="closeHelp">Luk</button>`);
@@ -102,7 +105,7 @@ function showIntro() {
     <p>Hvert valg i et trin viser sin tidsomkostning – komplet løsning koster 2 tidspoint og giver en større bonus, mens hurtig løsning koster 0 tidspoint og giver en mindre bonus.</p>
   `;
   const modalContent = document.querySelector('.modal-content');
-  modalContent.style.height = '48vh'; // Øg introduktionspop-up højden med 20%
+  modalContent.style.height = '48vh'; // Øger introduktionspop-up højden med 20%
   openModal(introContent, `<button id="startGame">Start Spillet</button>`);
   document.getElementById('startGame').addEventListener('click', () => {
     modalContent.style.height = '40vh'; // Reset til standardhøjde
@@ -215,7 +218,10 @@ function renderActiveTask(task) {
 
 function handleLocationClick(clickedLocation) {
   if (!gameState.currentTask) {
-    openModal("<h2>Advarsel</h2><p>Vælg en opgave og forpligt dig først!</p>", `<button id="alertOk">OK</button>`);
+    openModal(
+      "<h2>Advarsel</h2><p>Vælg en opgave og forpligt dig først!</p>",
+      `<button id="alertOk">OK</button>`
+    );
     document.getElementById('alertOk').addEventListener('click', () => closeModal());
     return;
   }
@@ -223,54 +229,12 @@ function handleLocationClick(clickedLocation) {
   if (clickedLocation.toLowerCase() === currentStep.location.toLowerCase()) {
     showStepChoices(currentStep);
   } else {
-    // Udvid fejlfeltet med detaljeret feedback
     openModal(
       `<h2>Fejl</h2><p>Forkert lokation.<br>Du valgte "${clickedLocation.toUpperCase()}", men den korrekte lokation for dette trin er "${currentStep.location.toUpperCase()}".<br>Læs trinbeskrivelsen nøje og prøv igen.</p>`,
       `<button id="errorOk">OK</button>`
     );
     document.getElementById('errorOk').addEventListener('click', () => closeModal());
   }
-}
-
-function getAdaptiveFeedback() {
-  let feedback = "";
-  if (gameState.security < gameState.missionGoals.security) {
-    feedback += "Din sikkerhedsstrategi kunne forbedres – overvej at vælge mere detaljerede og omfattende løsninger. ";
-  } else {
-    feedback += "Din sikkerhed blev godt håndteret. ";
-  }
-  if (gameState.development < gameState.missionGoals.development) {
-    feedback += "Din udviklingsindsats var under målet; forsøg at investere mere i dybdegående løsninger. ";
-  } else {
-    feedback += "Din udviklingsstrategi var optimal. ";
-  }
-  if (gameState.tasksCompleted < 10) {
-    feedback += "Du gennemførte ikke alle opgaver, hvilket påvirker din samlede score.";
-  }
-  return feedback;
-}
-
-function showInspectAndAdapt() {
-  const feedback = getAdaptiveFeedback();
-  const inspectContent = `
-    <h2>Inspect & Adapt</h2>
-    <p>Sikkerhed: ${gameState.security} (mål: ${gameState.missionGoals.security})</p>
-    <p>Udvikling: ${gameState.development} (mål: ${gameState.missionGoals.development})</p>
-    <p><strong>Feedback:</strong> ${feedback}</p>
-    <p>Din sprint er afsluttet. Nye, mere ambitiøse mål er nu sat: 24 for Sikkerhed og 24 for Udvikling. Din tid nulstilles til 30.</p>
-    <button id="continueGame">Fortsæt</button>
-  `;
-  openModal(inspectContent);
-  document.getElementById('continueGame').addEventListener('click', () => {
-    closeModal(() => {
-      gameState.time = 30;
-      gameState.missionGoals = { security: 24, development: 24 };
-      gameState.tasksCompleted = 0;
-      updateTaskProgress();
-      updateDashboard();
-      showSprintGoal();
-    });
-  });
 }
 
 function showStepChoices(step) {
@@ -322,6 +286,7 @@ function showStepChoices(step) {
         `<h2>Arkitekthjælp</h2><p>Anbefalet valg: ${step.choiceA.label}</p><p>${hint}</p>`,
         `<button id="closeArchitectHelp">Luk</button>`
       );
+      // Når arkitekthjælp-luk-knappen klikkes, vender vi tilbage til de aktuelle trinvalg
       document.getElementById('closeArchitectHelp').addEventListener('click', () =>
         closeModal(() => showStepChoices(step))
       );
@@ -408,6 +373,7 @@ function finishTask() {
   openModal("<h2>Info</h2><p>Opgaven er fuldført!</p>", `<button id="continueAfterFinish">Fortsæt</button>`);
   document.getElementById('continueAfterFinish').addEventListener('click', () => {
     closeModal(() => {
+      // Fjern den nuværende opgave fra listen
       gameState.tasks = gameState.tasks.filter(task => task !== gameState.currentTask);
       // Tilføj op til 2 nye opgaver fra allTasks
       const newTasks = gameState.allTasks.splice(0, 2);
@@ -461,7 +427,7 @@ function getAdaptiveFeedback() {
   return feedback;
 }
 
-// Start spillet med introduktion
+// Start med introduktion
 showIntro();
 
 export { gameState, updateDashboard, openModal, closeModal, renderActiveTask };
