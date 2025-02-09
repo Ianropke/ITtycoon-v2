@@ -1,13 +1,17 @@
 /* style.css */
 
-/* Global styling */
+/* CSS-variabler for nem vedligeholdelse */
 :root {
   --primary-color: #0275d8;
   --secondary-color: #4caf50;
   --background-gradient: linear-gradient(135deg, #f5f7fa, #c3cfe2);
   --text-color: #333;
+  --header-bg-gradient: linear-gradient(90deg, #2193b0, #6dd5ed);
+  --modal-default-width: 60vw;
+  --modal-default-height: 40vh;
 }
 
+/* Global styling */
 body {
   font-family: 'Montserrat', sans-serif;
   margin: 0;
@@ -18,7 +22,7 @@ body {
 
 /* Header */
 header {
-  background: linear-gradient(90deg, #2193b0, #6dd5ed);
+  background: var(--header-bg-gradient);
   color: #fff;
   padding: 1rem 2rem;
   text-align: center;
@@ -54,13 +58,13 @@ header {
   background-color: #025aa5;
 }
 
-/* Container */
+/* Container opdelt i to kolonner */
 .container {
   display: flex;
   min-height: calc(100vh - 80px);
 }
 
-/* Venstre side */
+/* Venstre side: KPI-graf og lokationer */
 .left-column {
   width: 50%;
   padding: 1rem;
@@ -94,7 +98,7 @@ header {
   transform: scale(1.02);
 }
 
-/* Højre side */
+/* Højre side: Opgaver */
 .right-column {
   width: 50%;
   padding: 1rem;
@@ -105,7 +109,7 @@ header {
 #activeTask {
   border-bottom: 1px solid #ddd;
   padding: 1rem;
-  min-height: 243px;
+  min-height: 243px;  /* Ca. 10% mindre end tidligere */
   overflow-y: auto;
   background-color: #fff;
 }
@@ -121,7 +125,7 @@ header {
 .task-item {
   border: 1px solid #ddd;
   padding: 0.75rem;
-  margin-bottom: 0.2rem;
+  margin-bottom: 0.2rem;  /* Mindre afstand mellem opgaver */
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -134,7 +138,7 @@ header {
   margin-right: 1rem;
 }
 
-/* Reducer spacing i .task-info */
+/* Reducer spacing i .task-info for tættere tekst */
 .task-info h3,
 .task-info p {
   margin: 0;
@@ -190,8 +194,8 @@ button:hover {
 .modal-content {
   background-color: #fff;
   border-radius: 12px;
-  width: 60vw;
-  height: 40vh;
+  width: var(--modal-default-width);
+  height: var(--modal-default-height);
   display: grid;
   grid-template-rows: 1fr auto;
   overflow: hidden;
@@ -243,4 +247,52 @@ button:hover {
 .hidden {
   display: none;
   pointer-events: none;
+}
+
+/* --- Responsivt design --- */
+
+/* Tablet og mindre (max-width: 768px) */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+  .left-column,
+  .right-column {
+    width: 100%;
+  }
+  header {
+    padding: 1rem;
+  }
+  .header-content .logo {
+    font-size: 2.5rem;
+  }
+  /* Modal justering for mindre skærme */
+  .modal-content {
+    width: 90vw;
+    height: 50vh;
+  }
+  .modal-body {
+    padding: 20px;
+  }
+}
+
+/* Mobile (max-width: 480px) */
+@media (max-width: 480px) {
+  .location-button {
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+  }
+  button {
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+  }
+  .task-progress {
+    font-size: 0.8rem;
+    padding: 3px 8px;
+  }
+  /* Endelig finjustering for modal på små skærme */
+  .modal-content {
+    width: 95vw;
+    height: 55vh;
+  }
 }
