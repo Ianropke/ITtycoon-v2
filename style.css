@@ -1,6 +1,6 @@
 /* style.css */
 
-/* CSS-variabler */
+/* Variabler */
 :root {
   --primary-color: #0275d8;
   --secondary-color: #4caf50;
@@ -44,7 +44,14 @@ header h1 {
   margin: 0;
 }
 
-/* Container opdelt i to kolonner */
+/* Hjælp-knap i øverste højre hjørne */
+.help-btn-right {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+/* Container til venstre/højre */
 .container {
   display: flex;
   min-height: calc(100vh - 80px);
@@ -67,7 +74,7 @@ header h1 {
   gap: 0.5rem;
 }
 
-/* Højre side: Aktiv opgave og opgavevalgknap */
+/* Højre side: Aktiv opgave + “Vælg ny opgave” knap */
 .right-column {
   width: 50%;
   padding: 1rem;
@@ -82,7 +89,7 @@ header h1 {
   min-height: 240px;
 }
 
-/* Knapper */
+/* Moderne knapper */
 .modern-btn {
   background-color: var(--primary-color);
   color: #fff;
@@ -114,7 +121,6 @@ header h1 {
   background-color: var(--secondary-color);
   color: #fff;
   text-transform: uppercase;
-  cursor: pointer;
   border-radius: 4px;
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
@@ -196,7 +202,7 @@ header h1 {
   color: var(--text-color);
 }
 
-/* Opgavevalgs-liste */
+/* Opgavevalg-liste */
 .task-selection-list {
   list-style: none;
   margin: 1rem 0;
@@ -225,7 +231,6 @@ header h1 {
   background-color: #fb8c00;
 }
 
-/* Revisions-lister, choice info, etc. */
 .done {
   color: #4caf50;
   font-weight: bold;
