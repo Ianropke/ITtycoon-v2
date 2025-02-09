@@ -103,9 +103,8 @@ header h1 {
   border-radius: 4px;
   color: #fff;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
-
 #newTaskButton:hover, .big-new-task-btn:hover {
   background-color: #1976d2;
   transform: scale(1.03);
@@ -115,7 +114,6 @@ header h1 {
 #locationsContainer {
   width: 100%;
 }
-
 #locations {
   display: flex;
   flex-direction: column;
@@ -123,9 +121,10 @@ header h1 {
   width: 100%;
 }
 
+/* Forstør selve knappen (tekst/emoji) 50% */
 .location-button {
   padding: 1.2rem 1.8rem;
-  font-size: 1.1rem;
+  font-size: 150%; /* vigtige ændring: skaler hele knappen */
   border: 2px solid var(--secondary-color);
   background-color: var(--secondary-color);
   color: #fff;
@@ -136,12 +135,6 @@ header h1 {
   width: 100%;
   text-align: center;
 }
-
-/* Øg størrelsen på ikonerne i lokationerne med 50% */
-.location-button i {
-  font-size: 150%;
-}
-
 .location-button:hover {
   background-color: #43a047;
   transform: scale(1.02);
@@ -171,10 +164,9 @@ header h1 {
 #graphContainer {
   width: 100%;
   position: relative;
-  max-width: 720px;  /* Øget fra f.eks. 600px */
-  height: 48vh;      /* Øget fra f.eks. 40vh */
+  max-width: 720px;  /* Øget fra 600px -> +20% */
+  height: 48vh;      /* Øget fra 40vh -> +20% */
 }
-
 #kpiChart {
   width: 100% !important;
   height: auto !important;
@@ -203,7 +195,6 @@ header h1 {
   margin: 0.5rem;
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
-
 .modern-btn:hover {
   background-color: var(--primary-color-dark);
   transform: scale(1.02);
@@ -223,11 +214,9 @@ header h1 {
   z-index: 1000;
   animation: fadeIn 0.3s ease;
 }
-
 .modal.hidden {
   display: none;
 }
-
 .modal-content {
   background: #fff;
   border-radius: 8px;
@@ -239,23 +228,19 @@ header h1 {
   position: relative;
   animation: slideIn 0.4s ease;
 }
-
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
 }
-
 @keyframes slideIn {
   from { transform: translateY(-20px); }
   to { transform: translateY(0); }
 }
-
 .modal-body {
   text-align: center;
   line-height: 1.6;
   margin-bottom: 1rem;
 }
-
 .modal-footer {
   display: flex;
   justify-content: flex-end;
@@ -264,7 +249,6 @@ header h1 {
   padding-top: 1rem;
   border-top: 1px solid #ddd;
 }
-
 .close {
   position: absolute;
   top: 10px;
@@ -280,14 +264,12 @@ header h1 {
   border-collapse: collapse;
   margin-top: 1rem;
 }
-
 .task-table th,
 .task-table td {
   padding: 0.75rem;
   text-align: left;
   border: 1px solid #ddd;
 }
-
 .task-table th {
   background-color: #f0f0f0;
   font-weight: 600;
@@ -317,7 +299,6 @@ header h1 {
     max-height: 70vh;
   }
 }
-
 @media (max-width: 480px) {
   .modern-btn {
     font-size: 0.9rem;
