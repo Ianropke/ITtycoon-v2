@@ -1,55 +1,64 @@
 <!DOCTYPE html>
 <html lang="da">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>IT‑Tycoon</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <header>
-      <h1>IT‑Tycoon</h1>
-      <button id="helpButton">Få hjælp</button>
-    </header>
-    <div id="mainContainer">
-      <!-- Venstre side: KPI‑graf og lokationer -->
-      <aside id="leftPanel">
-        <canvas id="kpiChart"></canvas>
-        <div id="locations"></div>
-      </aside>
-      <!-- Højre side: Aktiv opgave og potentielle opgaver -->
-      <section id="rightPanel">
-        <div id="activeTask">
-          <h2>Aktiv Opgave</h2>
-        </div>
-        <div id="potentialTasks">
-          <h2>Potentielle Opgaver</h2>
-        </div>
-        <div id="taskProgress"></div>
-      </section>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IT‑Tycoon</title>
+  <!-- Google Font: Montserrat -->
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
+  <!-- Hoved CSS -->
+  <link rel="stylesheet" href="style.css">
+  <!-- Eksterne biblioteker -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <span class="logo">🚀</span>
+      <h1>IT Tycoon</h1>
+      <button id="helpButton" class="help-btn">Få hjælp</button>
     </div>
-
-    <!-- Modal struktur med header, body og footer -->
-    <div class="modal hidden" id="modal">
-      <div class="modal-content">
-        <div class="modal-header" id="modalHeader"></div>
-        <div class="modal-body" id="modalBody"></div>
-        <div class="modal-footer" id="modalFooter"></div>
+  </header>
+  <div class="container">
+    <!-- Venstre side: KPI-graf og lokationer -->
+    <div class="left-column">
+      <div id="graphContainer" style="position: relative;">
+        <canvas id="kpiChart"></canvas>
+        <!-- Dashboard progress overlay -->
+        <div id="taskProgress" class="task-progress">Opgave 0/10</div>
+      </div>
+      <div id="locationsContainer">
+        <h2>Lokationer</h2>
+        <!-- Lokation-knapper indsættes her via main.js -->
+        <div id="locations"></div>
       </div>
     </div>
-
-    <!-- Inkluder eksterne biblioteker -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
-
-    <!-- Inkluder tasks-scripts (som normale scripts, så de binder til window) -->
-    <script src="tasks/hospitalTasks.js"></script>
-    <script src="tasks/infrastrukturTasks.js"></script>
-    <script src="tasks/cybersikkerhedTasks.js"></script>
-
-    <!-- Inkluder vores moduler – disse skal have type="module" -->
-    <script type="module" src="scripts/modal.js"></script>
-    <script type="module" src="scripts/utils.js"></script>
-    <script type="module" src="scripts/main.js"></script>
-  </body>
+    <!-- Højre side: Aktiv opgave og potentielle opgaver -->
+    <div class="right-column">
+      <div id="activeTask">
+        <h2>Aktiv Opgave</h2>
+        <!-- Den aktive opgave og dens trin vises her -->
+      </div>
+      <div id="potentialTasks">
+        <h2>Potentielle Opgaver</h2>
+        <!-- Listen med potentielle opgaver indsættes her -->
+      </div>
+    </div>
+  </div>
+  <!-- Modal-vindue -->
+  <div id="modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-body" id="modalBody"></div>
+      <div class="modal-footer" id="modalFooter"></div>
+      <span id="modalClose" class="close">&times;</span>
+    </div>
+  </div>
+  <!-- Indlæs task-filer -->
+  <script src="scripts/tasks/hospitalTasks.js"></script>
+  <script src="scripts/tasks/infrastrukturTasks.js"></script>
+  <script src="scripts/tasks/cybersikkerhedTasks.js"></script>
+  <!-- Indlæs hovedscriptet som et ES6 modul -->
+  <script type="module" src="scripts/main.js"></script>
+</body>
 </html>
