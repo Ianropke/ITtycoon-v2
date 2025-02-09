@@ -12,10 +12,12 @@
       <button id="helpButton">Få hjælp</button>
     </header>
     <div id="mainContainer">
+      <!-- Venstre side: KPI‑graf og lokationer -->
       <aside id="leftPanel">
         <canvas id="kpiChart"></canvas>
         <div id="locations"></div>
       </aside>
+      <!-- Højre side: Aktiv opgave og potentielle opgaver -->
       <section id="rightPanel">
         <div id="activeTask">
           <h2>Aktiv Opgave</h2>
@@ -27,7 +29,7 @@
       </section>
     </div>
 
-    <!-- Modal struktur -->
+    <!-- Modal struktur med header, body og footer -->
     <div class="modal hidden" id="modal">
       <div class="modal-content">
         <div class="modal-header" id="modalHeader"></div>
@@ -36,9 +38,16 @@
       </div>
     </div>
 
-    <!-- Inkluder eksterne biblioteker og scripts -->
+    <!-- Inkluder eksterne biblioteker -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+
+    <!-- Inkluder tasks-scripts (som normale scripts, så de binder til window) -->
+    <script src="tasks/hospitalTasks.js"></script>
+    <script src="tasks/infrastrukturTasks.js"></script>
+    <script src="tasks/cybersikkerhedTasks.js"></script>
+
+    <!-- Inkluder vores moduler – disse skal have type="module" -->
     <script type="module" src="scripts/modal.js"></script>
     <script type="module" src="scripts/utils.js"></script>
     <script type="module" src="scripts/main.js"></script>
