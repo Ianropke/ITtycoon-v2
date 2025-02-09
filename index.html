@@ -23,7 +23,7 @@
       <div class="header-content">
         <span class="logo">🚀</span>
         <h1>IT‑Tycoon</h1>
-        <!-- Hjælp-knap i øverste højre hjørne -->
+        <!-- Hjælp-knap – fast placeret i øverste højre hjørne -->
         <button id="helpButton" class="help-btn">Få hjælp</button>
       </div>
     </header>
@@ -38,18 +38,19 @@
           <div id="locations"></div>
         </div>
       </div>
-      <!-- Højre kolonne: KPI-graf og Aktiv opgave -->
+      <!-- Højre kolonne: Aktiv opgave OG KPI-graf -->
       <div class="right-column">
+        <!-- Aktiv opgave flyttes til toppen -->
+        <div id="activeTask">
+          <h2>Aktiv Opgave</h2>
+        </div>
         <div id="graphContainer">
           <canvas id="kpiChart"></canvas>
           <div id="taskProgress" class="task-progress">Opgave 0/10</div>
         </div>
-        <div id="activeTask">
-          <h2>Aktiv Opgave</h2>
-        </div>
       </div>
     </div>
-    <!-- Modal til popups -->
+    <!-- Modal-vindue -->
     <div id="modal" class="modal hidden">
       <div class="modal-content">
         <div class="modal-body" id="modalBody"></div>
