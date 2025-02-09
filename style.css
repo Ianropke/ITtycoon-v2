@@ -1,4 +1,4 @@
-/* Reset */
+/* Reset og grundindstillinger */
 *,
 *::before,
 *::after {
@@ -61,7 +61,7 @@ header h1 {
   margin: 0;
 }
 
-/* "Få hjælp" knap – skal være fast i øverste højre hjørne */
+/* Hjælp-knap – fast i øverste højre */
 .help-btn {
   position: absolute;
   top: 10px;
@@ -74,7 +74,6 @@ header h1 {
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
-
 .help-btn:hover {
   background-color: var(--primary-color-dark);
 }
@@ -106,24 +105,21 @@ header h1 {
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s;
 }
-
 #newTaskButton:hover, .big-new-task-btn:hover {
   background-color: #1976d2;
   transform: scale(1.03);
 }
 
-/* Lokationer – større knapper med mere afstand */
+/* Lokationer – større knapper med ekstra spacing */
 #locationsContainer {
   width: 100%;
 }
-
 #locations {
   display: flex;
   flex-direction: column;
   gap: 1.2rem;
   width: 100%;
 }
-
 .location-button {
   padding: 1.2rem 1.8rem;
   font-size: 1.1rem;
@@ -137,13 +133,12 @@ header h1 {
   width: 100%;
   text-align: center;
 }
-
 .location-button:hover {
   background-color: #43a047;
   transform: scale(1.02);
 }
 
-/* Højre kolonne: KPI-graf og aktiv opgave */
+/* Højre kolonne: Aktiv opgave og KPI-graf */
 .right-column {
   width: 60%;
   padding: 1rem;
@@ -154,13 +149,22 @@ header h1 {
   gap: 1rem;
 }
 
+/* Flyt aktiv opgave til toppen i højre kolonne */
+#activeTask {
+  width: 100%;
+  padding: 1rem;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+/* KPI-graf – gør den 20% højere */
 #graphContainer {
   width: 100%;
   position: relative;
-  /* Gør grafen større */
   max-width: 600px;
+  height: 40vh;  /* Fast højde, 20% højere end før */
 }
-
 #kpiChart {
   width: 100% !important;
   height: auto !important;
@@ -177,15 +181,6 @@ header h1 {
   color: var(--text-color);
 }
 
-/* Aktiv opgave */
-#activeTask {
-  width: 100%;
-  padding: 1rem;
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-
 /* Moderne knapper generelt */
 .modern-btn {
   background-color: var(--primary-color);
@@ -198,7 +193,6 @@ header h1 {
   margin: 0.5rem;
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
-
 .modern-btn:hover {
   background-color: var(--primary-color-dark);
   transform: scale(1.02);
@@ -211,18 +205,16 @@ header h1 {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.6);
+  background-color: rgba(0,0,0,0.6);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
   animation: fadeIn 0.3s ease;
 }
-
 .modal.hidden {
   display: none;
 }
-
 .modal-content {
   background: #fff;
   border-radius: 8px;
@@ -234,29 +226,27 @@ header h1 {
   position: relative;
   animation: slideIn 0.4s ease;
 }
-
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
 }
-
 @keyframes slideIn {
   from { transform: translateY(-20px); }
   to { transform: translateY(0); }
 }
-
 .modal-body {
-  text-align: left;
+  text-align: center; /* Centrer teksten i popups */
+  line-height: 1.6;
   margin-bottom: 1rem;
 }
-
 .modal-footer {
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
   flex-wrap: wrap;
+  padding-top: 1rem;
+  border-top: 1px solid #ddd;
 }
-
 .close {
   position: absolute;
   top: 10px;
@@ -272,14 +262,12 @@ header h1 {
   border-collapse: collapse;
   margin-top: 1rem;
 }
-
 .task-table th,
 .task-table td {
   padding: 0.75rem;
   border: 1px solid #ddd;
   text-align: left;
 }
-
 .task-table th {
   background-color: #f0f0f0;
   font-weight: 600;
@@ -309,7 +297,6 @@ header h1 {
     max-height: 70vh;
   }
 }
-
 @media (max-width: 480px) {
   .modern-btn {
     font-size: 0.9rem;
