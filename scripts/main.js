@@ -14,11 +14,12 @@ const gameState = {
   architectHelpUsed: false,
   allTasks: [],
   tasks: [],
-  // Vi gemmer nu for hvert trin et boolean-flag: true for avanceret, false for hurtig løsning
+  // choiceHistory gemmer for hvert trin et boolean flag:
+  // true for avanceret valg, false for hurtig valg; hvis der er et element her, er trinnet låst.
   choiceHistory: []
 };
 
-// Saml alle opgaver fra de tre task-filer
+// Saml alle opgaver fra de tre task-filer (forudsæt, at hospitalTasks, infrastrukturTasks og cybersikkerhedTasks er defineret globalt via window)
 gameState.allTasks = [].concat(window.hospitalTasks, window.infrastrukturTasks, window.cybersikkerhedTasks);
 
 // Bland opgaverne tilfældigt
@@ -187,7 +188,7 @@ function startTask(task) {
   gameState.currentTask = task;
   gameState.currentStepIndex = 0;
   gameState.architectHelpUsed = false;
-  // Nulstil choiceHistory med én post pr. trin (boolean)
+  // Nulstil choiceHistory – ét flag per trin
   gameState.choiceHistory = [];
   renderActiveTask(task);
 }
@@ -221,6 +222,12 @@ function handleLocationClick(clickedLocation) {
     document.getElementById('alertOk').addEventListener('click', () => closeModal());
     return;
   }
+  // Hvis løsningen for det aktuelle trin allerede er valgt, lås trinnet
+  if (gameState.choiceHistory[gameState.currentStepIndex] !== undefined) {
+    openModal("<h2>Information</h2><p>Du har allerede valgt en løsning for dette trin, og valget kan ikke ændres.</p>", `<button id="lockedOk">OK</button>`);
+    document.getElementById('lockedOk').addEventListener('click', () => closeModal());
+    return;
+  }
   const currentStep = gameState.currentTask.steps[gameState.currentStepIndex];
   if (clickedLocation.toLowerCase() === currentStep.location.toLowerCase()) {
     showStepChoices(currentStep);
@@ -251,12 +258,13 @@ function showStepChoices(step) {
     </div>
   `;
   openModal(choiceContent);
+  // Lad nu "undoChoice" være tilgængelig kun hvis intet valg er låst endnu (dette modal er kun vist, hvis intet valg er truffet)
   document.getElementById('undoChoice').addEventListener('click', () => closeModal(() => showStepChoices(step)));
   
   document.getElementById('choiceA').addEventListener('click', () => {
     let modifiedChoice = { ...step.choiceA, applyEffect: { ...step.choiceA.applyEffect, timeCost: 2 } };
     applyChoice(modifiedChoice);
-    // Gem et flag: true for avanceret valg
+    // Lås dette trin: true for avanceret valg
     gameState.choiceHistory[gameState.currentStepIndex] = true;
     closeModal(() => {
       if (gameState.currentStepIndex === gameState.currentTask.steps.length - 1) {
@@ -270,7 +278,7 @@ function showStepChoices(step) {
   document.getElementById('choiceB').addEventListener('click', () => {
     let modifiedChoice = { ...step.choiceB, applyEffect: { ...step.choiceB.applyEffect, timeCost: 0 } };
     applyChoice(modifiedChoice);
-    // Gem et flag: false for hurtig valg
+    // Lås dette trin: false for hurtig valg
     gameState.choiceHistory[gameState.currentStepIndex] = false;
     closeModal(() => {
       if (gameState.currentStepIndex === gameState.currentTask.steps.length - 1) {
@@ -340,9 +348,9 @@ function cabApproval() {
       focusKPI = gameState.development;
       missionGoal = gameState.missionGoals.development;
     }
-    // Tjek om alle valg for dette task er avancerede (true i choiceHistory)
+    // Tjek om alle valg for dette task er avancerede (alle choiceHistory-poster er true)
     let allComprehensive = gameState.choiceHistory.every(choice => choice === true);
-    // Hvis alle valg er avancerede, sæt godkendelsesprocenten til 100%
+    // Hvis alle valg er avancerede, lås godkendelsesprocenten til 100%
     let approvalPercentage = allComprehensive ? 100 : Math.floor((focusKPI) / missionGoal * 100);
     let riskPercentage = 100 - approvalPercentage;
     
@@ -388,8 +396,8 @@ function cabApproval() {
 function showTaskSummary() {
   let summaryHTML = "<h2>Opsummering af dine valg</h2><ul>";
   gameState.choiceHistory.forEach((choice, index) => {
-    // Vis en post per trin med en beskrivelse af valget
-    summaryHTML += `<li>Trin ${index + 1}: ${choice ? "Avanceret løsning" : "Hurtig løsning"}</li>`;
+    // Vis en post per trin: "Avanceret løsning" eller "Hurtig løsning"
+    summaryHTML += `<li>Trin ${index + 1}: ${choice === true ? "Avanceret løsning" : "Hurtig løsning"}</li>`;
   });
   summaryHTML += "</ul>";
   openModal(summaryHTML, `<button id="continueAfterSummary">Fortsæt</button>`);
@@ -413,7 +421,7 @@ function finishTask() {
   document.getElementById('continueAfterFinish').addEventListener('click', () => {
     closeModal(() => {
       gameState.tasks = gameState.tasks.filter(task => task !== gameState.currentTask);
-      // Tilføj op til 2 nye opgaver fra allTasks, hvis tilgængelige
+      // Tilføj op til 2 nye opgaver fra allTasks, hvis der er nogen
       const newTasks = gameState.allTasks.splice(0, 2);
       gameState.tasks = gameState.tasks.concat(newTasks);
       document.getElementById('activeTask').innerHTML = '<h2>Aktiv Opgave</h2>';
