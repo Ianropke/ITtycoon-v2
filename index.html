@@ -30,7 +30,7 @@
       </div>
       <div id="locationsContainer">
         <h2>Lokationer</h2>
-        <!-- Lokation-knapper indsættes dynamisk -->
+        <!-- Lokation-knapper indsættes her via main.js -->
         <div id="locations"></div>
       </div>
     </div>
@@ -38,7 +38,7 @@
     <div class="right-column">
       <div id="activeTask">
         <h2>Aktiv Opgave</h2>
-        <!-- Den aktuelle opgave og dens trin vises her -->
+        <!-- Den aktive opgave og dens trin vises her -->
       </div>
       <div id="potentialTasks">
         <h2>Potentielle Opgaver</h2>
@@ -46,7 +46,7 @@
       </div>
     </div>
   </div>
-  <!-- Modal-vindue til pop-ups -->
+  <!-- Modal-vindue -->
   <div id="modal" class="modal hidden">
     <div class="modal-content">
       <div class="modal-body" id="modalBody"></div>
@@ -54,7 +54,7 @@
       <span id="modalClose" class="close">&times;</span>
     </div>
   </div>
-  <!-- Indlæs task-filer (de skal køres før main.js, så de tilføjer de globale variabler, hvis nødvendigt) -->
+  <!-- Indlæs task-filer -->
   <script src="scripts/tasks/hospitalTasks.js"></script>
   <script src="scripts/tasks/infrastrukturTasks.js"></script>
   <script src="scripts/tasks/cybersikkerhedTasks.js"></script>
