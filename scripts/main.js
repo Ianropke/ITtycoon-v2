@@ -14,7 +14,7 @@ const gameState = {
   architectHelpUsed: false,
   allTasks: [],
   tasks: [],
-  choiceHistory: [] // Én post per trin
+  choiceHistory: [] // Én post pr. trin
 };
 
 // Saml alle opgaver fra de tre task-filer
@@ -103,10 +103,10 @@ function showIntro() {
     <p>Hvert valg i et trin viser sin tidsomkostning – komplet løsning koster 2 tidspoint og giver en større bonus; hurtig løsning koster 0 tidspoint og giver en mindre bonus.</p>
   `;
   const modalContent = document.querySelector('.modal-content');
-  modalContent.style.height = '48vh';
+  modalContent.style.height = '48vh'; // Øger introduktionspop-up højden
   openModal(introContent, `<button id="startGame">Start Spillet</button>`);
   document.getElementById('startGame').addEventListener('click', () => {
-    modalContent.style.height = '40vh';
+    modalContent.style.height = '40vh'; // Reset til standardhøjde
     closeModal(() => showSprintGoal());
   });
 }
@@ -331,7 +331,7 @@ function checkGameOverCondition() {
 function cabApproval() {
   // Luk den nuværende modal og vis CAB-modalen
   closeModal(() => {
-    // Bestem hvilken KPI der skal bruges, afhængig af taskens fokus
+    // Bestem hvilken KPI der skal bruges, baseret på taskens fokus
     let focusKPI, missionGoal;
     if (gameState.currentTask.focus === "sikkerhed") {
       focusKPI = gameState.security;
@@ -340,29 +340,26 @@ function cabApproval() {
       focusKPI = gameState.development;
       missionGoal = gameState.missionGoals.development;
     }
-    // Tjek om alle valg for det aktuelle task er avancerede (indeholder "-2 tid")
+    // Tjek, om alle valg for dette task er avancerede (indeholder "-2 tid")
     let allComprehensive = gameState.choiceHistory.every(item => item && item.includes("-2 tid"));
-    let bonus = 0;
+    let approvalPercentage;
     if (allComprehensive) {
-      // Hvis alle valg er avancerede, skal den samlede KPI opnå målet, dvs. 100% godkendelse
-      bonus = missionGoal - focusKPI;
+      approvalPercentage = 100;
+    } else {
+      approvalPercentage = Math.floor((focusKPI) / missionGoal * 100);
     }
-    // Beregn approvalPercentage (hvor 100% betyder fuld godkendelse)
-    let approvalPercentage = Math.floor((focusKPI + bonus) / missionGoal * 100);
-    // Risiko for afvisning er det modsatte
     let riskPercentage = 100 - approvalPercentage;
     
-    // Forklaring: Vis godkendelsesprocent og risiko for afvisning
+    // Forklar, at sikkerhedsvurdering (eller udviklingsvurdering) angiver risikoen for, at ændringerne ikke bliver godkendt
     const cabExplanation = `
       <h2>CAB (Change Advisory Board)</h2>
       <p>CAB er et panel af eksperter, der vurderer dine ændringer, før de implementeres.</p>
       <p><strong>Godkendelsesprocent:</strong> ${approvalPercentage}%</p>
       <p><strong>Risiko for afvisning:</strong> ${riskPercentage}%</p>
-      <p>Denne vurdering angiver, hvor stor en chance der er for, at dine ændringer ikke bliver godkendt. Hvis du når 100% godkendelse, er risikoen for afvisning 0%.</p>
+      <p>Denne vurdering angiver, hvor stor en chance der er for, at dine ændringer ikke bliver godkendt af CAB.</p>
       ${allComprehensive ? "" : "<p>Hvis du ønsker at ændre dine valg, kan du gå tilbage og revidere dem.</p>"}
     `;
     
-    // Hvis alle valg er avancerede, fjern "Gå tilbage"
     let buttonsHTML = allComprehensive 
       ? `<button id="evaluateCAB">Evaluér nu</button>` 
       : `<button id="evaluateCAB">Evaluér nu</button> <button id="goBackCAB">Gå tilbage</button>`;
@@ -370,7 +367,7 @@ function cabApproval() {
     openModal(cabExplanation, buttonsHTML);
     
     document.getElementById('evaluateCAB').addEventListener('click', () => {
-      let chance = allComprehensive ? 1 : Math.min(1, (focusKPI + bonus) / missionGoal);
+      let chance = allComprehensive ? 1 : Math.min(1, (focusKPI) / missionGoal);
       if (Math.random() < chance) {
         showTaskSummary();
       } else {
@@ -422,7 +419,7 @@ function finishTask() {
   document.getElementById('continueAfterFinish').addEventListener('click', () => {
     closeModal(() => {
       gameState.tasks = gameState.tasks.filter(task => task !== gameState.currentTask);
-      // Tilføj op til 2 nye opgaver fra allTasks, hvis de findes
+      // Tilføj op til 2 nye opgaver fra allTasks, hvis der er nogen
       const newTasks = gameState.allTasks.splice(0, 2);
       gameState.tasks = gameState.tasks.concat(newTasks);
       document.getElementById('activeTask').innerHTML = '<h2>Aktiv Opgave</h2>';
