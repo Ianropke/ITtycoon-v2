@@ -12,7 +12,7 @@
       <button id="helpButton">Få hjælp</button>
     </header>
     <div id="mainContainer">
-      <!-- Venstre side: KPI og lokationer -->
+      <!-- Venstre side: KPI-graf og lokationer -->
       <aside id="leftPanel">
         <canvas id="kpiChart"></canvas>
         <div id="locations"></div>
@@ -38,7 +38,10 @@
       </div>
     </div>
 
-    <!-- Inkluder scripts -->
+    <!-- Inkluder eksterne biblioteker og scripts -->
+    <!-- Chart.js fra CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Vores modaler og main script -->
     <script src="scripts/modal.js"></script>
     <script src="scripts/utils.js"></script>
     <script src="scripts/main.js"></script>
