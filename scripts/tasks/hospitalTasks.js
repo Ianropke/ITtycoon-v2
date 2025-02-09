@@ -555,7 +555,7 @@ window.hospitalTasks = [
     focus: "udvikling",
     steps: [
       {
-        location: "dokumentation",
+        location: "infrastruktur",  // <-- rettet fra "dokumentation"
         stepDescription: "Kortlæg nuværende kommunikationskanaler og identificér mangler.",
         stepContext: "En analyse af kommunikationen vil vise, hvor forbedringer er mulige.",
         choiceA: {
