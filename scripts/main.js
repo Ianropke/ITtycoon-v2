@@ -192,11 +192,28 @@ function showIntro() {
 function showSprintGoal() {
   const piHTML = `
     <h2>PI Planning</h2>
-    <p>Dit mål: NÅ mindst 22 i Sikkerhed og Udvikling, 
-       gennemfør 10 opgaver inden Tid (30) bliver 0. 
-       Avanceret valg = mere KPI, men koster 2 tid. 
-       Hurtigt valg = færre KPI, koster 0 tid. 
-       Opgaverne kan være hastende (+4 bonus, +10% risiko).</p>
+    <p>
+      Under PI Planning fastsætter du dine mål og prioriteringer 
+      for den kommende udviklings- og sikkerhedsindsats.
+      Du skal nå mindst 22 i både Sikkerhed og Udvikling, 
+      inden tiden (30) når 0. 
+      Derudover skal du gennemføre 10 opgaver, hvoraf nogle 
+      kan være mærket som Hastende, hvilket giver +4 bonus i KPI 
+      men også +10% øget risiko for at blive afvist af CAB.
+    </p>
+    <p>
+      Hver opgave er inddelt i trin, hvor du skal vælge den korrekte lokation
+      (fx hospital, infrastruktur, cybersikkerhed, osv.) 
+      og beslutte mellem et Avanceret (2 tid) eller et Hurtigt (0 tid) valg.
+      Avanceret valg bidrager mere til dine KPI’er, mens hurtige valg 
+      er bedre, hvis du vil spare tid.
+    </p>
+    <p>
+      Når du er klar, fortsætter du til tutorial, hvor du kan se 
+      den konkrete gennemgang af spillets trin. 
+      God planlægning og fokus på balancen mellem Tid og KPI’er 
+      bliver afgørende for din succes.
+    </p>
   `;
   openModal(piHTML, `<button id="toTutorial" class="modern-btn">Fortsæt</button>`);
   document.getElementById('toTutorial').addEventListener('click', () => closeModal(() => startTutorial()));
@@ -209,12 +226,29 @@ function startTutorial() {
   const tutHTML = `
     <h2>Tutorial</h2>
     <p>
-      1) Klik på “Vælg ny opgave” for at se opgavelisten.<br>
-      2) Forpligt en opgave, find de rigtige lokationer for hvert trin.<br>
-      3) Vælg enten Avanceret (2 tid) eller Hurtig (0 tid).<br>
-      4) Efter trin er færdige, afgør CAB om opgaven godkendes. 
-         Hvis afvist, rework koster 1 tid.<br>
-      5) Hastende opgaver giver +4 KPI ved succes, men har +10% ekstra risiko for afvisning.
+      1) Klik på “Vælg ny opgave” for at se opgavelisten.<br/>
+      2) Når du forpligter en opgave, skal du gennemføre dens trin 
+         i rækkefølge. Hvert trin kræver et klik på en bestemt 
+         lokation (hospital, infrastruktur, it-jura m.fl.).<br/>
+      3) For hvert trin vælger du enten et Avanceret valg (2 tid, 
+         større KPI) eller et Hurtigt valg (0 tid, lavere KPI).<br/>
+      4) Efter alle trin er afsluttet, skal CAB (Change Advisory Board) 
+         enten godkende eller afvise. Hvis afvist, bruger du 1 tid på rework.
+    </p>
+    <p>
+      Du kan bruge Arkitekthjælp én gang pr. opgave for at se, 
+      om opgaven er fokuseret på Sikkerhed eller Udvikling, 
+      og få en anbefaling til valget i trin. 
+      Men pas på ikke at spilde hjælpen på uvæsentlige opgaver!
+    </p>
+    <p>
+      På grafen i venstre side ser du din aktuelle Tid, Sikkerhed og 
+      Udvikling. Du starter med 30 tid, 0 i Sikkerhed og 0 i Udvikling, 
+      og skal nå mindst 22 i både Sikkerhed og Udvikling, samt gennemføre 
+      10 opgaver. 
+    </p>
+    <p>
+      Klar? Luk denne tutorial og klik “Vælg ny opgave” for at komme i gang!
     </p>
   `;
   openModal(tutHTML, `<button id="closeTut" class="modern-btn">Luk</button>`);
