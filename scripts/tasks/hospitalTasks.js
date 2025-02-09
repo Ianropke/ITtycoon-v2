@@ -1,5 +1,5 @@
 window.hospitalTasks = [
-  // 1) Nyt LIMS
+  // 1) Nyt LIMS (3 trin)
   {
     title: "Nyt LIMS",
     shortDesc: "Implementér et nyt LIMS-system for at modernisere patientdatahåndtering.",
@@ -25,23 +25,6 @@ window.hospitalTasks = [
         }
       },
       {
-        location: "dokumentation",
-        stepDescription: "Opdater systemdokumentationen med de fundne forbedringspunkter.",
-        stepContext: "Dokumentationen skal revideres grundigt for at reflektere de nye processer.",
-        choiceA: {
-          label: "Omfattende opdatering",
-          text: "+2 udvikling, -2 tid",
-          recommended: true,
-          applyEffect: { timeCost: 2, statChange: { development: 2 } }
-        },
-        choiceB: {
-          label: "Kort opdatering",
-          text: "+1 udvikling, 0 tid",
-          recommended: false,
-          applyEffect: { timeCost: 0, statChange: { development: 1 } }
-        }
-      },
-      {
         location: "leverandør",
         stepDescription: "Forhandle med leverandøren om integrationen af det nye system.",
         stepContext: "En god forhandling er nødvendig for en problemfri integration med eksisterende IT-løsninger.",
@@ -57,11 +40,28 @@ window.hospitalTasks = [
           recommended: false,
           applyEffect: { timeCost: 0, statChange: { development: 1 } }
         }
+      },
+      {
+        location: "dokumentation",
+        stepDescription: "Opdater systemdokumentationen med de fundne forbedringspunkter.",
+        stepContext: "Dokumentationen skal revideres grundigt for at reflektere de nye processer.",
+        choiceA: {
+          label: "Omfattende opdatering",
+          text: "+2 udvikling, -2 tid",
+          recommended: true,
+          applyEffect: { timeCost: 2, statChange: { development: 2 } }
+        },
+        choiceB: {
+          label: "Kort opdatering",
+          text: "+1 udvikling, 0 tid",
+          recommended: false,
+          applyEffect: { timeCost: 0, statChange: { development: 1 } }
+        }
       }
     ]
   },
 
-  // 2) Opgradering af EHR
+  // 2) Opgradering af EHR (3 trin)
   {
     title: "Opgradering af EHR",
     shortDesc: "Modernisér det elektroniske patientjournalssystem.",
@@ -87,23 +87,6 @@ window.hospitalTasks = [
         }
       },
       {
-        location: "dokumentation",
-        stepDescription: "Revider systemets dokumentation for at reflektere nye standarder.",
-        stepContext: "Dokumentationen skal opdateres, så den afspejler de nyeste krav og procedurer.",
-        choiceA: {
-          label: "Omfattende opdatering",
-          text: "+2 udvikling, -2 tid",
-          recommended: true,
-          applyEffect: { timeCost: 2, statChange: { development: 2 } }
-        },
-        choiceB: {
-          label: "Kort opdatering",
-          text: "+1 udvikling, 0 tid",
-          recommended: false,
-          applyEffect: { timeCost: 0, statChange: { development: 1 } }
-        }
-      },
-      {
         location: "it‑jura",
         stepDescription: "Sikre, at den nye opgradering overholder gældende IT-reguleringer.",
         stepContext: "Juridiske aspekter skal tages i betragtning for at undgå fremtidige problemer.",
@@ -119,11 +102,28 @@ window.hospitalTasks = [
           recommended: false,
           applyEffect: { timeCost: 0, statChange: { development: 1 } }
         }
+      },
+      {
+        location: "dokumentation",
+        stepDescription: "Revider systemets dokumentation for at reflektere nye standarder.",
+        stepContext: "Dokumentationen skal opdateres, så den afspejler de nyeste krav og procedurer.",
+        choiceA: {
+          label: "Omfattende opdatering",
+          text: "+2 udvikling, -2 tid",
+          recommended: true,
+          applyEffect: { timeCost: 2, statChange: { development: 2 } }
+        },
+        choiceB: {
+          label: "Kort opdatering",
+          text: "+1 udvikling, 0 tid",
+          recommended: false,
+          applyEffect: { timeCost: 0, statChange: { development: 1 } }
+        }
       }
     ]
   },
 
-  // 3) Implementering af telemedicin
+  // 3) Implementering af telemedicin (4 trin)
   {
     title: "Implementering af telemedicin",
     shortDesc: "Integrér telemedicinløsninger for at udvide patientplejen.",
@@ -166,6 +166,23 @@ window.hospitalTasks = [
         }
       },
       {
+        location: "hospital",
+        stepDescription: "Uddan sundhedspersonale i brug af telemedicin.",
+        stepContext: "Korrekt træning sikrer bedre implementering og accept hos personalet.",
+        choiceA: {
+          label: "Omfattende træning",
+          text: "+2 udvikling, -2 tid",
+          recommended: false,
+          applyEffect: { timeCost: 2, statChange: { development: 2 } }
+        },
+        choiceB: {
+          label: "Kort træning",
+          text: "+1 udvikling, 0 tid",
+          recommended: false,
+          applyEffect: { timeCost: 0, statChange: { development: 1 } }
+        }
+      },
+      {
         location: "dokumentation",
         stepDescription: "Udarbejd retningslinjer for brug af telemedicin.",
         stepContext: "Sikre, at alle sundhedspersonale er bekendte med procedurerne for telemedicin.",
@@ -185,7 +202,7 @@ window.hospitalTasks = [
     ]
   },
 
-  // 4) Optimering af patientflow
+  // 4) Optimering af patientflow (4 trin)
   {
     title: "Optimering af patientflow",
     shortDesc: "Forbedr processerne for at reducere ventetider og øge effektiviteten.",
@@ -228,6 +245,23 @@ window.hospitalTasks = [
         }
       },
       {
+        location: "hospital",
+        stepDescription: "Indfør triage-principper for hurtigere patientvisitation.",
+        stepContext: "Ensartede triage-processer kan reducere ventetider ved at prioritere patienter efter behov.",
+        choiceA: {
+          label: "Omfattende triage-system",
+          text: "+2 udvikling, -2 tid",
+          recommended: false,
+          applyEffect: { timeCost: 2, statChange: { development: 2 } }
+        },
+        choiceB: {
+          label: "Basis triage",
+          text: "+1 udvikling, 0 tid",
+          recommended: false,
+          applyEffect: { timeCost: 0, statChange: { development: 1 } }
+        }
+      },
+      {
         location: "dokumentation",
         stepDescription: "Opdater procedurerne for patientflow i den officielle dokumentation.",
         stepContext: "Retningslinjer skal afspejle de nye processer og sikre overholdelse.",
@@ -247,7 +281,7 @@ window.hospitalTasks = [
     ]
   },
 
-  // 5) Digitalisering af recepter
+  // 5) Digitalisering af recepter (3 trin)
   {
     title: "Digitalisering af recepter",
     shortDesc: "Implementér et system til digital håndtering af recepter.",
@@ -309,7 +343,7 @@ window.hospitalTasks = [
     ]
   },
 
-  // 6) Forbedring af laboratoriedata
+  // 6) Forbedring af laboratoriedata (3 trin)
   {
     title: "Forbedring af laboratoriedata",
     shortDesc: "Opgrader laboratorieinformationssystemet for bedre datahåndtering.",
@@ -335,23 +369,6 @@ window.hospitalTasks = [
         }
       },
       {
-        location: "dokumentation",
-        stepDescription: "Opdater standardprocedurerne for dataindsamling og -rapportering.",
-        stepContext: "Nøjagtig dokumentation er nøglen til at sikre datakvaliteten.",
-        choiceA: {
-          label: "Omfattende dokumentation",
-          text: "+2 udvikling, -2 tid",
-          recommended: true,
-          applyEffect: { timeCost: 2, statChange: { development: 2 } }
-        },
-        choiceB: {
-          label: "Kort dokumentation",
-          text: "+1 udvikling, 0 tid",
-          recommended: false,
-          applyEffect: { timeCost: 0, statChange: { development: 1 } }
-        }
-      },
-      {
         location: "hospital",
         stepDescription: "Test og valider det opgraderede system i praksis.",
         stepContext: "Udfør tests for at sikre, at systemet fungerer optimalt før fuld implementering.",
@@ -367,11 +384,28 @@ window.hospitalTasks = [
           recommended: false,
           applyEffect: { timeCost: 0, statChange: { development: 1 } }
         }
+      },
+      {
+        location: "dokumentation",
+        stepDescription: "Opdater standardprocedurerne for dataindsamling og -rapportering.",
+        stepContext: "Nøjagtig dokumentation er nøglen til at sikre datakvaliteten.",
+        choiceA: {
+          label: "Omfattende dokumentation",
+          text: "+2 udvikling, -2 tid",
+          recommended: true,
+          applyEffect: { timeCost: 2, statChange: { development: 2 } }
+        },
+        choiceB: {
+          label: "Kort dokumentation",
+          text: "+1 udvikling, 0 tid",
+          recommended: false,
+          applyEffect: { timeCost: 0, statChange: { development: 1 } }
+        }
       }
     ]
   },
 
-  // 7) Integration af wearable enheder
+  // 7) Integration af wearable enheder (4 trin)
   {
     title: "Integration af wearable enheder",
     shortDesc: "Integrér wearable enheder for at monitorere patienters vitale data.",
@@ -414,6 +448,23 @@ window.hospitalTasks = [
         }
       },
       {
+        location: "hospital",
+        stepDescription: "Indfør alarmer og monitorering i realtid for wearable-data.",
+        stepContext: "Hurtige alarmer kan advare personalet om kritiske værdier.",
+        choiceA: {
+          label: "Avancerede alarmflows",
+          text: "+2 udvikling, -2 tid",
+          recommended: false,
+          applyEffect: { timeCost: 2, statChange: { development: 2 } }
+        },
+        choiceB: {
+          label: "Enkle notifikationer",
+          text: "+1 udvikling, 0 tid",
+          recommended: false,
+          applyEffect: { timeCost: 0, statChange: { development: 1 } }
+        }
+      },
+      {
         location: "dokumentation",
         stepDescription: "Udarbejd retningslinjer for anvendelse af wearables.",
         stepContext: "Retningslinjer sikrer, at dataene håndteres korrekt og sikkert.",
@@ -433,7 +484,7 @@ window.hospitalTasks = [
     ]
   },
 
-  // 8) Automatisering af journalføring
+  // 8) Automatisering af journalføring (3 trin)
   {
     title: "Automatisering af journalføring",
     shortDesc: "Automatisér dataindtastning i patientjournaler.",
@@ -495,7 +546,7 @@ window.hospitalTasks = [
     ]
   },
 
-  // 9) Forbedring af patientkommunikation
+  // 9) Forbedring af patientkommunikation (5 trin)
   {
     title: "Forbedring af patientkommunikation",
     shortDesc: "Implementér digitale løsninger til effektiv kommunikation med patienter.",
@@ -553,11 +604,45 @@ window.hospitalTasks = [
           recommended: false,
           applyEffect: { timeCost: 0, statChange: { development: 1 } }
         }
+      },
+      {
+        location: "hospital",
+        stepDescription: "Indfør feedback-mekanismer, så patienter kan vurdere kommunikationen.",
+        stepContext: "Feedback hjælper med løbende at forbedre og tilpasse løsningen.",
+        choiceA: {
+          label: "Avanceret feedbacksystem",
+          text: "+2 udvikling, -2 tid",
+          recommended: false,
+          applyEffect: { timeCost: 2, statChange: { development: 2 } }
+        },
+        choiceB: {
+          label: "Enkel feedback",
+          text: "+1 udvikling, 0 tid",
+          recommended: false,
+          applyEffect: { timeCost: 0, statChange: { development: 1 } }
+        }
+      },
+      {
+        location: "dokumentation",
+        stepDescription: "Opdater retningslinjer og dokumentation med den nye kommunikationsløsning.",
+        stepContext: "Sikre, at personalet har klare procedurer og vejledninger.",
+        choiceA: {
+          label: "Omfattende dokumentation",
+          text: "+3 udvikling, -2 tid",
+          recommended: true,
+          applyEffect: { timeCost: 2, statChange: { development: 3 } }
+        },
+        choiceB: {
+          label: "Kort dokumentation",
+          text: "+1 udvikling, 0 tid",
+          recommended: false,
+          applyEffect: { timeCost: 0, statChange: { development: 1 } }
+        }
       }
     ]
   },
 
-  // 10) Implementering af AI-diagnoseværktøj
+  // 10) Implementering af AI-diagnoseværktøj (6 trin)
   {
     title: "Implementering af AI-diagnoseværktøj",
     shortDesc: "Integrér AI til at assistere læger i diagnosticering.",
@@ -594,6 +679,57 @@ window.hospitalTasks = [
         },
         choiceB: {
           label: "Standard opgradering",
+          text: "+1 udvikling, 0 tid",
+          recommended: false,
+          applyEffect: { timeCost: 0, statChange: { development: 1 } }
+        }
+      },
+      {
+        location: "hospital",
+        stepDescription: "Træn AI-modellen på historiske patientdata.",
+        stepContext: "En korrekt trænet AI kan præcist forudsige diagnoser.",
+        choiceA: {
+          label: "Omfattende træning",
+          text: "+3 udvikling, -2 tid",
+          recommended: false,
+          applyEffect: { timeCost: 2, statChange: { development: 3 } }
+        },
+        choiceB: {
+          label: "Minimal træning",
+          text: "+1 udvikling, 0 tid",
+          recommended: false,
+          applyEffect: { timeCost: 0, statChange: { development: 1 } }
+        }
+      },
+      {
+        location: "hospital",
+        stepDescription: "Afprøv AI-diagnoser på en mindre patientgruppe.",
+        stepContext: "En pilotfase kan afsløre fejl, inden løsningen rulles bredt ud.",
+        choiceA: {
+          label: "Grundig pilotfase",
+          text: "+2 udvikling, -2 tid",
+          recommended: false,
+          applyEffect: { timeCost: 2, statChange: { development: 2 } }
+        },
+        choiceB: {
+          label: "Kort pilotfase",
+          text: "+1 udvikling, 0 tid",
+          recommended: false,
+          applyEffect: { timeCost: 0, statChange: { development: 1 } }
+        }
+      },
+      {
+        location: "it‑jura",
+        stepDescription: "Sikre juridisk compliance og datasikkerhed ved AI-anvendelse.",
+        stepContext: "Undgå brud på databeskyttelsesregler, og beskyt patienternes privatliv.",
+        choiceA: {
+          label: "Omfattende juridisk review",
+          text: "+2 udvikling, -2 tid",
+          recommended: false,
+          applyEffect: { timeCost: 2, statChange: { development: 2 } }
+        },
+        choiceB: {
+          label: "Hurtig review",
           text: "+1 udvikling, 0 tid",
           recommended: false,
           applyEffect: { timeCost: 0, statChange: { development: 1 } }
