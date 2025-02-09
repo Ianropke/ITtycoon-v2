@@ -1,6 +1,3 @@
-/* style.css */
-
-/* --------- Root & Global --------- */
 :root {
   --primary-color: #0275d8;
   --secondary-color: #4caf50;
@@ -17,11 +14,10 @@ body {
   margin: 0;
   padding: 0;
   color: var(--text-color);
-  /* For mobil, sikrer vi at alt passer i viewport  */
-  -webkit-text-size-adjust: none; /* iOS fix for auto-scaling  */
+  -webkit-text-size-adjust: none;
 }
 
-/* --------- Header --------- */
+/* Header */
 header {
   background: var(--header-bg-gradient);
   color: #fff;
@@ -55,31 +51,30 @@ header {
   background-color: #025aa5;
 }
 
-/* --------- Container Layout --------- */
+/* Container - max width for store skærme */
 .container {
   display: flex;
   flex-direction: column;
   margin: 0 auto;
   padding: 0.5rem;
-  max-width: 1200px; /* For store skærme */
+  max-width: 1200px;
 }
 
-/* topPanel - viser chart, opgaveknap, lokationer */
+/* topPanel */
 #topPanel {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
-/* graphContainer og newTaskButtonContainer og locationsContainer
-   kan stables i en row på større skærme. */
+/* Graf og progress */
 #graphContainer {
   position: relative;
   background-color: rgba(255,255,255,0.85);
   border-radius: 6px;
   padding: 1rem;
 }
-#taskProgress {
+.task-progress {
   position: absolute;
   top: 10px;
   right: 10px;
@@ -88,6 +83,8 @@ header {
   font-size: 0.9rem;
   border-radius: 4px;
 }
+
+/* Knap til ny opgave */
 #newTaskButtonContainer {
   display: flex;
   justify-content: center;
@@ -104,6 +101,8 @@ header {
 #newTaskBtn:hover {
   background-color: #025aa5;
 }
+
+/* Lokationer */
 #locationsContainer {
   background-color: rgba(255,255,255,0.85);
   border-radius: 6px;
@@ -119,7 +118,7 @@ header {
   margin-top: 0.5rem;
 }
 
-/* Lokation-knapper */
+/* Knapper til lokationer */
 .location-button {
   flex: none;
   min-width: 110px;
@@ -138,14 +137,14 @@ header {
   transform: scale(1.02);
 }
 
-/* taskPanel - stack for mobil */
+/* taskPanel */
 #taskPanel {
   display: flex;
   flex-direction: column;
   gap: 1rem;
   margin-top: 1rem;
 }
-#activeTask, 
+#activeTask,
 #potentialTasks {
   background-color: rgba(255,255,255,0.95);
   padding: 1rem;
@@ -153,13 +152,13 @@ header {
   min-height: 170px;
 }
 
-/* Rulleliste for potentielle opgaver */
+/* Rulleliste (potentielle opgaver) */
 .scrollable-list {
-  max-height: 300px; 
+  max-height: 300px;
   overflow-y: auto;
 }
 
-/* task-item styling */
+/* Opgaveelementer */
 .task-item {
   border: 1px solid #ddd;
   background: #fff;
@@ -174,21 +173,19 @@ header {
   flex: 1;
   margin-right: 0.6rem;
 }
-
-/* Knapper i opgaveliste */
 .task-item button {
   margin: 0 0.2rem;
   font-size: 0.9rem;
   padding: 0.5rem 0.8rem;
 }
 
-/* --------- Buttons generelt --------- */
+/* Knappen i generel form */
 button {
   cursor: pointer;
   font-family: "Montserrat", sans-serif;
 }
 
-/* --------- Modal --------- */
+/* Modal */
 .modal {
   position: fixed;
   top: 0;
@@ -211,9 +208,8 @@ button {
   height: var(--modal-default-height);
   display: flex;
   flex-direction: column;
-  overflow: hidden;
   box-shadow: 0 8px 16px rgba(0,0,0,0.25);
-  color: var(--text-color);
+  overflow: hidden;
 }
 .modal-body {
   flex: 1;
@@ -235,8 +231,7 @@ button {
   cursor: pointer;
 }
 
-/* --------- Media Queries --------- */
-/* Større skærme: to kolonner for topPanel + taskPanel side om side */
+/* Responsivt design: to kolonner på store skærme */
 @media (min-width: 769px) {
   .container {
     flex-direction: row;
@@ -249,22 +244,24 @@ button {
   }
   #taskPanel {
     flex: 1;
-    margin-top: 0; 
+    margin-top: 0;
   }
 }
+
+/* Større skærm -> juster modal størrelse */
 @media (min-width: 1024px) {
-  /* Evt. finjustering af modal bredde/højde */
   :root {
     --modal-default-width: 50vw;
     --modal-default-height: 60vh;
   }
 }
+
+/* Mindre skærme */
 @media (max-width: 480px) {
   .location-button {
     min-width: 90px;
     font-size: 0.9rem;
   }
-  /* Gør skrift lidt større for mobil? */
   body {
     font-size: 1rem;
   }
