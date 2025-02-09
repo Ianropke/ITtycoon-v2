@@ -15,13 +15,11 @@ const gameState = {
   allTasks: [],
   tasks: [],
   // choiceHistory gemmer for hvert trin et objekt: { title: <string>, advanced: <boolean> }
-  choiceHistory: [],
-  // revisionCount sporer, hvor mange gange hvert trin er revideret (maks. 1 pr. trin)
-  revisionCount: [],
-  revisionMode: false
+  // Når et valg er truffet, bliver trinnet "låst"
+  choiceHistory: []
 };
 
-// Saml alle opgaver fra de tre task-filer
+// Saml alle opgaver fra de tre task-filer (forudsat at hospitalTasks, infrastrukturTasks og cybersikkerhedTasks er defineret globalt)
 gameState.allTasks = [].concat(window.hospitalTasks, window.infrastrukturTasks, window.cybersikkerhedTasks);
 
 // Bland opgaverne tilfældigt
@@ -67,7 +65,7 @@ function updateTaskProgress() {
 updateTaskProgress();
 
 /////////////////////////
-// Render lokationer
+// Render Lokationer (venstre side)
 /////////////////////////
 const locationsList = ["hospital", "dokumentation", "leverandør", "infrastruktur", "it‑jura", "cybersikkerhed"];
 function renderLocations() {
@@ -84,7 +82,7 @@ function renderLocations() {
 renderLocations();
 
 /////////////////////////
-// Hjælpefunktioner
+// Hjælpefunktioner (f.eks. Hjælp-knap)
 /////////////////////////
 document.getElementById('helpButton').addEventListener('click', showHelp);
 
@@ -92,9 +90,9 @@ function showHelp() {
   const helpContent = `
     <h2>Få Hjælp</h2>
     <p><strong>Din Rolle som IT-forvalter</strong><br>
-    Balancer KPI’erne Tid, Sikkerhed og Udvikling. Træf de rette beslutninger for at optimere din organisations sikkerhed og udvikling, mens du holder øje med din tid.</p>
+       Balancer KPI’erne Tid, Sikkerhed og Udvikling. Træf de rette beslutninger for at optimere din organisations sikkerhed og udvikling, mens du holder øje med din tid.</p>
     <p><strong>Spillets Struktur:</strong><br>
-    Hver opgave består af flere trin med to muligheder – komplet løsning (2 tidspoint, større bonus) og hurtig løsning (0 tidspoint, mindre bonus). Dashboardet viser din tid og opgaveprogress (f.eks. "Opgave 3/10").</p>
+       Hver opgave består af flere trin med to muligheder – komplet løsning (2 tidspoint, større bonus) og hurtig løsning (0 tidspoint, mindre bonus). Dashboardet viser din tid og opgaveprogress (f.eks. "Opgave 3/10").</p>
     <p>Held og lykke!</p>
   `;
   openModal(helpContent, `<button id="closeHelp">Luk</button>`);
@@ -107,7 +105,7 @@ function showHelp() {
 function showIntro() {
   const introContent = `
     <h2>Velkommen til IT‑Tycoon</h2>
-    <p>Du agerer IT‑forvalter under SAFe og starter med PI Planning, hvor målsætningen for udvikling og sikkerhed fastsættes.</p>
+    <p>Du agerer IT-forvalter under SAFe og starter med PI Planning, hvor målsætningen for udvikling og sikkerhed fastsættes.</p>
     <p>Venstre side viser din KPI-graf og en liste med lokationer; højre side viser aktive og potentielle opgaver.</p>
     <p>Når du vælger en opgave, skal du trykke på "Forpligt opgave" for at starte den.</p>
     <p>Hvert valg i et trin viser sin tidsomkostning – komplet løsning koster 2 tidspoint og giver en større bonus; hurtig løsning koster 0 tidspoint og giver en mindre bonus.</p>
@@ -134,14 +132,14 @@ function startTutorial() {
   const tutorialContent = `
     <h2>Tutorial</h2>
     <p><strong>Spillets Koncept:</strong><br>
-    Du navigerer komplekse IT-systemer og balancerer KPI’erne Tid, Sikkerhed og Udvikling. Dit mål er at nå sprintmålsætningen, som du kan følge i grafen.</p>
+       Du navigerer komplekse IT-systemer og balancerer KPI’erne Tid, Sikkerhed og Udvikling. Dit mål er at nå sprintmålsætningen, som du kan følge i grafen.</p>
     <p><strong>UI-Layout:</strong><br>
-    Venstre side: KPI-graf og lokationer<br>
-    Højre side: Aktiv opgave og potentielle opgaver</p>
+       Venstre side: KPI-graf og lokationer<br>
+       Højre side: Aktiv opgave og potentielle opgaver</p>
     <p><strong>Spillets Mekanik:</strong><br>
-    Når du forpligter en opgave, gennemfører du hvert trin ved at vælge den korrekte lokation. Komplet løsning koster 2 tidspoint og giver en større bonus; hurtig løsning koster 0 tidspoint og giver en mindre bonus.</p>
+       Når du forpligter en opgave, gennemfører du hvert trin ved at vælge den korrekte lokation. Komplet løsning koster 2 tidspoint og giver en større bonus; hurtig løsning koster 0 tidspoint og giver en mindre bonus.</p>
     <p><strong>Efter alle trin:</strong><br>
-    Dine ændringer sendes til CAB for evaluering. <em>Sikkerhedsvurdering</em> (eller <em>Udviklingsvurdering</em>) angiver den risiko, at dine ændringer ikke bliver godkendt af CAB. Hvis målene opfyldes, godkender CAB dem; hvis ikke, afviser de dem, og du skal udføre rework – hvilket trækker ekstra tid. Brug CAB-feedbacken til at justere din strategi.</p>
+       Dine ændringer sendes til CAB for evaluering. <em>Sikkerhedsvurdering</em> (eller <em>Udviklingsvurdering</em>) angiver den risiko, at dine ændringer ikke bliver godkendt af CAB. Hvis målene opfyldes, godkender CAB dem; hvis ikke, afviser de dem, og du skal udføre rework – hvilket trækker ekstra tid. Brug CAB-feedbacken til at justere din strategi.</p>
   `;
   openModal(tutorialContent, `<button id="endTutorial">Næste</button>`);
   document.getElementById('endTutorial').addEventListener('click', () => closeModal(() => renderPotentialTasks()));
@@ -203,10 +201,8 @@ function startTask(task) {
   gameState.currentTask = task;
   gameState.currentStepIndex = 0;
   gameState.architectHelpUsed = false;
-  // Initialiser choiceHistory og revisionCount for hvert trin
+  // Initialiser choiceHistory for hvert trin (simpelt array af objekter)
   gameState.choiceHistory = new Array(task.steps.length);
-  gameState.revisionCount = new Array(task.steps.length).fill(0);
-  gameState.revisionMode = false;
   renderActiveTask(task);
 }
 
@@ -242,13 +238,6 @@ function handleLocationClick(clickedLocation) {
     document.getElementById('alertOk').addEventListener('click', () => closeModal());
     return;
   }
-  // Hvis valget for det aktuelle trin allerede er låst og revideringen er udtømt, vis låst besked
-  if (gameState.choiceHistory[gameState.currentStepIndex] !== undefined &&
-      gameState.revisionCount[gameState.currentStepIndex] >= 1) {
-    openModal("<h2>Information</h2><p>Du har allerede revideret dette trin, og valget kan ikke ændres.</p>", `<button id="lockedOk">OK</button>`);
-    document.getElementById('lockedOk').addEventListener('click', () => closeModal());
-    return;
-  }
   const currentStep = gameState.currentTask.steps[gameState.currentStepIndex];
   if (clickedLocation.toLowerCase() === currentStep.location.toLowerCase()) {
     showStepChoices(currentStep);
@@ -274,27 +263,20 @@ function showStepChoices(step) {
     choiceBText = choiceBText.replace(/[\+\-]?\d+\s*udvikling/gi, "").trim();
   }
   
-  let footerContent = `
+  const footerContent = `
     <button id="choiceA">${step.choiceA.label} (${choiceAText})</button>
     <button id="choiceB">${step.choiceB.label} (${choiceBText})</button>
     <button id="architectHelp">${gameState.architectHelpUsed ? 'Arkitekthjælp brugt' : 'Brug Arkitekthjælp'}</button>
+    <button id="undoChoice">Fortryd</button>
   `;
-  // Tilføj "Fortryd" kun, hvis dette trin endnu ikke er revideret (revisionCount < 1)
-  if (gameState.revisionCount[gameState.currentStepIndex] < 1) {
-    footerContent += ` <button id="undoChoice">Fortryd</button>`;
-  }
   
   openModal(bodyContent, footerContent);
   
-  if (document.getElementById('undoChoice')) {
-    document.getElementById('undoChoice').addEventListener('click', () => {
-      gameState.revisionCount[gameState.currentStepIndex]++;
-      gameState.choiceHistory[gameState.currentStepIndex] = undefined;
-      // I revisionsflow: efter "Fortryd" forbliver vi i revisionsflow og vender tilbage til CAB-siden
-      gameState.revisionMode = true;
-      closeModal(() => showStepChoices(step));
-    });
-  }
+  document.getElementById('undoChoice').addEventListener('click', () => {
+    // Fjern det låste valg for dette trin, så brugeren kan vælge igen
+    gameState.choiceHistory[gameState.currentStepIndex] = undefined;
+    closeModal(() => showStepChoices(step));
+  });
   
   document.getElementById('choiceA').addEventListener('click', () => {
     let modifiedChoice = { ...step.choiceA, applyEffect: { ...step.choiceA.applyEffect, timeCost: 2 } };
@@ -302,15 +284,10 @@ function showStepChoices(step) {
     // Gem objekt med titlen og flag for avanceret valg
     gameState.choiceHistory[gameState.currentStepIndex] = { title: step.choiceA.label, advanced: true };
     closeModal(() => {
-      if (gameState.revisionMode) {
-        gameState.revisionMode = false;
+      if (gameState.currentStepIndex === gameState.currentTask.steps.length - 1) {
         cabApproval();
       } else {
-        if (gameState.currentStepIndex === gameState.currentTask.steps.length - 1) {
-          cabApproval();
-        } else {
-          proceedToNextStep();
-        }
+        proceedToNextStep();
       }
     });
   });
@@ -321,15 +298,10 @@ function showStepChoices(step) {
     // Gem objekt med titlen og flag for hurtig valg
     gameState.choiceHistory[gameState.currentStepIndex] = { title: step.choiceB.label, advanced: false };
     closeModal(() => {
-      if (gameState.revisionMode) {
-        gameState.revisionMode = false;
+      if (gameState.currentStepIndex === gameState.currentTask.steps.length - 1) {
         cabApproval();
       } else {
-        if (gameState.currentStepIndex === gameState.currentTask.steps.length - 1) {
-          cabApproval();
-        } else {
-          proceedToNextStep();
-        }
+        proceedToNextStep();
       }
     });
   });
@@ -369,7 +341,7 @@ function applyChoice(choice) {
 }
 
 /////////////////////////
-// Tjek Game Over
+// Tjek om spillet er slut
 /////////////////////////
 function checkGameOverCondition() {
   if (gameState.tasksCompleted < 10 &&
@@ -391,7 +363,6 @@ function checkGameOverCondition() {
 // CAB Evaluering
 /////////////////////////
 function cabApproval() {
-  // Når CAB-fasen kaldes, er alle trin låst – og vi afslutter revisionsflowet.
   closeModal(() => {
     let focusKPI, missionGoal;
     if (gameState.currentTask.focus === "sikkerhed") {
@@ -401,7 +372,6 @@ function cabApproval() {
       focusKPI = gameState.development;
       missionGoal = gameState.missionGoals.development;
     }
-    // Tjek om alle valg er avancerede ud fra det gemte objekt
     let allComprehensive = gameState.choiceHistory.every(choice => choice && choice.advanced === true);
     let approvalPercentage = allComprehensive ? 100 : Math.floor((focusKPI) / missionGoal * 100);
     let riskPercentage = 100 - approvalPercentage;
@@ -414,11 +384,9 @@ function cabApproval() {
       <p>Denne vurdering angiver, hvor stor en chance der er for, at dine ændringer ikke bliver godkendt af CAB.</p>
     `;
     
-    // Hvis der er reviderbare trin (dvs. hvis ikke alle er avancerede), skal revision stadig være muligt
-    let buttonsHTML = `<button id="evaluateCAB">Evaluér nu</button>`;
-    if (!allComprehensive) {
-      buttonsHTML += ` <button id="goBackCAB">Gå tilbage</button>`;
-    }
+    let buttonsHTML = allComprehensive 
+      ? `<button id="evaluateCAB">Evaluér nu</button>` 
+      : `<button id="evaluateCAB">Evaluér nu</button> <button id="goBackCAB">Gå tilbage</button>`;
     
     openModal(cabExplanation, buttonsHTML);
     
@@ -439,48 +407,13 @@ function cabApproval() {
     });
     
     if (!allComprehensive) {
-      document.getElementById('goBackCAB').addEventListener('click', () => showRevisionOptions());
+      document.getElementById('goBackCAB').addEventListener('click', () => cabApproval());
     }
   });
 }
 
 /////////////////////////
-// Revisionsmenu
-/////////////////////////
-function showRevisionOptions() {
-  let revisableIndices = [];
-  for (let i = 0; i < gameState.choiceHistory.length; i++) {
-    if (gameState.choiceHistory[i] && gameState.choiceHistory[i].advanced === false && gameState.revisionCount[i] < 1) {
-      revisableIndices.push(i);
-    }
-  }
-  if (revisableIndices.length === 0) {
-    openModal("<h2>Ingen revidérbare trin</h2><p>Alle trin er enten avancerede eller allerede revideret.</p>", `<button id="noRevisionOk">OK</button>`);
-    document.getElementById('noRevisionOk').addEventListener('click', () => closeModal(() => cabApproval()));
-    return;
-  }
-  let revisionList = "<h2>Vælg et trin at revidere</h2><ul>";
-  revisableIndices.forEach(index => {
-    let stepTitle = gameState.currentTask.steps[index].stepDescription;
-    revisionList += `<li><button class="revisionBtn" data-index="${index}">Trin ${index + 1}: ${stepTitle}</button></li>`;
-  });
-  revisionList += "</ul>";
-  openModal(revisionList, "");
-  document.querySelectorAll('.revisionBtn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      let idx = parseInt(e.target.getAttribute('data-index'));
-      gameState.revisionMode = true;
-      closeModal(() => {
-        gameState.revisionCount[idx]++;
-        gameState.currentStepIndex = idx;
-        showStepChoices(gameState.currentTask.steps[idx]);
-      });
-    });
-  });
-}
-
-/////////////////////////
-// Opsummering
+// Opsummering af Valg
 /////////////////////////
 function showTaskSummary() {
   let summaryHTML = "<h2>Opsummering af dine valg</h2><ul>";
@@ -495,7 +428,7 @@ function showTaskSummary() {
 }
 
 /////////////////////////
-// Næste trin og afslutning
+// Næste trin og Afslutning
 /////////////////////////
 function proceedToNextStep() {
   const task = gameState.currentTask;
@@ -525,7 +458,7 @@ function finishTask() {
 }
 
 /////////////////////////
-// Eksport
+// Start Spillet
 /////////////////////////
 showIntro();
 
