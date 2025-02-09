@@ -17,14 +17,13 @@ const gameState = {
   choiceHistory: []
 };
 
-// Saml alle opgaver fra de tre task-filer (de skal være inkluderet via <script> i index.html med type="module")
-// Her antages det, at hospitalTasks, infrastrukturTasks og cybersikkerhedTasks er globale (eller importeres i deres moduler)
+// Saml alle opgaver fra de tre task-filer (antaget at de er tilgængelige som globale variable via window)
 gameState.allTasks = [].concat(window.hospitalTasks, window.infrastrukturTasks, window.cybersikkerhedTasks);
 
 // Bland alle opgaver tilfældigt
 shuffleArray(gameState.allTasks);
 
-// Tag de første 7 opgaver som de potentielle opgaver
+// Tag de første 7 opgaver som potentielle opgaver
 gameState.tasks = gameState.allTasks.splice(0, 7);
 
 // Initialiser Chart.js-dashboardet
@@ -78,19 +77,20 @@ function renderLocations() {
 }
 renderLocations();
 
-// Modalhåndtering (openModal og closeModal er importeret fra modal.js)
+// Hjælpefunktioner til modal (brug importeret modal.js)
 
+// "Få hjælp"-knap
 document.getElementById('helpButton').addEventListener('click', showHelp);
 
 function showHelp() {
   const helpContent = `
     <h2>Få Hjælp</h2>
     <p><strong>Din Rolle som IT-forvalter</strong><br>
-    Du skal balancere tre KPI’er: Tid, Sikkerhed og Udvikling. Træf de rette beslutninger for at styrke både it-sikkerhed og udvikling, mens du holder øje med din tid.</p>
+    Du skal balancere KPI’erne Tid, Sikkerhed og Udvikling. Træf de rette beslutninger for at optimere din organisations it-sikkerhed og udvikling, mens du holder øje med din tid.</p>
     <p><strong>Spillets Struktur:</strong><br>
     - Hver opgave består af flere trin med to valg: komplet løsning (2 tidspoint, større bonus) og hurtig løsning (0 tidspoint, mindre bonus).<br>
     - Du skal gennemføre 10 opgaver for at nå Inspect & Adapt-fasen.</p>
-    <p>Dashboardet viser løbende din tid og din opgaveprogress (f.eks. "Opgave 3/10").</p>
+    <p>Dashboardet viser din tid og opgaveprogress (f.eks. "Opgave 3/10").</p>
     <p>Held og lykke!</p>
   `;
   openModal(helpContent, `<button id="closeHelp">Luk</button>`);
@@ -105,12 +105,11 @@ function showIntro() {
     <p>Når du vælger en opgave, skal du trykke på "Forpligt opgave" for at starte den.</p>
     <p>Hvert valg i et trin viser sin tidsomkostning – komplet løsning koster 2 tidspoint og giver en større bonus, mens hurtig løsning koster 0 tidspoint og giver en mindre bonus.</p>
   `;
-  // For introduktionen sætter vi modal-højden til 48vh
   const modalContent = document.querySelector('.modal-content');
-  modalContent.style.height = '48vh';
+  modalContent.style.height = '48vh'; // Øg introduktionspop-up højde med 20%
   openModal(introContent, `<button id="startGame">Start Spillet</button>`);
   document.getElementById('startGame').addEventListener('click', () => {
-    modalContent.style.height = '40vh'; // Reset til standardhøjde efter introduktionen
+    modalContent.style.height = '40vh'; // Reset til standardhøjde
     closeModal(() => showSprintGoal());
   });
 }
@@ -128,7 +127,7 @@ function startTutorial() {
   const tutorialContent = `
     <h2>Tutorial</h2>
     <p><strong>Spillets Koncept:</strong><br>
-    Du navigerer komplekse IT-systemer og balancerer dine KPI’er: Tid, Sikkerhed og Udvikling. Dit mål er at nå sprintmålsætningen, som du kan følge i grafen.</p>
+    Du navigerer komplekse IT-systemer og balancerer KPI’erne Tid, Sikkerhed og Udvikling. Dit mål er at nå sprintmålsætningen, som du kan følge i grafen.</p>
     <p><strong>UI-Layout:</strong><br>
     Venstre side: KPI-graf og lokationer<br>
     Højre side: Aktiv opgave og potentielle opgaver</p>
@@ -145,6 +144,11 @@ function renderPotentialTasks() {
   const potentialTasksDiv = document.getElementById('potentialTasks');
   potentialTasksDiv.innerHTML = '<h2>Potentielle Opgaver</h2>';
   gameState.tasks.forEach(task => {
+    // Tjek, at task ikke er undefined
+    if (!task) {
+      console.warn("Encountered undefined task, skipping.");
+      return;
+    }
     const taskItem = document.createElement('div');
     taskItem.className = 'task-item';
     const infoDiv = document.createElement('div');
@@ -172,7 +176,7 @@ function renderPotentialTasks() {
         `<h2>Arkitekthjælp</h2><p>Anbefalet valg: ${task.narrativeIntro ? task.narrativeIntro : hint}</p>`,
         `<button id="closeArchitectHelp">Luk</button>`
       );
-      document.getElementById('closeArchitectHelp').addEventListener('click', () => 
+      document.getElementById('closeArchitectHelp').addEventListener('click', () =>
         closeModal(() => showStepChoices(gameState.currentTask.steps[gameState.currentStepIndex]))
       );
     });
@@ -397,7 +401,7 @@ function showInspectAndAdapt() {
   });
 }
 
-// Start spillet
+// Start med introduktion
 showIntro();
 
 export { gameState, updateDashboard, openModal, closeModal, renderActiveTask };
