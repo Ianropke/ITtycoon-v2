@@ -1,298 +1,56 @@
-/* style.css */
-
-/* CSS-variabler for nem vedligeholdelse */
-:root {
-  --primary-color: #0275d8;
-  --secondary-color: #4caf50;
-  --background-gradient: linear-gradient(135deg, #f5f7fa, #c3cfe2);
-  --text-color: #333;
-  --header-bg-gradient: linear-gradient(90deg, #2193b0, #6dd5ed);
-  --modal-default-width: 60vw;
-  --modal-default-height: 40vh;
-}
-
-/* Global styling */
-body {
-  font-family: 'Montserrat', sans-serif;
-  margin: 0;
-  padding: 0;
-  background: var(--background-gradient);
-  color: var(--text-color);
-}
-
-/* Header */
-header {
-  background: var(--header-bg-gradient);
-  color: #fff;
-  padding: 1rem 2rem;
-  text-align: center;
-  position: relative;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-}
-.header-content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-}
-.header-content .logo {
-  font-size: 3rem;
-  margin-right: 0.5rem;
-}
-
-/* "Få hjælp"-knap */
-.help-btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background-color: var(--primary-color);
-  color: #fff;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: background-color 0.3s ease;
-}
-.help-btn:hover {
-  background-color: #025aa5;
-}
-
-/* Container opdelt i to kolonner */
-.container {
-  display: flex;
-  min-height: calc(100vh - 80px);
-}
-
-/* Venstre side: KPI-graf og lokationer */
-.left-column {
-  width: 50%;
-  padding: 1rem;
-  background-color: rgba(255,255,255,0.85);
-  display: flex;
-  flex-direction: column;
-}
-#locationsContainer {
-  margin-top: 1rem;
-}
-#locations {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-/* Lokationsknapper */
-.location-button {
-  padding: 1rem 1.5rem;
-  font-size: 1.2rem;
-  border: 2px solid var(--secondary-color);
-  background-color: var(--secondary-color);
-  color: #fff;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  border-radius: 4px;
-}
-.location-button:hover {
-  background-color: #43a047;
-  transform: scale(1.02);
-}
-
-/* Højre side: Opgaver */
-.right-column {
-  width: 50%;
-  padding: 1rem;
-  background-color: rgba(255,255,255,0.95);
-  display: flex;
-  flex-direction: column;
-}
-#activeTask {
-  border-bottom: 1px solid #ddd;
-  padding: 1rem;
-  min-height: 243px;  /* Ca. 10% mindre end tidligere */
-  overflow-y: auto;
-  background-color: #fff;
-}
-#potentialTasks {
-  margin-top: 1rem;
-  height: calc(100vh - 220px);
-  overflow-y: auto;
-  position: relative;
-  overscroll-behavior: contain;
-}
-
-/* Opgaveelementer */
-.task-item {
-  border: 1px solid #ddd;
-  padding: 0.75rem;
-  margin-bottom: 0.2rem;  /* Mindre afstand mellem opgaver */
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-radius: 4px;
-  background-color: #fff;
-  color: var(--text-color);
-}
-.task-item .task-info {
-  flex: 1;
-  margin-right: 1rem;
-}
-
-/* Reducer spacing i .task-info for tættere tekst */
-.task-info h3,
-.task-info p {
-  margin: 0;
-  padding: 0;
-  line-height: 1.1;
-}
-.task-info h3 {
-  margin-bottom: 0.1rem;
-}
-
-/* Generel knapstil */
-button {
-  padding: 1rem 1.5rem;
-  margin: 0.5rem;
-  font-size: 1rem;
-  cursor: pointer;
-  border: none;
-  border-radius: 4px;
-  background-color: var(--primary-color);
-  color: #fff;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-}
-button:hover {
-  background-color: #025aa5;
-  transform: scale(1.02);
-}
-
-/* Dashboard progress overlay */
-.task-progress {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: rgba(255,255,255,0.8);
-  padding: 5px 10px;
-  border-radius: 4px;
-  font-size: 0.9rem;
-  color: var(--text-color);
-}
-
-/* Modal */
+/* Grundlæggende modal styling */
 .modal {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0,0,0,0.6);
+  width: 100vw;
+  height: 100vh;
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
   z-index: 1000;
 }
-.modal-content {
-  background-color: #fff;
-  border-radius: 12px;
-  width: var(--modal-default-width);
-  height: var(--modal-default-height);
-  display: grid;
-  grid-template-rows: 1fr auto;
-  overflow: hidden;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.25);
-  color: var(--text-color);
-  margin: 0 20px;
-}
-.modal-body {
-  padding: 30px 100px;
-  overflow-y: auto;
-  text-align: center;
-}
-.modal-footer {
-  padding: 10px 60px;
-  background-color: #f5f5f5;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  flex-shrink: 0;
-  height: 60px;
-}
 
-/* Horisontale valgknapper */
-.choice-buttons {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  align-items: center;
-}
-
-/* Luk-knap */
-.close {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  font-size: 1.5rem;
-  cursor: pointer;
-  color: var(--text-color);
-}
-
-/* Markerede trin */
-.done {
-  color: #4caf50;
-  font-weight: bold;
-  margin-left: 0.5rem;
-}
-
-/* Skjulte elementer */
-.hidden {
+.modal.hidden {
   display: none;
-  pointer-events: none;
 }
 
-/* --- Responsivt design --- */
-
-/* Tablet og mindre (max-width: 768px) */
-@media (max-width: 768px) {
-  .container {
-    flex-direction: column;
-  }
-  .left-column,
-  .right-column {
-    width: 100%;
-  }
-  header {
-    padding: 1rem;
-  }
-  .header-content .logo {
-    font-size: 2.5rem;
-  }
-  /* Modal justering for mindre skærme */
-  .modal-content {
-    width: 90vw;
-    height: 50vh;
-  }
-  .modal-body {
-    padding: 20px;
-  }
+/* Modal-indhold: øget minimumshøjde */
+.modal-content {
+  background: #fff;
+  width: 80%;
+  min-height: 60vh;  /* Øger minimumshøjden – tidligere fx 40vh */
+  max-height: 80vh;
+  padding: 2rem;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  overflow-y: auto;
 }
 
-/* Mobile (max-width: 480px) */
-@media (max-width: 480px) {
-  .location-button {
-    padding: 0.75rem 1rem;
-    font-size: 1rem;
-  }
-  button {
-    padding: 0.75rem 1rem;
-    font-size: 0.9rem;
-  }
-  .task-progress {
-    font-size: 0.8rem;
-    padding: 3px 8px;
-  }
-  /* Endelig finjustering for modal på små skærme */
-  .modal-content {
-    width: 95vw;
-    height: 55vh;
-  }
+/* Modal-header, -body og -footer */
+.modal-header,
+.modal-body,
+.modal-footer {
+  padding: 1rem;
+}
+
+.modal-header {
+  border-bottom: 1px solid #ccc;
+  font-size: 1.5rem;
+}
+
+.modal-body {
+  flex: 1;
+  margin-top: 1rem;
+}
+
+.modal-footer {
+  border-top: 1px solid #ccc;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
 }
