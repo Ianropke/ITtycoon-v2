@@ -14,10 +14,11 @@ const gameState = {
   architectHelpUsed: false,
   allTasks: [],
   tasks: [],
-  choiceHistory: [] // Her gemmes en tekstbeskrivelse af hvert valg
+  choiceHistory: [] // Gemmer en tekstbeskrivelse af hvert valg
 };
 
-// Saml alle opgaver fra de tre task-filer (forudsat at hospitalTasks, infrastrukturTasks og cybersikkerhedTasks er defineret globalt via window)
+// Saml alle opgaver fra de tre task-filer
+// Forudsæt, at hospitalTasks, infrastrukturTasks og cybersikkerhedTasks er defineret globalt (fx via window)
 gameState.allTasks = [].concat(window.hospitalTasks, window.infrastrukturTasks, window.cybersikkerhedTasks);
 
 // Bland opgaverne tilfældigt
@@ -84,9 +85,9 @@ function showHelp() {
   const helpContent = `
     <h2>Få Hjælp</h2>
     <p><strong>Din Rolle som IT-forvalter</strong><br>
-    Du skal balancere KPI’erne Tid, Sikkerhed og Udvikling. Træf de rette beslutninger for at optimere din organisations sikkerhed og udvikling, mens du holder øje med din tid.</p>
+    Balancer KPI’erne Tid, Sikkerhed og Udvikling. Træf de rette beslutninger for at optimere din organisations sikkerhed og udvikling, mens du holder øje med din tid.</p>
     <p><strong>Spillets Struktur:</strong><br>
-    Hver opgave består af flere trin, hvor du vælger mellem to muligheder – komplet løsning (2 tidspoint, større bonus) og hurtig løsning (0 tidspoint, mindre bonus). Dashboardet viser din tid og opgaveprogress (f.eks. "Opgave 3/10").</p>
+    Hver opgave består af flere trin med to muligheder – komplet løsning (2 tidspoint, større bonus) og hurtig løsning (0 tidspoint, mindre bonus). Dashboardet viser din tid og opgaveprogress (f.eks. "Opgave 3/10").</p>
     <p>Held og lykke!</p>
   `;
   openModal(helpContent, `<button id="closeHelp">Luk</button>`);
@@ -99,10 +100,10 @@ function showIntro() {
     <p>Du agerer IT‑forvalter under SAFe og starter med PI Planning, hvor målsætningen for udvikling og sikkerhed fastsættes.</p>
     <p>Venstre side viser din KPI-graf og en liste med lokationer; højre side viser aktive og potentielle opgaver.</p>
     <p>Når du vælger en opgave, skal du trykke på "Forpligt opgave" for at starte den.</p>
-    <p>Hvert valg i et trin viser sin tidsomkostning – komplet løsning koster 2 tidspoint og giver en større bonus, mens hurtig løsning koster 0 tidspoint og giver en mindre bonus.</p>
+    <p>Hvert valg i et trin viser sin tidsomkostning – komplet løsning koster 2 tidspoint og giver en større bonus; hurtig løsning koster 0 tidspoint og giver en mindre bonus.</p>
   `;
   const modalContent = document.querySelector('.modal-content');
-  modalContent.style.height = '48vh'; // Øg introduktionspop-up højden
+  modalContent.style.height = '48vh'; // Øger introduktionspop-up højde med 20%
   openModal(introContent, `<button id="startGame">Start Spillet</button>`);
   document.getElementById('startGame').addEventListener('click', () => {
     modalContent.style.height = '40vh'; // Reset til standardhøjde
@@ -249,7 +250,6 @@ function showStepChoices(step) {
     </div>
   `;
   openModal(choiceContent);
-  // Mulighed for at fortryde (lukker blot modal'en og vender tilbage til step-modalen)
   document.getElementById('undoChoice').addEventListener('click', () => closeModal(() => showStepChoices(step)));
   document.getElementById('choiceA').addEventListener('click', () => {
     let modifiedChoice = { ...step.choiceA, applyEffect: { ...step.choiceA.applyEffect, timeCost: 2 } };
@@ -323,9 +323,9 @@ function checkGameOverCondition() {
 }
 
 function cabApproval() {
-  // Før CAB evalueringen vises en kort CAB-modal med forklaring og en score
+  // Luk den nuværende modal og vis en dedikeret CAB-modal med kort forklaring, sikkerhedsvurdering og to valgmuligheder: Evaluér og Gå tilbage.
   closeModal(() => {
-    // Beregn en bonus, hvis alle valg var sikre (0 tid)
+    // Beregn bonus: Hvis alle valg var sikre (0 tid)
     let allSafe = gameState.choiceHistory.every(item => item.includes("0 tid"));
     let bonus = allSafe ? gameState.missionGoals.security * 0.3 : 0;
     let cabScore = Math.floor((gameState.security + bonus) / gameState.missionGoals.security * 100);
@@ -333,9 +333,10 @@ function cabApproval() {
       <h2>CAB (Change Advisory Board)</h2>
       <p>CAB er et panel af eksperter, der vurderer dine ændringer, før de implementeres.</p>
       <p><strong>Sikkerhedsvurdering:</strong> ${cabScore}% – ${cabScore < 75 ? "Overvej at vælge mere detaljerede løsninger." : "Din tilgang er god."}</p>
-      <p>Hvis dine ændringer opfylder de fastsatte mål, godkender CAB dem. Er der fejl, afviser CAB ændringen, og du skal udføre rework, hvilket koster ekstra tid.</p>
+      <p>Hvis dine ændringer opfylder målene, godkender CAB dem. Hvis ikke, skal du udføre rework – hvilket trækker ekstra tid.</p>
+      <p>Du kan fortsætte evalueringen eller gå tilbage og revidere dine valg.</p>
     `;
-    openModal(cabExplanation, `<button id="evaluateCAB">Evaluér nu</button>`);
+    openModal(cabExplanation, `<button id="evaluateCAB">Evaluér nu</button> <button id="goBackCAB">Gå tilbage</button>`);
     document.getElementById('evaluateCAB').addEventListener('click', () => {
       let chance = Math.min(1, (gameState.security + bonus) / gameState.missionGoals.security);
       if (Math.random() < chance) {
@@ -350,6 +351,9 @@ function cabApproval() {
           closeModal(() => cabApproval());
         });
       }
+    });
+    document.getElementById('goBackCAB').addEventListener('click', () => {
+      closeModal(() => showStepChoices(gameState.currentTask.steps[gameState.currentStepIndex]));
     });
   });
 }
@@ -380,6 +384,7 @@ function finishTask() {
   openModal("<h2>Info</h2><p>Opgaven er fuldført!</p>", `<button id="continueAfterFinish">Fortsæt</button>`);
   document.getElementById('continueAfterFinish').addEventListener('click', () => {
     closeModal(() => {
+      // Fjern den afsluttede opgave fra listen
       gameState.tasks = gameState.tasks.filter(task => task !== gameState.currentTask);
       // Tilføj op til 2 nye opgaver fra allTasks
       const newTasks = gameState.allTasks.splice(0, 2);
