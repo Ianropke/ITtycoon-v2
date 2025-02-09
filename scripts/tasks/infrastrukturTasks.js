@@ -1,5 +1,5 @@
 window.infrastrukturTasks = [
-  // 1) Netværksopgradering
+  // 1) Netværksopgradering (3 trin)
   {
     title: "Netværksopgradering",
     shortDesc: "Opgrader netværksinfrastrukturen for øget båndbredde og sikkerhed.",
@@ -61,7 +61,7 @@ window.infrastrukturTasks = [
     ]
   },
 
-  // 2) Serveropgradering
+  // 2) Serveropgradering (3 trin)
   {
     title: "Serveropgradering",
     shortDesc: "Opgrader serverne for at øge ydeevnen og sikkerheden.",
@@ -123,7 +123,7 @@ window.infrastrukturTasks = [
     ]
   },
 
-  // 3) Datacenter Optimering
+  // 3) Datacenter Optimering (4 trin)
   {
     title: "Datacenter Optimering",
     shortDesc: "Optimer driften i datacentret for bedre effektivitet og sikkerhed.",
@@ -149,17 +149,17 @@ window.infrastrukturTasks = [
         }
       },
       {
-        location: "dokumentation",
-        stepDescription: "Opdater datacenterprocedurerne.",
-        stepContext: "Dokumentér nye optimerede processer for fremtidig reference.",
+        location: "infrastruktur",
+        stepDescription: "Optimer serverplacering og luftflow.",
+        stepContext: "Bedre placering af hardware og optimeret luftstrøm øger køleeffektiviteten.",
         choiceA: {
-          label: "Omfattende dokumentation",
+          label: "Omfattende omplacering",
           text: "+2 sikkerhed, -2 tid",
-          recommended: true,
+          recommended: false,
           applyEffect: { timeCost: 2, statChange: { security: 2 } }
         },
         choiceB: {
-          label: "Kort dokumentation",
+          label: "Minimal tilpasning",
           text: "+1 sikkerhed, 0 tid",
           recommended: false,
           applyEffect: { timeCost: 0, statChange: { security: 1 } }
@@ -181,11 +181,28 @@ window.infrastrukturTasks = [
           recommended: false,
           applyEffect: { timeCost: 0, statChange: { security: 1 } }
         }
+      },
+      {
+        location: "dokumentation",
+        stepDescription: "Opdater datacenterprocedurerne.",
+        stepContext: "Dokumentér nye optimerede processer for fremtidig reference.",
+        choiceA: {
+          label: "Omfattende dokumentation",
+          text: "+2 sikkerhed, -2 tid",
+          recommended: true,
+          applyEffect: { timeCost: 2, statChange: { security: 2 } }
+        },
+        choiceB: {
+          label: "Kort dokumentation",
+          text: "+1 sikkerhed, 0 tid",
+          recommended: false,
+          applyEffect: { timeCost: 0, statChange: { security: 1 } }
+        }
       }
     ]
   },
 
-  // 4) Implementering af Virtualisering
+  // 4) Implementering af Virtualisering (4 trin)
   {
     title: "Implementering af Virtualisering",
     shortDesc: "Virtualisér servere for at øge fleksibilitet og reducere omkostninger.",
@@ -228,6 +245,23 @@ window.infrastrukturTasks = [
         }
       },
       {
+        location: "infrastruktur",
+        stepDescription: "Opsæt hypervisor og segmenter ressourcer.",
+        stepContext: "En korrekt opsætning sikrer, at virtuelle maskiner kører stabilt og sikkert.",
+        choiceA: {
+          label: "Omfattende opsætning",
+          text: "+2 sikkerhed, -2 tid",
+          recommended: false,
+          applyEffect: { timeCost: 2, statChange: { security: 2 } }
+        },
+        choiceB: {
+          label: "Standard opsætning",
+          text: "+1 sikkerhed, 0 tid",
+          recommended: false,
+          applyEffect: { timeCost: 0, statChange: { security: 1 } }
+        }
+      },
+      {
         location: "dokumentation",
         stepDescription: "Opdater dokumentationen for virtualiseringsmiljøet.",
         stepContext: "Dokumentér de nye processer og procedurer grundigt.",
@@ -247,7 +281,7 @@ window.infrastrukturTasks = [
     ]
   },
 
-  // 5) Forbedring af Backup-system
+  // 5) Forbedring af Backup-system (3 trin)
   {
     title: "Forbedring af Backup-system",
     shortDesc: "Opgrader backup-systemet for at beskytte data og reducere nedetid.",
@@ -273,23 +307,6 @@ window.infrastrukturTasks = [
         }
       },
       {
-        location: "dokumentation",
-        stepDescription: "Opdater backup-procedurerne.",
-        stepContext: "Sørg for, at de nye procedurer er veldokumenterede og nemme at følge.",
-        choiceA: {
-          label: "Omfattende dokumentation",
-          text: "+2 sikkerhed, -2 tid",
-          recommended: true,
-          applyEffect: { timeCost: 2, statChange: { security: 2 } }
-        },
-        choiceB: {
-          label: "Kort dokumentation",
-          text: "+1 sikkerhed, 0 tid",
-          recommended: false,
-          applyEffect: { timeCost: 0, statChange: { security: 1 } }
-        }
-      },
-      {
         location: "infrastruktur",
         stepDescription: "Test backup-systemet grundigt.",
         stepContext: "Udfør tests for at sikre, at systemet hurtigt kan gendanne data ved fejl.",
@@ -305,11 +322,28 @@ window.infrastrukturTasks = [
           recommended: false,
           applyEffect: { timeCost: 0, statChange: { security: 1 } }
         }
+      },
+      {
+        location: "dokumentation",
+        stepDescription: "Opdater backup-procedurerne.",
+        stepContext: "Sørg for, at de nye procedurer er veldokumenterede og nemme at følge.",
+        choiceA: {
+          label: "Omfattende dokumentation",
+          text: "+2 sikkerhed, -2 tid",
+          recommended: true,
+          applyEffect: { timeCost: 2, statChange: { security: 2 } }
+        },
+        choiceB: {
+          label: "Kort dokumentation",
+          text: "+1 sikkerhed, 0 tid",
+          recommended: false,
+          applyEffect: { timeCost: 0, statChange: { security: 1 } }
+        }
       }
     ]
   },
 
-  // 6) Opgradering af Routere
+  // 6) Opgradering af Routere (3 trin)
   {
     title: "Opgradering af Routere",
     shortDesc: "Opgrader routere for forbedret netværkssikkerhed og hastighed.",
@@ -371,7 +405,7 @@ window.infrastrukturTasks = [
     ]
   },
 
-  // 7) Switch Optimering
+  // 7) Switch Optimering (5 trin)
   {
     title: "Switch Optimering",
     shortDesc: "Opgrader og optimer netværksswitches for bedre datatransmission.",
@@ -414,6 +448,40 @@ window.infrastrukturTasks = [
         }
       },
       {
+        location: "infrastruktur",
+        stepDescription: "Segmentér VLAN for bedre sikkerhed og performance.",
+        stepContext: "Opdel netværket i virtuelle LAN-segmenter for at reducere broadcast-trafik.",
+        choiceA: {
+          label: "Omfattende VLAN-opdeling",
+          text: "+2 sikkerhed, -2 tid",
+          recommended: false,
+          applyEffect: { timeCost: 2, statChange: { security: 2 } }
+        },
+        choiceB: {
+          label: "Minimal VLAN-opdeling",
+          text: "+1 sikkerhed, 0 tid",
+          recommended: false,
+          applyEffect: { timeCost: 0, statChange: { security: 1 } }
+        }
+      },
+      {
+        location: "leverandør",
+        stepDescription: "Forhandle supportaftaler om switch-software.",
+        stepContext: "Sikre, at eventuelle firmwareopdateringer udføres gnidningsfrit.",
+        choiceA: {
+          label: "Detaljeret forhandling",
+          text: "+3 sikkerhed, -2 tid",
+          recommended: false,
+          applyEffect: { timeCost: 2, statChange: { security: 3 } }
+        },
+        choiceB: {
+          label: "Hurtig forhandling",
+          text: "+1 sikkerhed, 0 tid",
+          recommended: false,
+          applyEffect: { timeCost: 0, statChange: { security: 1 } }
+        }
+      },
+      {
         location: "dokumentation",
         stepDescription: "Opdater dokumentationen for switch-konfigurationer.",
         stepContext: "Dokumentér alle ændringer for fremtidig reference.",
@@ -433,7 +501,7 @@ window.infrastrukturTasks = [
     ]
   },
 
-  // 8) Strømsikkerhed i Datacenter
+  // 8) Strømsikkerhed i Datacenter (3 trin)
   {
     title: "Strømsikkerhed i Datacenter",
     shortDesc: "Sikr datacenterets strømforsyning for at forhindre nedbrud.",
@@ -495,7 +563,7 @@ window.infrastrukturTasks = [
     ]
   },
 
-  // 9) IT-infrastruktur Modernisering
+  // 9) IT-infrastruktur Modernisering (6 trin)
   {
     title: "IT-infrastruktur Modernisering",
     shortDesc: "Modernisér hele IT-infrastrukturen for bedre performance og robusthed.",
@@ -521,17 +589,17 @@ window.infrastrukturTasks = [
         }
       },
       {
-        location: "dokumentation",
-        stepDescription: "Opdater al IT-dokumentation til at afspejle den nye infrastruktur.",
-        stepContext: "Dokumentationen skal være klar og detaljeret for fremtidig vedligeholdelse.",
+        location: "infrastruktur",
+        stepDescription: "Udskift forældet hardware med moderne servere og netværksudstyr.",
+        stepContext: "Moderne udstyr forbedrer både hastighed og sikkerhed.",
         choiceA: {
-          label: "Omfattende opdatering",
-          text: "+2 sikkerhed, -2 tid",
-          recommended: true,
-          applyEffect: { timeCost: 2, statChange: { security: 2 } }
+          label: "Omfattende udskiftning",
+          text: "+3 sikkerhed, -2 tid",
+          recommended: false,
+          applyEffect: { timeCost: 2, statChange: { security: 3 } }
         },
         choiceB: {
-          label: "Kort opdatering",
+          label: "Punktvis udskiftning",
           text: "+1 sikkerhed, 0 tid",
           recommended: false,
           applyEffect: { timeCost: 0, statChange: { security: 1 } }
@@ -553,11 +621,62 @@ window.infrastrukturTasks = [
           recommended: false,
           applyEffect: { timeCost: 0, statChange: { security: 1 } }
         }
+      },
+      {
+        location: "infrastruktur",
+        stepDescription: "Implementér et automatiseret overvågningssystem.",
+        stepContext: "Et automatiseret system kan proaktivt identificere fejl og performanceproblemer.",
+        choiceA: {
+          label: "Avanceret monitorering",
+          text: "+2 sikkerhed, -2 tid",
+          recommended: false,
+          applyEffect: { timeCost: 2, statChange: { security: 2 } }
+        },
+        choiceB: {
+          label: "Basis monitorering",
+          text: "+1 sikkerhed, 0 tid",
+          recommended: false,
+          applyEffect: { timeCost: 0, statChange: { security: 1 } }
+        }
+      },
+      {
+        location: "it‑jura",
+        stepDescription: "Sikre juridisk compliance i forbindelse med moderniseringen.",
+        stepContext: "Undgå brud på regler vedr. databehandling og privatliv.",
+        choiceA: {
+          label: "Grundig juridisk gennemgang",
+          text: "+2 sikkerhed, -2 tid",
+          recommended: false,
+          applyEffect: { timeCost: 2, statChange: { security: 2 } }
+        },
+        choiceB: {
+          label: "Minimal gennemgang",
+          text: "+1 sikkerhed, 0 tid",
+          recommended: false,
+          applyEffect: { timeCost: 0, statChange: { security: 1 } }
+        }
+      },
+      {
+        location: "dokumentation",
+        stepDescription: "Opdater al IT-dokumentation til at afspejle den nye infrastruktur.",
+        stepContext: "Dokumentationen skal være klar og detaljeret for fremtidig vedligeholdelse.",
+        choiceA: {
+          label: "Omfattende opdatering",
+          text: "+2 sikkerhed, -2 tid",
+          recommended: true,
+          applyEffect: { timeCost: 2, statChange: { security: 2 } }
+        },
+        choiceB: {
+          label: "Kort opdatering",
+          text: "+1 sikkerhed, 0 tid",
+          recommended: false,
+          applyEffect: { timeCost: 0, statChange: { security: 1 } }
+        }
       }
     ]
   },
 
-  // 10) Cloud Migration
+  // 10) Cloud Migration (3 trin)
   {
     title: "Cloud Migration",
     shortDesc: "Migrér IT-systemer til skyen for øget fleksibilitet og sikkerhed.",
