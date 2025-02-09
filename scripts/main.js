@@ -14,11 +14,11 @@ const gameState = {
   architectHelpUsed: false,
   allTasks: [],
   tasks: [],
-  choiceHistory: [] // Én post pr. trin
+  // Vi gemmer nu for hvert trin et boolean-flag: true for avanceret, false for hurtig løsning
+  choiceHistory: []
 };
 
 // Saml alle opgaver fra de tre task-filer
-// Forudsæt, at hospitalTasks, infrastrukturTasks og cybersikkerhedTasks er defineret globalt via window
 gameState.allTasks = [].concat(window.hospitalTasks, window.infrastrukturTasks, window.cybersikkerhedTasks);
 
 // Bland opgaverne tilfældigt
@@ -103,10 +103,10 @@ function showIntro() {
     <p>Hvert valg i et trin viser sin tidsomkostning – komplet løsning koster 2 tidspoint og giver en større bonus; hurtig løsning koster 0 tidspoint og giver en mindre bonus.</p>
   `;
   const modalContent = document.querySelector('.modal-content');
-  modalContent.style.height = '48vh'; // Øger introduktionspop-up højden
+  modalContent.style.height = '48vh';
   openModal(introContent, `<button id="startGame">Start Spillet</button>`);
   document.getElementById('startGame').addEventListener('click', () => {
-    modalContent.style.height = '40vh'; // Reset til standardhøjde
+    modalContent.style.height = '40vh';
     closeModal(() => showSprintGoal());
   });
 }
@@ -187,7 +187,7 @@ function startTask(task) {
   gameState.currentTask = task;
   gameState.currentStepIndex = 0;
   gameState.architectHelpUsed = false;
-  // Overskriv eventuelle tidligere valg for dette task – sikrer én post pr. trin
+  // Nulstil choiceHistory med én post pr. trin (boolean)
   gameState.choiceHistory = [];
   renderActiveTask(task);
 }
@@ -256,8 +256,8 @@ function showStepChoices(step) {
   document.getElementById('choiceA').addEventListener('click', () => {
     let modifiedChoice = { ...step.choiceA, applyEffect: { ...step.choiceA.applyEffect, timeCost: 2 } };
     applyChoice(modifiedChoice);
-    // Overskriv det valgte valg for det nuværende trin
-    gameState.choiceHistory[gameState.currentStepIndex] = `${step.choiceA.label} (${choiceAText})`;
+    // Gem et flag: true for avanceret valg
+    gameState.choiceHistory[gameState.currentStepIndex] = true;
     closeModal(() => {
       if (gameState.currentStepIndex === gameState.currentTask.steps.length - 1) {
         cabApproval();
@@ -270,8 +270,8 @@ function showStepChoices(step) {
   document.getElementById('choiceB').addEventListener('click', () => {
     let modifiedChoice = { ...step.choiceB, applyEffect: { ...step.choiceB.applyEffect, timeCost: 0 } };
     applyChoice(modifiedChoice);
-    // Overskriv det valgte valg for det nuværende trin
-    gameState.choiceHistory[gameState.currentStepIndex] = `${step.choiceB.label} (${choiceBText})`;
+    // Gem et flag: false for hurtig valg
+    gameState.choiceHistory[gameState.currentStepIndex] = false;
     closeModal(() => {
       if (gameState.currentStepIndex === gameState.currentTask.steps.length - 1) {
         cabApproval();
@@ -331,7 +331,7 @@ function checkGameOverCondition() {
 function cabApproval() {
   // Luk den nuværende modal og vis CAB-modalen
   closeModal(() => {
-    // Bestem hvilken KPI der skal bruges, baseret på taskens fokus
+    // Bestem hvilken KPI vi bruger ud fra taskens fokus
     let focusKPI, missionGoal;
     if (gameState.currentTask.focus === "sikkerhed") {
       focusKPI = gameState.security;
@@ -340,17 +340,12 @@ function cabApproval() {
       focusKPI = gameState.development;
       missionGoal = gameState.missionGoals.development;
     }
-    // Tjek, om alle valg for dette task er avancerede (indeholder "-2 tid")
-    let allComprehensive = gameState.choiceHistory.every(item => item && item.includes("-2 tid"));
-    let approvalPercentage;
-    if (allComprehensive) {
-      approvalPercentage = 100;
-    } else {
-      approvalPercentage = Math.floor((focusKPI) / missionGoal * 100);
-    }
+    // Tjek om alle valg for dette task er avancerede (true i choiceHistory)
+    let allComprehensive = gameState.choiceHistory.every(choice => choice === true);
+    // Hvis alle valg er avancerede, sæt godkendelsesprocenten til 100%
+    let approvalPercentage = allComprehensive ? 100 : Math.floor((focusKPI) / missionGoal * 100);
     let riskPercentage = 100 - approvalPercentage;
     
-    // Forklar, at sikkerhedsvurdering (eller udviklingsvurdering) angiver risikoen for, at ændringerne ikke bliver godkendt
     const cabExplanation = `
       <h2>CAB (Change Advisory Board)</h2>
       <p>CAB er et panel af eksperter, der vurderer dine ændringer, før de implementeres.</p>
@@ -392,10 +387,9 @@ function cabApproval() {
 
 function showTaskSummary() {
   let summaryHTML = "<h2>Opsummering af dine valg</h2><ul>";
-  gameState.choiceHistory.forEach((item, index) => {
-    if (item) {
-      summaryHTML += `<li>Trin ${index + 1}: ${item}</li>`;
-    }
+  gameState.choiceHistory.forEach((choice, index) => {
+    // Vis en post per trin med en beskrivelse af valget
+    summaryHTML += `<li>Trin ${index + 1}: ${choice ? "Avanceret løsning" : "Hurtig løsning"}</li>`;
   });
   summaryHTML += "</ul>";
   openModal(summaryHTML, `<button id="continueAfterSummary">Fortsæt</button>`);
@@ -419,7 +413,7 @@ function finishTask() {
   document.getElementById('continueAfterFinish').addEventListener('click', () => {
     closeModal(() => {
       gameState.tasks = gameState.tasks.filter(task => task !== gameState.currentTask);
-      // Tilføj op til 2 nye opgaver fra allTasks, hvis der er nogen
+      // Tilføj op til 2 nye opgaver fra allTasks, hvis tilgængelige
       const newTasks = gameState.allTasks.splice(0, 2);
       gameState.tasks = gameState.tasks.concat(newTasks);
       document.getElementById('activeTask').innerHTML = '<h2>Aktiv Opgave</h2>';
