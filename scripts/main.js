@@ -14,11 +14,13 @@ const gameState = {
   architectHelpUsed: false,
   allTasks: [],
   tasks: [],
-  // choiceHistory gemmer for hvert trin et boolean flag: 
+  // choiceHistory gemmer for hvert trin et boolean flag:
   // true for avanceret valg og false for hurtig valg. Når et valg er truffet, er trinnet "låst".
   choiceHistory: [],
-  // revisionCount sporer, hvor mange gange hvert trin er revideret (maks. 1 revidering pr. trin)
-  revisionCount: []
+  // revisionCount sporer, hvor mange gange hvert trin er revideret (maks. 1 pr. trin)
+  revisionCount: [],
+  // Flag for om vi er i revisionsmodus (hvis ja, skal vi vende direkte tilbage til CAB efter at have valgt en løsning)
+  revisionMode: false
 };
 
 // Saml alle opgaver fra de tre task-filer
@@ -190,9 +192,10 @@ function startTask(task) {
   gameState.currentTask = task;
   gameState.currentStepIndex = 0;
   gameState.architectHelpUsed = false;
-  // Initialiser choiceHistory og revisionCount for hvert trin
+  // Initialiser choiceHistory og revisionCount for alle trin
   gameState.choiceHistory = new Array(task.steps.length);
   gameState.revisionCount = new Array(task.steps.length).fill(0);
+  gameState.revisionMode = false;
   renderActiveTask(task);
 }
 
@@ -225,7 +228,7 @@ function handleLocationClick(clickedLocation) {
     document.getElementById('alertOk').addEventListener('click', () => closeModal());
     return;
   }
-  // Hvis løsningen for det aktuelle trin allerede er låst og revideret (revisionCount >= 1), kan man ikke ændre den
+  // Hvis løsningen for det aktuelle trin allerede er låst, og revision er udtømt, vis besked
   if (gameState.choiceHistory[gameState.currentStepIndex] !== undefined &&
       gameState.revisionCount[gameState.currentStepIndex] >= 1) {
     openModal("<h2>Information</h2><p>Du har allerede revideret dette trin, og valget kan ikke ændres.</p>", `<button id="lockedOk">OK</button>`);
@@ -269,8 +272,9 @@ function showStepChoices(step) {
     document.getElementById('undoChoice').addEventListener('click', () => {
       // Øg revisions-tælleren for dette trin, så det ikke kan revideres igen
       gameState.revisionCount[gameState.currentStepIndex]++;
-      // Fjern det låste valg, så brugeren kan vælge igen
+      // Fjern det låste valg
       gameState.choiceHistory[gameState.currentStepIndex] = undefined;
+      // Når "Fortryd" vælges i revisionsmodus, forbliver vi i revisionsflow og vender til CAB-siden efter revision
       closeModal(() => showStepChoices(step));
     });
   }
@@ -281,10 +285,16 @@ function showStepChoices(step) {
     // Lås dette trin med avanceret valg (true)
     gameState.choiceHistory[gameState.currentStepIndex] = true;
     closeModal(() => {
-      if (gameState.currentStepIndex === gameState.currentTask.steps.length - 1) {
+      if (gameState.revisionMode) {
+        // I revisionsflow vender vi straks tilbage til CAB-siden
+        gameState.revisionMode = false;
         cabApproval();
       } else {
-        proceedToNextStep();
+        if (gameState.currentStepIndex === gameState.currentTask.steps.length - 1) {
+          cabApproval();
+        } else {
+          proceedToNextStep();
+        }
       }
     });
   });
@@ -295,10 +305,15 @@ function showStepChoices(step) {
     // Lås dette trin med hurtig valg (false)
     gameState.choiceHistory[gameState.currentStepIndex] = false;
     closeModal(() => {
-      if (gameState.currentStepIndex === gameState.currentTask.steps.length - 1) {
+      if (gameState.revisionMode) {
+        gameState.revisionMode = false;
         cabApproval();
       } else {
-        proceedToNextStep();
+        if (gameState.currentStepIndex === gameState.currentTask.steps.length - 1) {
+          cabApproval();
+        } else {
+          proceedToNextStep();
+        }
       }
     });
   });
@@ -351,7 +366,7 @@ function checkGameOverCondition() {
 }
 
 function cabApproval() {
-  // Når CAB-fasen kaldes, er alle trin låst – men vi tillader revision af ikke-avancerede trin via en revisionsmenu.
+  // Når CAB-fasen kaldes, er alle trin låst – og eventuel revisionsflow afsluttes.
   closeModal(() => {
     let focusKPI, missionGoal;
     if (gameState.currentTask.focus === "sikkerhed") {
@@ -373,7 +388,7 @@ function cabApproval() {
       <p>Denne vurdering angiver, hvor stor en chance der er for, at dine ændringer ikke bliver godkendt af CAB.</p>
     `;
     
-    // Hvis ikke alle trin er avancerede, vis revisionsmulighed via "Gå tilbage"-knap
+    // Hvis ikke alle valg er avancerede, vis revisionsmulighed
     let buttonsHTML = allComprehensive 
       ? `<button id="evaluateCAB">Evaluér nu</button>` 
       : `<button id="evaluateCAB">Evaluér nu</button> <button id="goBackCAB">Gå tilbage</button>`;
@@ -397,17 +412,15 @@ function cabApproval() {
     });
     
     if (!allComprehensive) {
-      // Åbn en revisionsmenu, der lader brugeren vælge, hvilket trin der skal revideres
       document.getElementById('goBackCAB').addEventListener('click', () => showRevisionOptions());
     }
   });
 }
 
-// Ny funktion: Vis en revisionsmenu for de trin, der ikke er avancerede og kan revideres
 function showRevisionOptions() {
+  // Saml indekser og titler for de trin, der kan revideres (hvor choiceHistory er false)
   let revisableIndices = [];
   for (let i = 0; i < gameState.choiceHistory.length; i++) {
-    // Tillad revision, hvis valget er false (ikke avanceret) og endnu ikke revideret (revisionCount < 1)
     if (gameState.choiceHistory[i] === false && gameState.revisionCount[i] < 1) {
       revisableIndices.push(i);
     }
@@ -417,19 +430,23 @@ function showRevisionOptions() {
     document.getElementById('noRevisionOk').addEventListener('click', () => closeModal(() => cabApproval()));
     return;
   }
+  // Lav en liste med knapper, der viser "Trin X: [step title]"
   let revisionList = "<h2>Vælg et trin at revidere</h2><ul>";
   revisableIndices.forEach(index => {
-    revisionList += `<li><button class="revisionBtn" data-index="${index}">Trin ${index + 1}</button></li>`;
+    let stepTitle = gameState.currentTask.steps[index].stepDescription;
+    revisionList += `<li><button class="revisionBtn" data-index="${index}">Trin ${index + 1}: ${stepTitle}</button></li>`;
   });
   revisionList += "</ul>";
   openModal(revisionList, "");
   document.querySelectorAll('.revisionBtn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       let idx = parseInt(e.target.getAttribute('data-index'));
+      // Gå ind i revisionsmodus, så efter det nye valg vender vi straks tilbage til CAB
+      gameState.revisionMode = true;
       closeModal(() => {
         // Øg revisions-tælleren for det valgte trin
         gameState.revisionCount[idx]++;
-        // Gå til det valgte trin for revision
+        // Sæt det aktuelle trin til det valgte indeks og lad brugeren vælge ny løsning for dette trin
         gameState.currentStepIndex = idx;
         showStepChoices(gameState.currentTask.steps[idx]);
       });
