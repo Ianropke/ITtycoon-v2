@@ -2,12 +2,10 @@
 <html lang="da">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>IT‑Tycoon</title>
-
-    <!-- CSS -->
+    <!-- Hoved CSS -->
     <link rel="stylesheet" href="style.css" />
-
     <!-- Eksterne biblioteker -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
@@ -25,40 +23,33 @@
       <div class="header-content">
         <span class="logo">🚀</span>
         <h1>IT‑Tycoon</h1>
-        <!-- Få hjælp-knap i øverste højre hjørne -->
-        <button id="helpButton" class="modern-btn help-btn-right">
-          <i class="fa fa-question-circle"></i> Få hjælp
-        </button>
+        <!-- Hjælp-knap i øverste højre hjørne -->
+        <button id="helpButton" class="help-btn">Få hjælp</button>
       </div>
     </header>
-
     <div class="container">
-      <!-- Venstre side: KPI-graf og lokationer -->
+      <!-- Venstre kolonne: "Vælg ny opgave"-knap og Lokationer -->
       <div class="left-column">
-        <div id="graphContainer" style="position: relative;">
-          <canvas id="kpiChart"></canvas>
-          <div id="taskProgress" class="task-progress">Opgave 0/10</div>
-        </div>
-
+        <button id="newTaskButton" class="big-new-task-btn">
+          <i class="fas fa-plus"></i> Vælg ny opgave
+        </button>
         <div id="locationsContainer">
           <h2>Lokationer</h2>
           <div id="locations"></div>
         </div>
       </div>
-
-      <!-- Højre side: Aktiv opgave og "Vælg ny opgave"-knap -->
+      <!-- Højre kolonne: KPI-graf og Aktiv opgave -->
       <div class="right-column">
+        <div id="graphContainer">
+          <canvas id="kpiChart"></canvas>
+          <div id="taskProgress" class="task-progress">Opgave 0/10</div>
+        </div>
         <div id="activeTask">
           <h2>Aktiv Opgave</h2>
         </div>
-        <!-- Knap til at åbne modal for opgavevalg -->
-        <button id="newTaskButton" class="modern-btn big-new-task-btn">
-          <i class="fas fa-plus"></i> Vælg ny opgave
-        </button>
       </div>
     </div>
-
-    <!-- Modal-vindue -->
+    <!-- Modal til popups -->
     <div id="modal" class="modal hidden">
       <div class="modal-content">
         <div class="modal-body" id="modalBody"></div>
@@ -66,13 +57,11 @@
         <span id="modalClose" class="close">&times;</span>
       </div>
     </div>
-
-    <!-- Indlæs tasks -->
+    <!-- Indlæs opgave-filer -->
     <script src="scripts/tasks/hospitalTasks.js"></script>
     <script src="scripts/tasks/infrastrukturTasks.js"></script>
     <script src="scripts/tasks/cybersikkerhedTasks.js"></script>
-
-    <!-- Moduler -->
+    <!-- Moduler (ES6) -->
     <script type="module" src="scripts/modal.js"></script>
     <script type="module" src="scripts/utils.js"></script>
     <script type="module" src="scripts/main.js"></script>
