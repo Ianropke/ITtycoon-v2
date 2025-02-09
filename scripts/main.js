@@ -14,11 +14,12 @@ const gameState = {
   architectHelpUsed: false,
   allTasks: [],
   tasks: [],
-  // Gemmer for hvert trin et boolean flag: true for avanceret valg, false for hurtig valg
+  // choiceHistory gemmer for hvert trin et boolean flag:
+  // true for avanceret valg, false for hurtig valg; hvis der er et element her, er trinnet låst.
   choiceHistory: []
 };
 
-// Saml alle opgaver fra de tre task-filer
+// Saml alle opgaver fra de tre task-filer (forudsæt, at hospitalTasks, infrastrukturTasks og cybersikkerhedTasks er defineret globalt via window)
 gameState.allTasks = [].concat(window.hospitalTasks, window.infrastrukturTasks, window.cybersikkerhedTasks);
 
 // Bland opgaverne tilfældigt
@@ -187,7 +188,7 @@ function startTask(task) {
   gameState.currentTask = task;
   gameState.currentStepIndex = 0;
   gameState.architectHelpUsed = false;
-  // Nulstil choiceHistory – én post per trin (boolean)
+  // Nulstil choiceHistory – ét flag per trin
   gameState.choiceHistory = [];
   renderActiveTask(task);
 }
@@ -240,29 +241,30 @@ function handleLocationClick(clickedLocation) {
 }
 
 function showStepChoices(step) {
-  // Opdel indhold: Body = beskrivelse; Footer = knapper
-  const bodyContent = `<h2>${step.stepDescription}</h2>${step.stepContext ? `<p>${step.stepContext}</p>` : ""}`;
-  
   let choiceAText = step.choiceA.text.replace(/-?\d+\s*tid/, "<span style='color:#800000;'>−2 tid</span>");
   let choiceBText = step.choiceB.text.replace(/-?\d+\s*tid/, "<span style='color:#006400;'>0 tid</span>");
   if (gameState.currentTask.focus === "sikkerhed") {
     choiceAText = choiceAText.replace(/[\+\-]?\d+\s*udvikling/gi, "").trim();
     choiceBText = choiceBText.replace(/[\+\-]?\d+\s*udvikling/gi, "").trim();
   }
-  const footerContent = `
-    <button id="choiceA">${step.choiceA.label} (${choiceAText})</button>
-    <button id="choiceB">${step.choiceB.label} (${choiceBText})</button>
-    <button id="architectHelp">${gameState.architectHelpUsed ? 'Arkitekthjælp brugt' : 'Brug Arkitekthjælp'}</button>
-    <button id="undoChoice">Fortryd</button>
+  const choiceContent = `
+    <h2>${step.stepDescription}</h2>
+    ${step.stepContext ? `<p>${step.stepContext}</p>` : ""}
+    <div class="choice-buttons">
+      <button id="choiceA">${step.choiceA.label} (${choiceAText})</button>
+      <button id="choiceB">${step.choiceB.label} (${choiceBText})</button>
+      <button id="architectHelp">${gameState.architectHelpUsed ? 'Arkitekthjælp brugt' : 'Brug Arkitekthjælp'}</button>
+      <button id="undoChoice">Fortryd</button>
+    </div>
   `;
-  openModal(bodyContent, footerContent);
-  
+  openModal(choiceContent);
+  // Lad nu "undoChoice" være tilgængelig kun hvis intet valg er låst endnu (dette modal er kun vist, hvis intet valg er truffet)
   document.getElementById('undoChoice').addEventListener('click', () => closeModal(() => showStepChoices(step)));
   
   document.getElementById('choiceA').addEventListener('click', () => {
     let modifiedChoice = { ...step.choiceA, applyEffect: { ...step.choiceA.applyEffect, timeCost: 2 } };
     applyChoice(modifiedChoice);
-    // Lås dette trin med avanceret valg (true)
+    // Lås dette trin: true for avanceret valg
     gameState.choiceHistory[gameState.currentStepIndex] = true;
     closeModal(() => {
       if (gameState.currentStepIndex === gameState.currentTask.steps.length - 1) {
@@ -276,7 +278,7 @@ function showStepChoices(step) {
   document.getElementById('choiceB').addEventListener('click', () => {
     let modifiedChoice = { ...step.choiceB, applyEffect: { ...step.choiceB.applyEffect, timeCost: 0 } };
     applyChoice(modifiedChoice);
-    // Lås dette trin med hurtig valg (false)
+    // Lås dette trin: false for hurtig valg
     gameState.choiceHistory[gameState.currentStepIndex] = false;
     closeModal(() => {
       if (gameState.currentStepIndex === gameState.currentTask.steps.length - 1) {
@@ -337,7 +339,7 @@ function checkGameOverCondition() {
 function cabApproval() {
   // Luk den nuværende modal og vis CAB-modalen
   closeModal(() => {
-    // Bestem hvilken KPI vi bruger baseret på taskens fokus
+    // Bestem hvilken KPI vi bruger ud fra taskens fokus
     let focusKPI, missionGoal;
     if (gameState.currentTask.focus === "sikkerhed") {
       focusKPI = gameState.security;
@@ -348,6 +350,7 @@ function cabApproval() {
     }
     // Tjek om alle valg for dette task er avancerede (alle choiceHistory-poster er true)
     let allComprehensive = gameState.choiceHistory.every(choice => choice === true);
+    // Hvis alle valg er avancerede, lås godkendelsesprocenten til 100%
     let approvalPercentage = allComprehensive ? 100 : Math.floor((focusKPI) / missionGoal * 100);
     let riskPercentage = 100 - approvalPercentage;
     
@@ -393,6 +396,7 @@ function cabApproval() {
 function showTaskSummary() {
   let summaryHTML = "<h2>Opsummering af dine valg</h2><ul>";
   gameState.choiceHistory.forEach((choice, index) => {
+    // Vis en post per trin: "Avanceret løsning" eller "Hurtig løsning"
     summaryHTML += `<li>Trin ${index + 1}: ${choice === true ? "Avanceret løsning" : "Hurtig løsning"}</li>`;
   });
   summaryHTML += "</ul>";
