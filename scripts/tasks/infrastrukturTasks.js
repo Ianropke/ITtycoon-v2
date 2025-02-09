@@ -150,8 +150,8 @@ window.infrastrukturTasks = [
       },
       {
         location: "cybersikkerhed",
-        stepDescription: "Sikre cybersikkerheden ved optimeret hardware- og serverplacering.",
-        stepContext: "Undgå nye sårbarheder i netværk og serverlokationer, der kan udnyttes af angribere.",
+        stepDescription: "Sørg for, at optimeret hardware ikke skaber nye sikkerhedshuller.",
+        stepContext: "Undgå konfigurationsfejl, der potentielt kunne udnyttes af angribere.",
         choiceA: {
           label: "Omfattende kontrol",
           text: "+2 sikkerhed, -2 tid",
@@ -247,7 +247,7 @@ window.infrastrukturTasks = [
       {
         location: "cybersikkerhed",
         stepDescription: "Opsæt hypervisor og segmenter ressourcer med fokus på sikkerhed.",
-        stepContext: "En korrekt opsætning minimerer risiko for brud mellem virtuelle maskiner.",
+        stepContext: "Korrekt opsætning minimerer risikoen for brud mellem virtuelle maskiner.",
         choiceA: {
           label: "Omfattende opsætning",
           text: "+2 sikkerhed, -2 tid",
@@ -309,7 +309,7 @@ window.infrastrukturTasks = [
       {
         location: "cybersikkerhed",
         stepDescription: "Test backup-systemet grundigt under sikkerhedsmæssige betingelser.",
-        stepContext: "Sørg for, at systemet ikke blot gendanner data, men også beskytter mod angreb.",
+        stepContext: "Sørg for, at systemet ikke kun gendanner data, men også beskytter dem.",
         choiceA: {
           label: "Detaljeret test",
           text: "+3 sikkerhed, -2 tid",
@@ -433,7 +433,7 @@ window.infrastrukturTasks = [
       {
         location: "cybersikkerhed",
         stepDescription: "Opgrader switch-hardware med fokus på sikkerhed.",
-        stepContext: "Opdater firmware og sikr mod kendte exploits ved at bruge sikre moduler.",
+        stepContext: "Opdater firmware og sikr mod kendte exploits via sikre moduler.",
         choiceA: {
           label: "Omfattende opgradering",
           text: "+2 sikkerhed, -2 tid",
@@ -450,7 +450,7 @@ window.infrastrukturTasks = [
       {
         location: "it‑jura",
         stepDescription: "Sikre lovmedholdelig VLAN-segmentering og logging.",
-        stepContext: "Tjek reglerne for netværkslogning, dataadgang og privatliv i segmentering.",
+        stepContext: "Tjek reglerne for netværkslogning, dataadgang og privatliv.",
         choiceA: {
           label: "Omfattende juridisk tjek",
           text: "+2 sikkerhed, -2 tid",
@@ -591,7 +591,7 @@ window.infrastrukturTasks = [
       {
         location: "cybersikkerhed",
         stepDescription: "Udskift forældet hardware med et fokus på sikkerhed.",
-        stepContext: "Moderne udstyr forbedrer både hastighed og beskytter mod kendte exploits.",
+        stepContext: "Moderne udstyr forbedrer hastighed og beskytter mod kendte exploits.",
         choiceA: {
           label: "Omfattende udskiftning",
           text: "+3 sikkerhed, -2 tid",
@@ -625,7 +625,7 @@ window.infrastrukturTasks = [
       {
         location: "hospital",
         stepDescription: "Implementér et automatiseret overvågningssystem i kritiske afdelinger.",
-        stepContext: "Et proaktivt monitoreringssystem kan advare om fejl og flaskehalse.",
+        stepContext: "Proaktiv monitorering kan advare om fejl og flaskehalse.",
         choiceA: {
           label: "Avanceret monitorering",
           text: "+2 sikkerhed, -2 tid",
