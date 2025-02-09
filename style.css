@@ -4,18 +4,19 @@
 :root {
   --primary-color: #0275d8;
   --secondary-color: #4caf50;
+  --haster-color: #d9534f;
+  --header-bg-gradient: linear-gradient(90deg, #2193b0, #6dd5ed);
   --background-gradient: linear-gradient(135deg, #f5f7fa, #c3cfe2);
   --text-color: #333;
-  --header-bg-gradient: linear-gradient(90deg, #2193b0, #6dd5ed);
-  --modal-default-width: 60vw;
-  --modal-default-height: 40vh;
+  --modal-default-width: 70vw;
+  --modal-default-height: 60vh;
+  --button-padding: 0.8rem 1.2rem;
 }
 
 /* Global styling */
 body {
   font-family: 'Montserrat', sans-serif;
   margin: 0;
-  padding: 0;
   background: var(--background-gradient);
   color: var(--text-color);
 }
@@ -25,7 +26,6 @@ header {
   background: var(--header-bg-gradient);
   color: #fff;
   padding: 1rem 2rem;
-  text-align: center;
   position: relative;
   box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
@@ -36,26 +36,12 @@ header {
   position: relative;
 }
 .header-content .logo {
-  font-size: 3rem;
+  font-size: 2rem;
   margin-right: 0.5rem;
 }
-
-/* "Få hjælp"-knap */
-.help-btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background-color: var(--primary-color);
-  color: #fff;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: background-color 0.3s ease;
-}
-.help-btn:hover {
-  background-color: #025aa5;
+header h1 {
+  font-size: 2rem;
+  margin: 0;
 }
 
 /* Container opdelt i to kolonner */
@@ -64,7 +50,7 @@ header {
   min-height: calc(100vh - 80px);
 }
 
-/* Venstre side: KPI-graf og lokationer */
+/* Venstre side: KPI og lokationer */
 .left-column {
   width: 50%;
   padding: 1rem;
@@ -81,24 +67,7 @@ header {
   gap: 0.5rem;
 }
 
-/* Lokationsknapper */
-.location-button {
-  padding: 1rem 1.5rem;
-  font-size: 1.2rem;
-  border: 2px solid var(--secondary-color);
-  background-color: var(--secondary-color);
-  color: #fff;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  border-radius: 4px;
-}
-.location-button:hover {
-  background-color: #43a047;
-  transform: scale(1.02);
-}
-
-/* Højre side: Aktiv opgave og en knap til valg af ny opgave */
+/* Højre side: Aktiv opgave og opgavevalgknap */
 .right-column {
   width: 50%;
   padding: 1rem;
@@ -109,32 +78,63 @@ header {
 #activeTask {
   border-bottom: 1px solid #ddd;
   padding: 1rem;
-  min-height: 243px;
-  overflow-y: auto;
-  background-color: #fff;
+  background: #fff;
+  min-height: 240px;
 }
 
-/* Knap til at vælge ny opgave */
-.new-task-btn {
-  background-color: #2196f3;
+/* Knapper */
+.modern-btn {
+  background-color: var(--primary-color);
   color: #fff;
   border: none;
   border-radius: 4px;
   font-size: 1rem;
-  padding: 0.75rem 1.25rem;
-  margin: 1rem 0 0 0;
+  padding: var(--button-padding);
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   cursor: pointer;
   transition: background-color 0.2s ease, transform 0.2s ease;
 }
-.new-task-btn:hover {
-  background-color: #1976d2;
+.modern-btn:hover {
+  background-color: #025aa5;
+  transform: scale(1.02);
+}
+.big-new-task-btn {
+  margin: 1rem 0 0 0;
+  font-size: 1.1rem;
+  padding: 1rem 1.5rem;
+}
+
+/* Lokationsknapper */
+.location-button {
+  padding: 0.8rem 1.2rem;
+  font-size: 1rem;
+  border: 2px solid var(--secondary-color);
+  background-color: var(--secondary-color);
+  color: #fff;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+.location-button:hover {
+  background-color: #43a047;
   transform: scale(1.02);
 }
 
-/* Dashboard progress overlay */
+/* Hastende badge */
+.haster-badge {
+  background-color: var(--haster-color);
+  color: #fff;
+  font-size: 0.8rem;
+  padding: 3px 6px;
+  border-radius: 4px;
+  margin-left: 0.5rem;
+  vertical-align: middle;
+}
+
+/* Task-progress overlay */
 .task-progress {
   position: absolute;
   top: 10px;
@@ -142,7 +142,6 @@ header {
   background: rgba(255,255,255,0.8);
   padding: 5px 10px;
   border-radius: 4px;
-  font-size: 0.9rem;
   color: var(--text-color);
 }
 
@@ -164,7 +163,7 @@ header {
 }
 .modal-content {
   background-color: #fff;
-  border-radius: 12px;
+  border-radius: 8px;
   width: var(--modal-default-width);
   height: var(--modal-default-height);
   display: grid;
@@ -177,19 +176,17 @@ header {
 .modal-body {
   padding: 30px 50px;
   overflow-y: auto;
-  text-align: center;
+  text-align: left;
 }
 .modal-footer {
-  padding: 10px 60px;
+  padding: 10px 50px;
   background-color: #f5f5f5;
   display: flex;
   align-items: center;
   justify-content: flex-end;
   flex-shrink: 0;
-  height: 60px;
+  border-top: 1px solid #ddd;
 }
-
-/* Luk-knap */
 .close {
   position: absolute;
   top: 10px;
@@ -199,45 +196,43 @@ header {
   color: var(--text-color);
 }
 
-/* Flydende tekst-stil til feedback */
-.choice-buttons {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  align-items: center;
+/* Opgavevalgs-liste */
+.task-selection-list {
+  list-style: none;
+  margin: 1rem 0;
+  padding: 0;
+}
+.task-selection-item {
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 1rem;
+}
+.task-selection-item h3 {
+  margin: 0 0 0.3rem 0;
+}
+.commit-task-btn,
+.help-task-btn {
+  margin-right: 0.5rem;
+  background-color: var(--secondary-color);
+}
+.commit-task-btn:hover {
+  background-color: #43a047;
+}
+.help-task-btn {
+  background-color: #ff9800; /* Orange farve */
+}
+.help-task-btn:hover {
+  background-color: #fb8c00;
 }
 
-/* Markerede trin */
+/* Revisions-lister, choice info, etc. */
 .done {
   color: #4caf50;
   font-weight: bold;
   margin-left: 0.5rem;
 }
 
-/* Revisions-lister, valg af opgave */
-.task-selection-list {
-  list-style: none;
-  padding: 0;
-  margin: 1rem 0;
-  text-align: left;
-}
-.task-selection-item {
-  margin-bottom: 1rem;
-  border-bottom: 1px solid #ccc;
-  padding-bottom: 1rem;
-}
-.commit-task-btn,
-.help-task-btn {
-  margin-right: 0.5rem;
-}
-
-/* Skjulte elementer */
-.hidden {
-  display: none;
-  pointer-events: none;
-}
-
-/* Responsivt design */
+/* Responsivt */
 @media (max-width: 768px) {
   .container {
     flex-direction: column;
@@ -246,33 +241,22 @@ header {
   .right-column {
     width: 100%;
   }
-  header {
-    padding: 1rem;
-  }
   .modal-content {
     width: 90vw;
-    height: 50vh;
-  }
-  .modal-body {
-    padding: 20px;
+    height: 60vh;
   }
 }
-
 @media (max-width: 480px) {
-  .location-button {
-    padding: 0.75rem 1rem;
-    font-size: 1rem;
-  }
-  button {
-    padding: 0.75rem 1rem;
-    font-size: 0.9rem;
-  }
   .task-progress {
     font-size: 0.8rem;
     padding: 3px 8px;
   }
   .modal-content {
     width: 95vw;
-    height: 55vh;
+    height: 65vh;
+  }
+  .big-new-task-btn {
+    font-size: 1rem;
+    padding: 0.8rem;
   }
 }
