@@ -149,17 +149,17 @@ window.infrastrukturTasks = [
         }
       },
       {
-        location: "infrastruktur",
-        stepDescription: "Optimer serverplacering og luftflow.",
-        stepContext: "Bedre placering af hardware og optimeret luftstrøm øger køleeffektiviteten.",
+        location: "cybersikkerhed",
+        stepDescription: "Sikre cybersikkerheden ved optimeret hardware- og serverplacering.",
+        stepContext: "Undgå nye sårbarheder i netværk og serverlokationer, der kan udnyttes af angribere.",
         choiceA: {
-          label: "Omfattende omplacering",
+          label: "Omfattende kontrol",
           text: "+2 sikkerhed, -2 tid",
           recommended: false,
           applyEffect: { timeCost: 2, statChange: { security: 2 } }
         },
         choiceB: {
-          label: "Minimal tilpasning",
+          label: "Minimal kontrol",
           text: "+1 sikkerhed, 0 tid",
           recommended: false,
           applyEffect: { timeCost: 0, statChange: { security: 1 } }
@@ -245,9 +245,9 @@ window.infrastrukturTasks = [
         }
       },
       {
-        location: "infrastruktur",
-        stepDescription: "Opsæt hypervisor og segmenter ressourcer.",
-        stepContext: "En korrekt opsætning sikrer, at virtuelle maskiner kører stabilt og sikkert.",
+        location: "cybersikkerhed",
+        stepDescription: "Opsæt hypervisor og segmenter ressourcer med fokus på sikkerhed.",
+        stepContext: "En korrekt opsætning minimerer risiko for brud mellem virtuelle maskiner.",
         choiceA: {
           label: "Omfattende opsætning",
           text: "+2 sikkerhed, -2 tid",
@@ -307,9 +307,9 @@ window.infrastrukturTasks = [
         }
       },
       {
-        location: "infrastruktur",
-        stepDescription: "Test backup-systemet grundigt.",
-        stepContext: "Udfør tests for at sikre, at systemet hurtigt kan gendanne data ved fejl.",
+        location: "cybersikkerhed",
+        stepDescription: "Test backup-systemet grundigt under sikkerhedsmæssige betingelser.",
+        stepContext: "Sørg for, at systemet ikke blot gendanner data, men også beskytter mod angreb.",
         choiceA: {
           label: "Detaljeret test",
           text: "+3 sikkerhed, -2 tid",
@@ -431,9 +431,9 @@ window.infrastrukturTasks = [
         }
       },
       {
-        location: "infrastruktur",
-        stepDescription: "Opgrader switch-hardware.",
-        stepContext: "Udskift forældet hardware for at sikre bedre ydeevne.",
+        location: "cybersikkerhed",
+        stepDescription: "Opgrader switch-hardware med fokus på sikkerhed.",
+        stepContext: "Opdater firmware og sikr mod kendte exploits ved at bruge sikre moduler.",
         choiceA: {
           label: "Omfattende opgradering",
           text: "+2 sikkerhed, -2 tid",
@@ -448,17 +448,17 @@ window.infrastrukturTasks = [
         }
       },
       {
-        location: "infrastruktur",
-        stepDescription: "Segmentér VLAN for bedre sikkerhed og performance.",
-        stepContext: "Opdel netværket i virtuelle LAN-segmenter for at reducere broadcast-trafik.",
+        location: "it‑jura",
+        stepDescription: "Sikre lovmedholdelig VLAN-segmentering og logging.",
+        stepContext: "Tjek reglerne for netværkslogning, dataadgang og privatliv i segmentering.",
         choiceA: {
-          label: "Omfattende VLAN-opdeling",
+          label: "Omfattende juridisk tjek",
           text: "+2 sikkerhed, -2 tid",
           recommended: false,
           applyEffect: { timeCost: 2, statChange: { security: 2 } }
         },
         choiceB: {
-          label: "Minimal VLAN-opdeling",
+          label: "Minimal tjek",
           text: "+1 sikkerhed, 0 tid",
           recommended: false,
           applyEffect: { timeCost: 0, statChange: { security: 1 } }
@@ -589,9 +589,9 @@ window.infrastrukturTasks = [
         }
       },
       {
-        location: "infrastruktur",
-        stepDescription: "Udskift forældet hardware med moderne servere og netværksudstyr.",
-        stepContext: "Moderne udstyr forbedrer både hastighed og sikkerhed.",
+        location: "cybersikkerhed",
+        stepDescription: "Udskift forældet hardware med et fokus på sikkerhed.",
+        stepContext: "Moderne udstyr forbedrer både hastighed og beskytter mod kendte exploits.",
         choiceA: {
           label: "Omfattende udskiftning",
           text: "+3 sikkerhed, -2 tid",
@@ -623,9 +623,9 @@ window.infrastrukturTasks = [
         }
       },
       {
-        location: "infrastruktur",
-        stepDescription: "Implementér et automatiseret overvågningssystem.",
-        stepContext: "Et automatiseret system kan proaktivt identificere fejl og performanceproblemer.",
+        location: "hospital",
+        stepDescription: "Implementér et automatiseret overvågningssystem i kritiske afdelinger.",
+        stepContext: "Et proaktivt monitoreringssystem kan advare om fejl og flaskehalse.",
         choiceA: {
           label: "Avanceret monitorering",
           text: "+2 sikkerhed, -2 tid",
