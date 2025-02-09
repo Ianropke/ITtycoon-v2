@@ -1,4 +1,4 @@
-/* Reset og grundlæggende styling */
+/* Generelle reset og grundlæggende styling */
 * {
   margin: 0;
   padding: 0;
@@ -7,14 +7,13 @@
 
 body {
   font-family: Arial, sans-serif;
-  background-color: #f0f0f0;
+  background: #f0f0f0;
   color: #333;
   line-height: 1.5;
 }
 
-/* Header */
 header {
-  background-color: #333;
+  background: #333;
   color: #fff;
   padding: 1rem;
   display: flex;
@@ -26,20 +25,19 @@ header h1 {
   font-size: 2rem;
 }
 
-/* Main container */
 #mainContainer {
   display: flex;
   padding: 1rem;
   gap: 1rem;
 }
 
-/* Venstre side: KPI og lokationer */
+/* Venstre side (KPI og lokationer) */
 #leftPanel {
   flex: 1;
-  background-color: #fff;
+  background: #fff;
   padding: 1rem;
   border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 #locations {
@@ -50,26 +48,22 @@ header h1 {
 }
 
 .location-button {
-  background-color: #27ae60;
-  color: #fff;
+  padding: 0.5rem 1rem;
+  background: #27ae60;
   border: none;
   border-radius: 4px;
-  padding: 0.5rem 1rem;
+  color: #fff;
   cursor: pointer;
   font-size: 0.9rem;
 }
 
-.location-button:hover {
-  background-color: #219150;
-}
-
-/* Højre side: Aktiv opgave og potentielle opgaver */
+/* Højre side (Aktiv opgave og potentielle opgaver) */
 #rightPanel {
   flex: 1;
-  background-color: #fff;
+  background: #fff;
   padding: 1rem;
   border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 #activeTask,
@@ -78,9 +72,9 @@ header h1 {
 }
 
 .task-item {
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
+  background: #f9f9f9;
   padding: 1rem;
+  border: 1px solid #ddd;
   border-radius: 4px;
   margin-bottom: 0.5rem;
 }
@@ -97,10 +91,10 @@ header h1 {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
   z-index: 1000;
 }
 
@@ -109,21 +103,21 @@ header h1 {
 }
 
 .modal-content {
-  background-color: #fff;
+  background: #fff;
   width: 80%;
-  min-height: 60vh;  /* Gør pop‑up'en en anelse højere */
+  min-height: 60vh;  /* Øger minimumshøjden – tidligere fx 40vh */
   max-height: 80vh;
+  padding: 1rem;
   border-radius: 8px;
   display: flex;
   flex-direction: column;
-  padding: 1rem;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   overflow-y: auto;
 }
 
 .modal-header {
   padding: 1rem;
-  background-color: #f0f0f0;
+  background: #f0f0f0;
   border-bottom: 1px solid #ddd;
   font-size: 1.5rem;
 }
@@ -136,7 +130,7 @@ header h1 {
 
 .modal-footer {
   padding: 1rem;
-  background-color: #f0f0f0;
+  background: #f0f0f0;
   border-top: 1px solid #ddd;
   display: flex;
   justify-content: flex-end;
@@ -149,13 +143,13 @@ button {
   padding: 0.5rem 1rem;
   border: none;
   border-radius: 4px;
-  background-color: #27ae60;
+  background: #27ae60;
   color: #fff;
   font-size: 1rem;
 }
 
 button:hover {
-  background-color: #219150;
+  background: #219150;
 }
 
 /* Responsivt design */
