@@ -14,7 +14,7 @@ const gameState = {
   architectHelpUsed: false,
   allTasks: [],
   tasks: [],
-  choiceHistory: []
+  choiceHistory: [] // Her gemmes en tekstbeskrivelse af hvert valg
 };
 
 // Saml alle opgaver fra de tre task-filer (forudsat at hospitalTasks, infrastrukturTasks og cybersikkerhedTasks er defineret globalt via window)
@@ -23,7 +23,7 @@ gameState.allTasks = [].concat(window.hospitalTasks, window.infrastrukturTasks, 
 // Bland opgaverne tilfældigt
 shuffleArray(gameState.allTasks);
 
-// Tag de første 7 opgaver som potentielle opgaver
+// Tag de første 7 opgaver som de potentielle opgaver
 gameState.tasks = gameState.allTasks.splice(0, 7);
 
 // Initialiser Chart.js-dashboardet
@@ -102,7 +102,7 @@ function showIntro() {
     <p>Hvert valg i et trin viser sin tidsomkostning – komplet løsning koster 2 tidspoint og giver en større bonus, mens hurtig løsning koster 0 tidspoint og giver en mindre bonus.</p>
   `;
   const modalContent = document.querySelector('.modal-content');
-  modalContent.style.height = '48vh'; // Øger introduktionspop-up højden med 20%
+  modalContent.style.height = '48vh'; // Øg introduktionspop-up højden
   openModal(introContent, `<button id="startGame">Start Spillet</button>`);
   document.getElementById('startGame').addEventListener('click', () => {
     modalContent.style.height = '40vh'; // Reset til standardhøjde
@@ -130,7 +130,7 @@ function startTutorial() {
     <p><strong>Spillets Mekanik:</strong><br>
     Når du forpligter en opgave, gennemfører du hvert trin ved at vælge den korrekte lokation. Komplet løsning koster 2 tidspoint og giver en større bonus; hurtig løsning koster 0 tidspoint og giver en mindre bonus.</p>
     <p><strong>Efter alle trin:</strong><br>
-    Dine ændringer sendes til CAB for evaluering. Hvis CAB afviser, skal du udføre rework, hvilket koster ekstra tid.</p>
+    Dine ændringer sendes til CAB for evaluering. Hvis CAB afviser, skal du udføre rework – hvilket trækker ekstra tid. Brug CAB-feedbacken til at justere din strategi.</p>
   `;
   openModal(tutorialContent, `<button id="endTutorial">Næste</button>`);
   document.getElementById('endTutorial').addEventListener('click', () => closeModal(() => renderPotentialTasks()));
@@ -224,7 +224,7 @@ function handleLocationClick(clickedLocation) {
     showStepChoices(currentStep);
   } else {
     openModal(
-      `<h2>Fejl</h2><p>Forkert lokation.<br>Du valgte "${clickedLocation.toUpperCase()}", men den korrekte lokation for dette trin er "${currentStep.location.toUpperCase()}".<br>Læs trinbeskrivelsen nøje og prøv igen.</p>`,
+      `<h2>Fejl</h2><p>Forkert lokation.<br>Du valgte "${clickedLocation.toUpperCase()}", men den korrekte lokation er "${currentStep.location.toUpperCase()}".<br>Læs trinbeskrivelsen og prøv igen.</p>`,
       `<button id="errorOk">OK</button>`
     );
     document.getElementById('errorOk').addEventListener('click', () => closeModal());
@@ -245,9 +245,12 @@ function showStepChoices(step) {
       <button id="choiceA">${step.choiceA.label} (${choiceAText})</button>
       <button id="choiceB">${step.choiceB.label} (${choiceBText})</button>
       <button id="architectHelp">${gameState.architectHelpUsed ? 'Arkitekthjælp brugt' : 'Brug Arkitekthjælp'}</button>
+      <button id="undoChoice">Fortryd</button>
     </div>
   `;
   openModal(choiceContent);
+  // Mulighed for at fortryde (lukker blot modal'en og vender tilbage til step-modalen)
+  document.getElementById('undoChoice').addEventListener('click', () => closeModal(() => showStepChoices(step)));
   document.getElementById('choiceA').addEventListener('click', () => {
     let modifiedChoice = { ...step.choiceA, applyEffect: { ...step.choiceA.applyEffect, timeCost: 2 } };
     applyChoice(modifiedChoice);
@@ -320,19 +323,21 @@ function checkGameOverCondition() {
 }
 
 function cabApproval() {
-  // Luk eventuel åben modal og vis nu en dedikeret CAB-forklaringsmodal
+  // Før CAB evalueringen vises en kort CAB-modal med forklaring og en score
   closeModal(() => {
-    // Beregn en score baseret på sikkerheden
-    let cabScore = Math.floor(((gameState.security + 20) / (gameState.missionGoals.security + 20)) * 100);
+    // Beregn en bonus, hvis alle valg var sikre (0 tid)
+    let allSafe = gameState.choiceHistory.every(item => item.includes("0 tid"));
+    let bonus = allSafe ? gameState.missionGoals.security * 0.3 : 0;
+    let cabScore = Math.floor((gameState.security + bonus) / gameState.missionGoals.security * 100);
     const cabExplanation = `
-      <h2>Change Advisory Board (CAB)</h2>
-      <p>CAB er et panel af eksperter, der vurderer dine ændringer, før de implementeres. Hvis dine ændringer er velovervejede og opfylder de fastsatte sikkerheds- og udviklingsmål, godkender CAB dem. Er der fejl eller mangler, afviser CAB ændringen, og du skal udføre rework – hvilket trækker ekstra tid fra din samlede tid. Brug denne feedback til at justere din strategi og lære af dine valg.</p>
-      <p><strong>Sikkerhedsvurdering:</strong> ${cabScore}% – ${cabScore < 75 ? "Overvej at øge den detaljerede analyse." : "Din tilgang er robust."}</p>
+      <h2>CAB (Change Advisory Board)</h2>
+      <p>CAB er et panel af eksperter, der vurderer dine ændringer, før de implementeres.</p>
+      <p><strong>Sikkerhedsvurdering:</strong> ${cabScore}% – ${cabScore < 75 ? "Overvej at vælge mere detaljerede løsninger." : "Din tilgang er god."}</p>
+      <p>Hvis dine ændringer opfylder de fastsatte mål, godkender CAB dem. Er der fejl, afviser CAB ændringen, og du skal udføre rework, hvilket koster ekstra tid.</p>
     `;
     openModal(cabExplanation, `<button id="evaluateCAB">Evaluér nu</button>`);
     document.getElementById('evaluateCAB').addEventListener('click', () => {
-      // Simuler CAB evaluering baseret på en chanceberegning
-      let chance = (gameState.security + 20) / (gameState.missionGoals.security + 20);
+      let chance = Math.min(1, (gameState.security + bonus) / gameState.missionGoals.security);
       if (Math.random() < chance) {
         showTaskSummary();
       } else {
@@ -375,9 +380,8 @@ function finishTask() {
   openModal("<h2>Info</h2><p>Opgaven er fuldført!</p>", `<button id="continueAfterFinish">Fortsæt</button>`);
   document.getElementById('continueAfterFinish').addEventListener('click', () => {
     closeModal(() => {
-      // Fjern den afsluttede opgave fra listen
       gameState.tasks = gameState.tasks.filter(task => task !== gameState.currentTask);
-      // Tilføj op til 2 nye opgaver fra allTasks, hvis de findes
+      // Tilføj op til 2 nye opgaver fra allTasks
       const newTasks = gameState.allTasks.splice(0, 2);
       gameState.tasks = gameState.tasks.concat(newTasks);
       document.getElementById('activeTask').innerHTML = '<h2>Aktiv Opgave</h2>';
@@ -388,7 +392,7 @@ function finishTask() {
   });
 }
 
-// Start med introduktion
+// Start spillet med introduktion
 showIntro();
 
 export { gameState, updateDashboard, openModal, closeModal, renderActiveTask };
