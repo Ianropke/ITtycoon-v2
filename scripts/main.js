@@ -14,7 +14,7 @@ const gameState = {
   architectHelpUsed: false,
   allTasks: [],
   tasks: [],
-  choiceHistory: [] // Gemmer en tekstbeskrivelse af hvert valg
+  choiceHistory: [] // Nu bruges dette array til at gemme ét valg pr. trin
 };
 
 // Saml alle opgaver fra de tre task-filer
@@ -103,7 +103,7 @@ function showIntro() {
     <p>Hvert valg i et trin viser sin tidsomkostning – komplet løsning koster 2 tidspoint og giver en større bonus; hurtig løsning koster 0 tidspoint og giver en mindre bonus.</p>
   `;
   const modalContent = document.querySelector('.modal-content');
-  modalContent.style.height = '48vh'; // Øger introduktionspop-up højden med 20%
+  modalContent.style.height = '48vh'; // Øger introduktionspop-up højden
   openModal(introContent, `<button id="startGame">Start Spillet</button>`);
   document.getElementById('startGame').addEventListener('click', () => {
     modalContent.style.height = '40vh'; // Reset til standardhøjde
@@ -131,7 +131,7 @@ function startTutorial() {
     <p><strong>Spillets Mekanik:</strong><br>
     Når du forpligter en opgave, gennemfører du hvert trin ved at vælge den korrekte lokation. Komplet løsning koster 2 tidspoint og giver en større bonus; hurtig løsning koster 0 tidspoint og giver en mindre bonus.</p>
     <p><strong>Efter alle trin:</strong><br>
-    Dine ændringer sendes til CAB for evaluering. <em>Sikkerhedsvurdering</em> (eller <em>Udviklingsvurdering</em> for udviklingsopgaver) angiver den risiko, at dine ændringer ikke bliver godkendt af CAB. Hvis målene opfyldes, godkender CAB dem; hvis ikke, afviser de dem, og du skal udføre rework – hvilket trækker ekstra tid. Brug denne feedback til at justere din strategi.</p>
+    Dine ændringer sendes til CAB for evaluering. <em>Sikkerhedsvurdering</em> (eller <em>Udviklingsvurdering</em>) angiver den risiko, at dine ændringer ikke bliver godkendt af CAB. Hvis målene opfyldes, godkender CAB dem; hvis ikke, afviser de dem, og du skal udføre rework – hvilket trækker ekstra tid. Brug CAB-feedbacken til at justere din strategi.</p>
   `;
   openModal(tutorialContent, `<button id="endTutorial">Næste</button>`);
   document.getElementById('endTutorial').addEventListener('click', () => closeModal(() => renderPotentialTasks()));
@@ -187,6 +187,7 @@ function startTask(task) {
   gameState.currentTask = task;
   gameState.currentStepIndex = 0;
   gameState.architectHelpUsed = false;
+  // Ved start overskrives evt. tidligere valg for dette task (sikrer én post pr. trin)
   gameState.choiceHistory = [];
   renderActiveTask(task);
 }
@@ -251,10 +252,12 @@ function showStepChoices(step) {
   `;
   openModal(choiceContent);
   document.getElementById('undoChoice').addEventListener('click', () => closeModal(() => showStepChoices(step)));
+  
   document.getElementById('choiceA').addEventListener('click', () => {
     let modifiedChoice = { ...step.choiceA, applyEffect: { ...step.choiceA.applyEffect, timeCost: 2 } };
     applyChoice(modifiedChoice);
-    gameState.choiceHistory.push(`Trin ${gameState.currentStepIndex + 1}: ${step.choiceA.label} (${choiceAText})`);
+    // Sæt det valgte valg i choiceHistory på indekset for det nuværende trin
+    gameState.choiceHistory[gameState.currentStepIndex] = `Trin ${gameState.currentStepIndex + 1}: ${step.choiceA.label} (${choiceAText})`;
     closeModal(() => {
       if (gameState.currentStepIndex === gameState.currentTask.steps.length - 1) {
         cabApproval();
@@ -263,10 +266,12 @@ function showStepChoices(step) {
       }
     });
   });
+  
   document.getElementById('choiceB').addEventListener('click', () => {
     let modifiedChoice = { ...step.choiceB, applyEffect: { ...step.choiceB.applyEffect, timeCost: 0 } };
     applyChoice(modifiedChoice);
-    gameState.choiceHistory.push(`Trin ${gameState.currentStepIndex + 1}: ${step.choiceB.label} (${choiceBText})`);
+    // Sæt det valgte valg i choiceHistory for det aktuelle trin
+    gameState.choiceHistory[gameState.currentStepIndex] = `Trin ${gameState.currentStepIndex + 1}: ${step.choiceB.label} (${choiceBText})`;
     closeModal(() => {
       if (gameState.currentStepIndex === gameState.currentTask.steps.length - 1) {
         cabApproval();
@@ -275,6 +280,7 @@ function showStepChoices(step) {
       }
     });
   });
+  
   document.getElementById('architectHelp').addEventListener('click', () => {
     if (!gameState.architectHelpUsed) {
       gameState.architectHelpUsed = true;
@@ -325,7 +331,7 @@ function checkGameOverCondition() {
 function cabApproval() {
   // Luk den nuværende modal og vis CAB-modalen
   closeModal(() => {
-    // Vælg den relevante KPI baseret på opgavens fokus
+    // Bestem, hvilken KPI vi bruger (sikkerhed eller udvikling)
     let focusKPI, missionGoal;
     if (gameState.currentTask.focus === "sikkerhed") {
       focusKPI = gameState.security;
@@ -334,15 +340,15 @@ function cabApproval() {
       focusKPI = gameState.development;
       missionGoal = gameState.missionGoals.development;
     }
-    // Tjek, om alle valg er avancerede (indeholder "-2 tid")
-    let allComprehensive = gameState.choiceHistory.every(item => item.includes("-2 tid"));
+    // Tjek, om alle valg for det aktuelle task var avancerede (indeholder "-2 tid")
+    let allComprehensive = gameState.choiceHistory.every(item => item && item.includes("-2 tid"));
     let bonus = 0;
     if (allComprehensive) {
       bonus = missionGoal - focusKPI;
     }
     let cabScore = Math.floor((focusKPI + bonus) / missionGoal * 100);
     
-    // CAB-tekst: Forklar kort, at sikkerhedsvurderingen (eller udviklingsvurdering) angiver risikoen for, at ændringerne ikke bliver godkendt.
+    // Forklar kort, at sikkerhedsvurderingen (eller udviklingsvurderingen) angiver risikoen for, at ændringerne ikke bliver godkendt
     const cabExplanation = `
       <h2>CAB (Change Advisory Board)</h2>
       <p>CAB er et panel af eksperter, der vurderer dine ændringer, før de implementeres.</p>
@@ -383,8 +389,11 @@ function cabApproval() {
 
 function showTaskSummary() {
   let summaryHTML = "<h2>Opsummering af dine valg</h2><ul>";
-  gameState.choiceHistory.forEach(item => {
-    summaryHTML += `<li>${item}</li>`;
+  gameState.choiceHistory.forEach((item, index) => {
+    // Sørg for at vise kun én post per trin
+    if (item) {
+      summaryHTML += `<li>Trin ${index + 1}: ${item.split(': ')[1]}</li>`;
+    }
   });
   summaryHTML += "</ul>";
   openModal(summaryHTML, `<button id="continueAfterSummary">Fortsæt</button>`);
@@ -408,7 +417,7 @@ function finishTask() {
   document.getElementById('continueAfterFinish').addEventListener('click', () => {
     closeModal(() => {
       gameState.tasks = gameState.tasks.filter(task => task !== gameState.currentTask);
-      // Tilføj op til 2 nye opgaver fra allTasks, hvis de findes
+      // Tilføj op til 2 nye opgaver fra allTasks, hvis der er nogen
       const newTasks = gameState.allTasks.splice(0, 2);
       gameState.tasks = gameState.tasks.concat(newTasks);
       document.getElementById('activeTask').innerHTML = '<h2>Aktiv Opgave</h2>';
