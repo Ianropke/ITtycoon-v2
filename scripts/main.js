@@ -17,8 +17,7 @@ const gameState = {
   choiceHistory: []
 };
 
-// Saml alle opgaver fra de tre task-filer
-// Sørg for, at hospitalTasks, infrastrukturTasks og cybersikkerhedTasks er tilgængelige globalt via window
+// Saml alle opgaver fra de tre task-filer (forudsat at hospitalTasks, infrastrukturTasks og cybersikkerhedTasks er defineret globalt via window)
 gameState.allTasks = [].concat(window.hospitalTasks, window.infrastrukturTasks, window.cybersikkerhedTasks);
 
 // Bland opgaverne tilfældigt
@@ -48,9 +47,7 @@ const kpiChart = new Chart(ctx, {
       pointRadius: 0
     }]
   },
-  options: {
-    scales: { y: { beginAtZero: true } }
-  }
+  options: { scales: { y: { beginAtZero: true } } }
 });
 
 function updateDashboard() {
@@ -89,7 +86,7 @@ function showHelp() {
     <p><strong>Din Rolle som IT-forvalter</strong><br>
     Du skal balancere KPI’erne Tid, Sikkerhed og Udvikling. Træf de rette beslutninger for at optimere din organisations sikkerhed og udvikling, mens du holder øje med din tid.</p>
     <p><strong>Spillets Struktur:</strong><br>
-    Hver opgave består af flere trin, hvor du skal vælge mellem to muligheder – komplet løsning (2 tidspoint, større bonus) og hurtig løsning (0 tidspoint, mindre bonus). Dashboardet viser din tid og opgaveprogress (f.eks. "Opgave 3/10").</p>
+    Hver opgave består af flere trin, hvor du vælger mellem to muligheder – komplet løsning (2 tidspoint, større bonus) og hurtig løsning (0 tidspoint, mindre bonus). Dashboardet viser din tid og opgaveprogress (f.eks. "Opgave 3/10").</p>
     <p>Held og lykke!</p>
   `;
   openModal(helpContent, `<button id="closeHelp">Luk</button>`);
@@ -218,10 +215,7 @@ function renderActiveTask(task) {
 
 function handleLocationClick(clickedLocation) {
   if (!gameState.currentTask) {
-    openModal(
-      "<h2>Advarsel</h2><p>Vælg en opgave og forpligt dig først!</p>",
-      `<button id="alertOk">OK</button>`
-    );
+    openModal("<h2>Advarsel</h2><p>Vælg en opgave og forpligt dig først!</p>", `<button id="alertOk">OK</button>`);
     document.getElementById('alertOk').addEventListener('click', () => closeModal());
     return;
   }
@@ -286,7 +280,6 @@ function showStepChoices(step) {
         `<h2>Arkitekthjælp</h2><p>Anbefalet valg: ${step.choiceA.label}</p><p>${hint}</p>`,
         `<button id="closeArchitectHelp">Luk</button>`
       );
-      // Når arkitekthjælp-luk-knappen klikkes, vender vi tilbage til de aktuelle trinvalg
       document.getElementById('closeArchitectHelp').addEventListener('click', () =>
         closeModal(() => showStepChoices(step))
       );
@@ -327,9 +320,18 @@ function checkGameOverCondition() {
 }
 
 function cabApproval() {
+  // Luk eventuel åben modal og vis nu en dedikeret CAB-forklaringsmodal
   closeModal(() => {
-    openModal("<h2>Til CAB</h2><p>Din ændring sendes nu til CAB for evaluering…</p>", `<button id="evaluateCAB">Evaluér nu</button>`);
+    // Beregn en score baseret på sikkerheden
+    let cabScore = Math.floor(((gameState.security + 20) / (gameState.missionGoals.security + 20)) * 100);
+    const cabExplanation = `
+      <h2>Change Advisory Board (CAB)</h2>
+      <p>CAB er et panel af eksperter, der vurderer dine ændringer, før de implementeres. Hvis dine ændringer er velovervejede og opfylder de fastsatte sikkerheds- og udviklingsmål, godkender CAB dem. Er der fejl eller mangler, afviser CAB ændringen, og du skal udføre rework – hvilket trækker ekstra tid fra din samlede tid. Brug denne feedback til at justere din strategi og lære af dine valg.</p>
+      <p><strong>Sikkerhedsvurdering:</strong> ${cabScore}% – ${cabScore < 75 ? "Overvej at øge den detaljerede analyse." : "Din tilgang er robust."}</p>
+    `;
+    openModal(cabExplanation, `<button id="evaluateCAB">Evaluér nu</button>`);
     document.getElementById('evaluateCAB').addEventListener('click', () => {
+      // Simuler CAB evaluering baseret på en chanceberegning
       let chance = (gameState.security + 20) / (gameState.missionGoals.security + 20);
       if (Math.random() < chance) {
         showTaskSummary();
@@ -373,9 +375,9 @@ function finishTask() {
   openModal("<h2>Info</h2><p>Opgaven er fuldført!</p>", `<button id="continueAfterFinish">Fortsæt</button>`);
   document.getElementById('continueAfterFinish').addEventListener('click', () => {
     closeModal(() => {
-      // Fjern den nuværende opgave fra listen
+      // Fjern den afsluttede opgave fra listen
       gameState.tasks = gameState.tasks.filter(task => task !== gameState.currentTask);
-      // Tilføj op til 2 nye opgaver fra allTasks
+      // Tilføj op til 2 nye opgaver fra allTasks, hvis de findes
       const newTasks = gameState.allTasks.splice(0, 2);
       gameState.tasks = gameState.tasks.concat(newTasks);
       document.getElementById('activeTask').innerHTML = '<h2>Aktiv Opgave</h2>';
@@ -384,47 +386,6 @@ function finishTask() {
       renderPotentialTasks();
     });
   });
-}
-
-function showInspectAndAdapt() {
-  const feedback = getAdaptiveFeedback();
-  const inspectContent = `
-    <h2>Inspect & Adapt</h2>
-    <p>Sikkerhed: ${gameState.security} (mål: ${gameState.missionGoals.security})</p>
-    <p>Udvikling: ${gameState.development} (mål: ${gameState.missionGoals.development})</p>
-    <p><strong>Feedback:</strong> ${feedback}</p>
-    <p>Din sprint er afsluttet. Nye, mere ambitiøse mål er nu sat: 24 for Sikkerhed og 24 for Udvikling. Din tid nulstilles til 30.</p>
-    <button id="continueGame">Fortsæt</button>
-  `;
-  openModal(inspectContent);
-  document.getElementById('continueGame').addEventListener('click', () => {
-    closeModal(() => {
-      gameState.time = 30;
-      gameState.missionGoals = { security: 24, development: 24 };
-      gameState.tasksCompleted = 0;
-      updateTaskProgress();
-      updateDashboard();
-      showSprintGoal();
-    });
-  });
-}
-
-function getAdaptiveFeedback() {
-  let feedback = "";
-  if (gameState.security < gameState.missionGoals.security) {
-    feedback += "Din sikkerhedsstrategi kunne forbedres – overvej at vælge mere detaljerede løsninger i kritiske trin. ";
-  } else {
-    feedback += "Din sikkerhed blev godt håndteret. ";
-  }
-  if (gameState.development < gameState.missionGoals.development) {
-    feedback += "Din udviklingsindsats var under målet; forsøg at investere mere i dybdegående løsninger. ";
-  } else {
-    feedback += "Din udviklingsstrategi var optimal. ";
-  }
-  if (gameState.tasksCompleted < 10) {
-    feedback += "Du gennemførte ikke alle opgaver, hvilket reducerer din samlede score.";
-  }
-  return feedback;
 }
 
 // Start med introduktion
