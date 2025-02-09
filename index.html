@@ -1,64 +1,80 @@
 <!DOCTYPE html>
 <html lang="da">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>IT‑Tycoon</title>
-  <!-- Google Font: Montserrat -->
-  <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
-  <!-- Hoved CSS -->
-  <link rel="stylesheet" href="style.css">
-  <!-- Eksterne biblioteker -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
-</head>
-<body>
-  <header>
-    <div class="header-content">
-      <span class="logo">🚀</span>
-      <h1>IT Tycoon</h1>
-      <button id="helpButton" class="help-btn">Få hjælp</button>
-    </div>
-  </header>
-  <div class="container">
-    <!-- Venstre side: KPI-graf og lokationer -->
-    <div class="left-column">
-      <div id="graphContainer" style="position: relative;">
-        <canvas id="kpiChart"></canvas>
-        <!-- Dashboard progress overlay -->
-        <div id="taskProgress" class="task-progress">Opgave 0/10</div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IT‑Tycoon</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css" />
+
+    <!-- Eksterne biblioteker -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
+    <!-- Font Awesome til ikoner -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      integrity="sha512-..."
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+  </head>
+
+  <body>
+    <header>
+      <div class="header-content">
+        <span class="logo">🚀</span>
+        <h1>IT‑Tycoon</h1>
+        <button id="helpButton" class="help-btn">Få hjælp</button>
       </div>
-      <div id="locationsContainer">
-        <h2>Lokationer</h2>
-        <!-- Lokation-knapper indsættes her via main.js -->
-        <div id="locations"></div>
+    </header>
+
+    <div class="container">
+      <!-- Venstre side: KPI-graf og lokationer -->
+      <div class="left-column">
+        <div id="graphContainer" style="position: relative;">
+          <canvas id="kpiChart"></canvas>
+          <div id="taskProgress" class="task-progress">Opgave 0/10</div>
+        </div>
+
+        <div id="locationsContainer">
+          <h2>Lokationer</h2>
+          <div id="locations"></div>
+        </div>
+      </div>
+
+      <!-- Højre side: Aktiv opgave og "Vælg ny opgave"-knap -->
+      <div class="right-column">
+        <div id="activeTask">
+          <h2>Aktiv Opgave</h2>
+        </div>
+        <!-- Knap til at åbne modal for opgavevalg (erstatning for tidligere liste) -->
+        <button id="newTaskButton" class="new-task-btn">
+          <i class="fas fa-plus"></i> Vælg ny opgave
+        </button>
       </div>
     </div>
-    <!-- Højre side: Aktiv opgave og potentielle opgaver -->
-    <div class="right-column">
-      <div id="activeTask">
-        <h2>Aktiv Opgave</h2>
-        <!-- Den aktive opgave og dens trin vises her -->
-      </div>
-      <div id="potentialTasks">
-        <h2>Potentielle Opgaver</h2>
-        <!-- Listen med potentielle opgaver indsættes her -->
+
+    <!-- Modal-vindue -->
+    <div id="modal" class="modal hidden">
+      <div class="modal-content">
+        <!-- Her placeres body i #modalBody og knapper i #modalFooter -->
+        <div class="modal-body" id="modalBody"></div>
+        <div class="modal-footer" id="modalFooter"></div>
+        <!-- Luk-ikon -->
+        <span id="modalClose" class="close">&times;</span>
       </div>
     </div>
-  </div>
-  <!-- Modal-vindue -->
-  <div id="modal" class="modal hidden">
-    <div class="modal-content">
-      <div class="modal-body" id="modalBody"></div>
-      <div class="modal-footer" id="modalFooter"></div>
-      <span id="modalClose" class="close">&times;</span>
-    </div>
-  </div>
-  <!-- Indlæs task-filer -->
-  <script src="scripts/tasks/hospitalTasks.js"></script>
-  <script src="scripts/tasks/infrastrukturTasks.js"></script>
-  <script src="scripts/tasks/cybersikkerhedTasks.js"></script>
-  <!-- Indlæs hovedscriptet som et ES6 modul -->
-  <script type="module" src="scripts/main.js"></script>
-</body>
+
+    <!-- Indlæs tasks -->
+    <script src="scripts/tasks/hospitalTasks.js"></script>
+    <script src="scripts/tasks/infrastrukturTasks.js"></script>
+    <script src="scripts/tasks/cybersikkerhedTasks.js"></script>
+
+    <!-- Vores moduler -->
+    <script type="module" src="scripts/modal.js"></script>
+    <script type="module" src="scripts/utils.js"></script>
+    <script type="module" src="scripts/main.js"></script>
+  </body>
 </html>
