@@ -1,70 +1,58 @@
 <!DOCTYPE html>
 <html lang="da">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>IT‑Tycoon</title>
-    <!-- Hoved CSS -->
-    <link rel="stylesheet" href="style.css" />
-    <!-- Eksterne biblioteker -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
-    <!-- Font Awesome til ikoner -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-      integrity="sha512-..."
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    />
-  </head>
-  <body>
-    <header>
-      <div class="header-content">
-        <span class="logo">🚀</span>
-        <h1>IT‑Tycoon</h1>
-        <!-- Hjælp-knap – fast placeret i øverste højre hjørne -->
-        <button id="helpButton" class="help-btn">Få hjælp</button>
-      </div>
-    </header>
-    <div class="container">
-      <!-- Venstre kolonne: "Vælg ny opgave"-knap og Lokationer -->
-      <div class="left-column">
-        <button id="newTaskButton" class="big-new-task-btn">
-          <i class="fas fa-plus"></i> Vælg ny opgave
-        </button>
-        <div id="locationsContainer">
-          <h2>Lokationer</h2>
-          <div id="locations"></div>
-        </div>
-      </div>
-      <!-- Højre kolonne: Aktiv opgave OG KPI-graf -->
-      <div class="right-column">
-        <!-- Aktiv opgave flyttes til toppen -->
-        <div id="activeTask">
-          <h2>Aktiv Opgave</h2>
-        </div>
-        <div id="graphContainer">
-          <canvas id="kpiChart"></canvas>
-          <div id="taskProgress" class="task-progress">Opgave 0/10</div>
-        </div>
-      </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>IT‑Tycoon</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <span class="logo">🚀</span>
+      <h1>IT Tycoon</h1>
+      <button id="helpButton" class="help-btn">Få hjælp</button>
     </div>
-    <!-- Modal-vindue -->
-    <div id="modal" class="modal hidden">
-      <div class="modal-content">
-        <div class="modal-body" id="modalBody"></div>
-        <div class="modal-footer" id="modalFooter"></div>
-        <span id="modalClose" class="close">&times;</span>
+  </header>
+
+  <div class="container">
+    <section id="topPanel">
+      <div id="graphContainer">
+        <canvas id="kpiChart"></canvas>
+        <div id="taskProgress" class="task-progress">Opgave 0/10</div>
       </div>
+
+      <div id="newTaskButtonContainer">
+        <button id="newTaskBtn">Vælg ny opgave</button>
+      </div>
+
+      <div id="locationsContainer">
+        <h2>Lokationer</h2>
+        <div id="locations"></div>
+      </div>
+    </section>
+
+    <section id="taskPanel">
+      <div id="activeTask">
+        <h2>Aktiv Opgave</h2>
+      </div>
+      <div id="potentialTasks" class="scrollable-list">
+        <h2>Potentielle Opgaver</h2>
+      </div>
+    </section>
+  </div>
+
+  <div id="modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-body" id="modalBody"></div>
+      <div class="modal-footer" id="modalFooter"></div>
+      <span id="modalClose" class="close">&times;</span>
     </div>
-    <!-- Indlæs opgave-filer -->
-    <script src="scripts/tasks/hospitalTasks.js"></script>
-    <script src="scripts/tasks/infrastrukturTasks.js"></script>
-    <script src="scripts/tasks/cybersikkerhedTasks.js"></script>
-    <!-- Moduler (ES6) -->
-    <script type="module" src="scripts/modal.js"></script>
-    <script type="module" src="scripts/utils.js"></script>
-    <script type="module" src="scripts/main.js"></script>
-  </body>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="scripts/modal.js"></script>
+  <script src="scripts/utils.js"></script>
+  <script type="module" src="scripts/main.js"></script>
+</body>
 </html>
