@@ -10,7 +10,7 @@ window.cybersikkerhedTasks = [
       {
         location: "cybersikkerhed",
         stepDescription: "Gennemfør en sårbarhedsvurdering af netværket.",
-        stepContext: "Identificér potentielle svagheder i netværksinfrastrukturen ved hjælp af avancerede værktøjer.",
+        stepContext: "Identificér potentielle svagheder ved hjælp af avancerede værktøjer.",
         choiceA: { 
           label: "Detaljeret vurdering", 
           text: "+3 sikkerhed, -2 tid", 
@@ -44,7 +44,7 @@ window.cybersikkerhedTasks = [
       {
         location: "dokumentation",
         stepDescription: "Opdater netværkssikkerhedspolitikker.",
-        stepContext: "Sørg for, at alle medarbejdere er opdateret med de nye politikker og procedurer.",
+        stepContext: "Sørg for, at alle medarbejdere er opdateret med de nye politikker.",
         choiceA: { 
           label: "Detaljeret opdatering", 
           text: "+2 sikkerhed, -2 tid", 
@@ -72,7 +72,7 @@ window.cybersikkerhedTasks = [
       {
         location: "cybersikkerhed",
         stepDescription: "Identificér kritiske opdateringer for centrale systemer.",
-        stepContext: "Sørg for, at alle opdateringer er kompatible med den eksisterende infrastruktur.",
+        stepContext: "Sørg for, at alle opdateringer er kompatible med nuværende infrastruktur.",
         choiceA: {
           label: "Detaljeret gennemgang",
           text: "+3 sikkerhed, -2 tid",
@@ -106,7 +106,7 @@ window.cybersikkerhedTasks = [
       {
         location: "dokumentation",
         stepDescription: "Dokumentér opdateringsprocessen og resultaterne.",
-        stepContext: "En klar dokumentation sikrer, at processen kan gentages korrekt i fremtiden.",
+        stepContext: "En klar dokumentation sikrer, at processen kan gentages korrekt.",
         choiceA: {
           label: "Detaljeret dokumentation",
           text: "+2 sikkerhed, -2 tid",
@@ -127,14 +127,14 @@ window.cybersikkerhedTasks = [
   {
     title: "Phishing Awareness Kampagne",
     shortDesc: "Gennemfør en kampagne for at øge medarbejdernes opmærksomhed på phishing.",
-    narrativeIntro: "Øget medarbejderbevidsthed kan betydeligt reducere risikoen for phishing-angreb.",
+    narrativeIntro: "Øget medarbejderbevidsthed kan reducere risikoen for phishing-angreb markant.",
     riskProfile: 2,
     focus: "cybersikkerhed",
     steps: [
       {
         location: "hospital",
         stepDescription: "Planlæg kampagnens omfang og målgruppe.",
-        stepContext: "Vurder, hvor i organisationen phishing-truslen er størst, og prioriter indsatsen.",
+        stepContext: "Vurder, hvor i organisationen phishing-truslen er størst.",
         choiceA: {
           label: "Grundig planlægning",
           text: "+2 sikkerhed, -2 tid",
@@ -151,7 +151,7 @@ window.cybersikkerhedTasks = [
       {
         location: "leverandør",
         stepDescription: "Indgå samarbejde med ekstern partner for kampagnemateriale.",
-        stepContext: "Partneren leverer materiale, der forklarer phishing og hvordan man undgår det.",
+        stepContext: "Partneren leverer materiale, der beskriver phishing og forebyggelse.",
         choiceA: {
           label: "Detaljeret materiale",
           text: "+3 sikkerhed, -2 tid",
@@ -168,7 +168,7 @@ window.cybersikkerhedTasks = [
       {
         location: "cybersikkerhed",
         stepDescription: "Afhold en træningssession for medarbejderne.",
-        stepContext: "Interaktiv træning øger bevidstheden om phishing-angreb og mulige svindelmetoder.",
+        stepContext: "Interaktiv træning øger bevidstheden om phishing og mulige svindelmetoder.",
         choiceA: {
           label: "Interaktiv session",
           text: "+2 sikkerhed, -2 tid",
@@ -185,7 +185,7 @@ window.cybersikkerhedTasks = [
       {
         location: "dokumentation",
         stepDescription: "Evaluer kampagnens effekt og juster procedurerne.",
-        stepContext: "Mål ændringer i medarbejdernes respons på phishing-forsøg, og opdater retningslinjer.",
+        stepContext: "Mål ændringer i medarbejdernes respons på phishing-forsøg.",
         choiceA: {
           label: "Detaljeret evaluering",
           text: "+2 sikkerhed, -2 tid",
@@ -213,7 +213,7 @@ window.cybersikkerhedTasks = [
       {
         location: "cybersikkerhed",
         stepDescription: "Vurder eksisterende adgangskontroller og identificer svagheder.",
-        stepContext: "En grundig vurdering er nødvendig for at bestemme, hvor to-faktor kan implementeres.",
+        stepContext: "En grundig vurdering afgør, hvor to-faktor bør implementeres.",
         choiceA: { 
           label: "Detaljeret vurdering", 
           text: "+3 sikkerhed, -2 tid", 
@@ -230,7 +230,7 @@ window.cybersikkerhedTasks = [
       {
         location: "infrastruktur",
         stepDescription: "Integrer to-faktor løsningen med eksisterende systemer.",
-        stepContext: "Sørg for en glidende integration, så systemdriften ikke forstyrres.",
+        stepContext: "Sørg for en gnidningsløs integration uden at forstyrre driften.",
         choiceA: { 
           label: "Omfattende integration", 
           text: "+2 sikkerhed, -2 tid", 
@@ -247,7 +247,7 @@ window.cybersikkerhedTasks = [
       {
         location: "dokumentation",
         stepDescription: "Opdater adgangspolitikker med de nye procedurer.",
-        stepContext: "Retningslinjerne skal tydeligt beskrive den nye to-faktor autentifikation.",
+        stepContext: "Retningslinjerne skal tydeligt beskrive 2-faktor autentifikation.",
         choiceA: { 
           label: "Detaljeret dokumentation", 
           text: "+2 sikkerhed, -2 tid", 
@@ -275,7 +275,7 @@ window.cybersikkerhedTasks = [
       {
         location: "cybersikkerhed",
         stepDescription: "Udarbejd en træningsplan med fokus på aktuelle cybertrusler.",
-        stepContext: "Træningsplanen skal dække de mest relevante trusler og bedste praksis.",
+        stepContext: "Planen skal dække de mest relevante trusler og bedste praksis.",
         choiceA: { 
           label: "Detaljeret plan", 
           text: "+3 sikkerhed, -2 tid", 
@@ -307,9 +307,9 @@ window.cybersikkerhedTasks = [
         }
       },
       {
-        location: "cybersikkerhed",
+        location: "leverandør",  // (ændret fra “cybersikkerhed” for at undgå gentagelse)
         stepDescription: "Afhold simulationsøvelser, hvor medarbejdere udsættes for test-angreb.",
-        stepContext: "Simulerede angreb giver praktisk erfaring og skærper opmærksomheden.",
+        stepContext: "En ekstern partner kan hjælpe med realistiske angreb, fx phishing-simulationer.",
         choiceA: {
           label: "Avancerede simulationer",
           text: "+2 sikkerhed, -2 tid",
@@ -326,7 +326,7 @@ window.cybersikkerhedTasks = [
       {
         location: "dokumentation",
         stepDescription: "Opdater medarbejdermanualen med de nye sikkerhedsprocedurer.",
-        stepContext: "Manualen skal afspejle den seneste sikkerhedstræning og procedurer.",
+        stepContext: "Manualen afspejler den seneste sikkerhedstræning og simulationer.",
         choiceA: { 
           label: "Detaljeret manual", 
           text: "+2 sikkerhed, -2 tid", 
@@ -416,7 +416,7 @@ window.cybersikkerhedTasks = [
       {
         location: "cybersikkerhed",
         stepDescription: "Evaluér de nuværende logningssystemer for mangler.",
-        stepContext: "Identificér hvilke systemer der har behov for opgradering for bedre overvågning.",
+        stepContext: "Identificér, hvilke systemer mangler opgradering for bedre overvågning.",
         choiceA: { 
           label: "Detaljeret evaluering", 
           text: "+3 sikkerhed, -2 tid", 
@@ -433,7 +433,7 @@ window.cybersikkerhedTasks = [
       {
         location: "infrastruktur",
         stepDescription: "Integrer SIEM med eksisterende systemer.",
-        stepContext: "Sørg for, at alle relevante data bliver sendt til SIEM-systemet for central analyse.",
+        stepContext: "Sørg for, at alle relevante data bliver sendt til SIEM for central analyse.",
         choiceA: { 
           label: "Omfattende integration", 
           text: "+2 sikkerhed, -2 tid", 
@@ -450,7 +450,7 @@ window.cybersikkerhedTasks = [
       {
         location: "dokumentation",
         stepDescription: "Dokumentér SIEM-implementeringen og hændelsesprocedurerne.",
-        stepContext: "En klar dokumentation er afgørende for at kunne håndtere fremtidige sikkerhedshændelser.",
+        stepContext: "En klar dokumentation er afgørende for at kunne håndtere fremtidige hændelser.",
         choiceA: { 
           label: "Detaljeret dokumentation", 
           text: "+2 sikkerhed, -2 tid", 
@@ -471,7 +471,7 @@ window.cybersikkerhedTasks = [
   {
     title: "Overvågning af eksterne trusler",
     shortDesc: "Etabler løbende monitorering af eksterne cybertrusler.",
-    narrativeIntro: "Ved at holde øje med eksterne trusselsfeeds og dark web, kan man proaktivt imødegå kommende angreb.",
+    narrativeIntro: "Ved at holde øje med trusselsfeeds og dark web kan man proaktivt imødegå kommende angreb.",
     riskProfile: 3,
     focus: "cybersikkerhed",
     steps: [
@@ -495,7 +495,7 @@ window.cybersikkerhedTasks = [
       {
         location: "leverandør",
         stepDescription: "Samarbejd med eksterne partnere om trusselsdata.",
-        stepContext: "Deling af trusselsinformation giver et mere komplet billede af aktuelle angrebsmønstre.",
+        stepContext: "Deling af trusselsinformation giver et mere komplet billede af angrebsmønstre.",
         choiceA: {
           label: "Tæt partnerintegration",
           text: "+2 sikkerhed, -2 tid",
@@ -510,9 +510,9 @@ window.cybersikkerhedTasks = [
         }
       },
       {
-        location: "cybersikkerhed",
+        location: "infrastruktur", // <-- rettet for at undgå gentagen "cybersikkerhed"
         stepDescription: "Opsæt automatiske alarmer baseret på nye trusselsfeeds.",
-        stepContext: "Sikre, at sikkerhedsteamet straks underrettes ved potentielle nye angrebsmønstre.",
+        stepContext: "Sikre, at teamet straks underrettes ved potentielle nye angrebsmønstre.",
         choiceA: {
           label: "Omfattende alarmer",
           text: "+2 sikkerhed, -2 tid",
@@ -529,7 +529,7 @@ window.cybersikkerhedTasks = [
       {
         location: "dokumentation",
         stepDescription: "Dokumentér processen for ekstern trusselsovervågning.",
-        stepContext: "En fast procedure sikrer, at nye angrebsmønstre hurtigt kan integreres i systemet.",
+        stepContext: "En fast procedure sikrer, at nye angrebsmønstre hurtigt kan integreres.",
         choiceA: {
           label: "Omfattende procedurebeskrivelse",
           text: "+2 sikkerhed, -2 tid",
@@ -589,9 +589,9 @@ window.cybersikkerhedTasks = [
         }
       },
       {
-        location: "cybersikkerhed",
+        location: "leverandør", // <-- rettet for at undgå gentagen "cybersikkerhed"
         stepDescription: "Udfør social engineering-tests mod medarbejdere.",
-        stepContext: "Phishing, tailgating og lign. kan afdække menneskelige svagheder.",
+        stepContext: "Phishing, tailgating og lignende kan afdække menneskelige svagheder.",
         choiceA: {
           label: "Omfattende social engineering",
           text: "+2 sikkerhed, -2 tid",
@@ -606,7 +606,7 @@ window.cybersikkerhedTasks = [
         }
       },
       {
-        location: "cybersikkerhed",
+        location: "hospital", // <-- rettet for at undgå gentagen "cybersikkerhed"
         stepDescription: "Indsaml data fra testen og sammenlign med baseline.",
         stepContext: "Hvilke nye sårbarheder er dukket op? Er der områder med forbedring?",
         choiceA: {
@@ -625,7 +625,7 @@ window.cybersikkerhedTasks = [
       {
         location: "dokumentation",
         stepDescription: "Rapportér fundne sårbarheder og løsninger.",
-        stepContext: "Rapporten skal prioriteres efter alvorlighed, så de mest kritiske sårbarheder lukkes først.",
+        stepContext: "Rapporten skal prioriteres efter alvorlighed, så kritiske sårbarheder lukkes først.",
         choiceA: {
           label: "Udførlig rapport",
           text: "+2 sikkerhed, -2 tid",
@@ -646,14 +646,14 @@ window.cybersikkerhedTasks = [
   {
     title: "Zero Trust Arkitektur",
     shortDesc: "Implementér en Zero Trust-model, hvor intet netværkselement stoles på per default.",
-    narrativeIntro: "Zero Trust sikrer, at alle brugere og enheder valideres løbende, hvilket minimerer skadens omfang ved et brud.",
+    narrativeIntro: "Zero Trust sikrer, at alle brugere og enheder løbende valideres, hvilket minimerer skadens omfang.",
     riskProfile: 4,
     focus: "cybersikkerhed",
     steps: [
       {
         location: "cybersikkerhed",
         stepDescription: "Design en overordnet Zero Trust-strategi.",
-        stepContext: "Vurder, hvordan eksisterende sikkerhedsforanstaltninger skal tilpasses en streng Zero Trust-model.",
+        stepContext: "Vurder, hvordan eksisterende sikkerhedsforanstaltninger skal tilpasses en streng model.",
         choiceA: {
           label: "Dybtgående strategi",
           text: "+3 sikkerhed, -2 tid",
@@ -670,7 +670,7 @@ window.cybersikkerhedTasks = [
       {
         location: "infrastruktur",
         stepDescription: "Segmentér netværket og indfør mikrosegmentering.",
-        stepContext: "Hvert netværkselement skal isoleres, så et angreb ikke kan brede sig.",
+        stepContext: "Hvert netværkselement isoleres, så et angreb ikke kan brede sig.",
         choiceA: {
           label: "Omfattende mikrosegmentering",
           text: "+2 sikkerhed, -2 tid",
@@ -685,9 +685,9 @@ window.cybersikkerhedTasks = [
         }
       },
       {
-        location: "cybersikkerhed",
+        location: "leverandør", // <-- rettet for at undgå gentagen "cybersikkerhed"
         stepDescription: "Indfør løbende verifikation af brugere og enheder.",
-        stepContext: "Zero Trust kræver, at ingen enhed stoles på uden gentagen verifikation.",
+        stepContext: "Ekstern partner kan hjælpe med identity-løsninger til Zero Trust.",
         choiceA: {
           label: "Streng kontrol",
           text: "+2 sikkerhed, -2 tid",
@@ -704,7 +704,7 @@ window.cybersikkerhedTasks = [
       {
         location: "hospital",
         stepDescription: "Tilpas kritiske sundhedssystemer til Zero Trust-principper.",
-        stepContext: "Sikker dataadgang for patientjournaler og medicinsk udstyr er afgørende.",
+        stepContext: "Sikker dataadgang for journaler og medicinsk udstyr er afgørende.",
         choiceA: {
           label: "Omfattende tilpasning",
           text: "+2 sikkerhed, -2 tid",
@@ -720,8 +720,8 @@ window.cybersikkerhedTasks = [
       },
       {
         location: "it‑jura",
-        stepDescription: "Sikre overholdelse af juridiske krav ifm. Zero Trust-implementering.",
-        stepContext: "Undgå at kollidere med databeskyttelses- og persondatalovgivning.",
+        stepDescription: "Sikre overholdelse af juridiske krav ved Zero Trust.",
+        stepContext: "Undgå brud på databeskyttelses- og persondatalovgivning.",
         choiceA: {
           label: "Grundig juridisk review",
           text: "+2 sikkerhed, -2 tid",
@@ -738,7 +738,7 @@ window.cybersikkerhedTasks = [
       {
         location: "dokumentation",
         stepDescription: "Fastsæt stramme adgangsregler og opdater alle brugere.",
-        stepContext: "Brugerne skal forstå, at de kun har adgang til netop det, de har brug for – og ikke mere.",
+        stepContext: "Brugerne skal kun have adgang til netop det, de har brug for.",
         choiceA: {
           label: "Detaljeret adgangsregler",
           text: "+2 sikkerhed, -2 tid",
