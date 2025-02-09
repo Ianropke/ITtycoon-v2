@@ -20,7 +20,7 @@ const gameState = {
 // Saml alle opgaver fra de tre task-filer (antaget at de er tilgængelige som globale variable via window)
 gameState.allTasks = [].concat(window.hospitalTasks, window.infrastrukturTasks, window.cybersikkerhedTasks);
 
-// Bland alle opgaver tilfældigt
+// Bland opgaverne tilfældigt
 shuffleArray(gameState.allTasks);
 
 // Tag de første 7 opgaver som potentielle opgaver
@@ -77,8 +77,6 @@ function renderLocations() {
 }
 renderLocations();
 
-// Hjælpefunktioner til modal (brug importeret modal.js)
-
 // "Få hjælp"-knap
 document.getElementById('helpButton').addEventListener('click', showHelp);
 
@@ -86,11 +84,9 @@ function showHelp() {
   const helpContent = `
     <h2>Få Hjælp</h2>
     <p><strong>Din Rolle som IT-forvalter</strong><br>
-    Du skal balancere KPI’erne Tid, Sikkerhed og Udvikling. Træf de rette beslutninger for at optimere din organisations it-sikkerhed og udvikling, mens du holder øje med din tid.</p>
+    Du skal balancere KPI’erne Tid, Sikkerhed og Udvikling. Træf de rette beslutninger for at optimere din organisations sikkerhed og udvikling, mens du holder øje med din tid.</p>
     <p><strong>Spillets Struktur:</strong><br>
-    - Hver opgave består af flere trin med to valg: komplet løsning (2 tidspoint, større bonus) og hurtig løsning (0 tidspoint, mindre bonus).<br>
-    - Du skal gennemføre 10 opgaver for at nå Inspect & Adapt-fasen.</p>
-    <p>Dashboardet viser din tid og opgaveprogress (f.eks. "Opgave 3/10").</p>
+    Hver opgave består af flere trin, hvor du skal vælge mellem to muligheder – en komplet løsning (som koster 2 tidspoint og giver en større bonus) og en hurtig løsning (som koster 0 tidspoint og giver en mindre bonus). Dashboardet viser løbende din tid og din opgaveprogress (f.eks. "Opgave 3/10").</p>
     <p>Held og lykke!</p>
   `;
   openModal(helpContent, `<button id="closeHelp">Luk</button>`);
@@ -106,7 +102,7 @@ function showIntro() {
     <p>Hvert valg i et trin viser sin tidsomkostning – komplet løsning koster 2 tidspoint og giver en større bonus, mens hurtig løsning koster 0 tidspoint og giver en mindre bonus.</p>
   `;
   const modalContent = document.querySelector('.modal-content');
-  modalContent.style.height = '48vh'; // Øg introduktionspop-up højde med 20%
+  modalContent.style.height = '48vh'; // Øg introduktionspop-up højden med 20%
   openModal(introContent, `<button id="startGame">Start Spillet</button>`);
   document.getElementById('startGame').addEventListener('click', () => {
     modalContent.style.height = '40vh'; // Reset til standardhøjde
@@ -144,7 +140,6 @@ function renderPotentialTasks() {
   const potentialTasksDiv = document.getElementById('potentialTasks');
   potentialTasksDiv.innerHTML = '<h2>Potentielle Opgaver</h2>';
   gameState.tasks.forEach(task => {
-    // Tjek, at task ikke er undefined
     if (!task) {
       console.warn("Encountered undefined task, skipping.");
       return;
@@ -228,9 +223,54 @@ function handleLocationClick(clickedLocation) {
   if (clickedLocation.toLowerCase() === currentStep.location.toLowerCase()) {
     showStepChoices(currentStep);
   } else {
-    openModal("<h2>Fejl</h2><p>Forkert lokation. Prøv igen.</p>", `<button id="errorOk">OK</button>`);
+    // Udvid fejlfeltet med detaljeret feedback
+    openModal(
+      `<h2>Fejl</h2><p>Forkert lokation.<br>Du valgte "${clickedLocation.toUpperCase()}", men den korrekte lokation for dette trin er "${currentStep.location.toUpperCase()}".<br>Læs trinbeskrivelsen nøje og prøv igen.</p>`,
+      `<button id="errorOk">OK</button>`
+    );
     document.getElementById('errorOk').addEventListener('click', () => closeModal());
   }
+}
+
+function getAdaptiveFeedback() {
+  let feedback = "";
+  if (gameState.security < gameState.missionGoals.security) {
+    feedback += "Din sikkerhedsstrategi kunne forbedres – overvej at vælge mere detaljerede og omfattende løsninger. ";
+  } else {
+    feedback += "Din sikkerhed blev godt håndteret. ";
+  }
+  if (gameState.development < gameState.missionGoals.development) {
+    feedback += "Din udviklingsindsats var under målet; forsøg at investere mere i dybdegående løsninger. ";
+  } else {
+    feedback += "Din udviklingsstrategi var optimal. ";
+  }
+  if (gameState.tasksCompleted < 10) {
+    feedback += "Du gennemførte ikke alle opgaver, hvilket påvirker din samlede score.";
+  }
+  return feedback;
+}
+
+function showInspectAndAdapt() {
+  const feedback = getAdaptiveFeedback();
+  const inspectContent = `
+    <h2>Inspect & Adapt</h2>
+    <p>Sikkerhed: ${gameState.security} (mål: ${gameState.missionGoals.security})</p>
+    <p>Udvikling: ${gameState.development} (mål: ${gameState.missionGoals.development})</p>
+    <p><strong>Feedback:</strong> ${feedback}</p>
+    <p>Din sprint er afsluttet. Nye, mere ambitiøse mål er nu sat: 24 for Sikkerhed og 24 for Udvikling. Din tid nulstilles til 30.</p>
+    <button id="continueGame">Fortsæt</button>
+  `;
+  openModal(inspectContent);
+  document.getElementById('continueGame').addEventListener('click', () => {
+    closeModal(() => {
+      gameState.time = 30;
+      gameState.missionGoals = { security: 24, development: 24 };
+      gameState.tasksCompleted = 0;
+      updateTaskProgress();
+      updateDashboard();
+      showSprintGoal();
+    });
+  });
 }
 
 function showStepChoices(step) {
@@ -381,10 +421,12 @@ function finishTask() {
 }
 
 function showInspectAndAdapt() {
+  const feedback = getAdaptiveFeedback();
   const inspectContent = `
     <h2>Inspect & Adapt</h2>
     <p>Sikkerhed: ${gameState.security} (mål: ${gameState.missionGoals.security})</p>
     <p>Udvikling: ${gameState.development} (mål: ${gameState.missionGoals.development})</p>
+    <p><strong>Feedback:</strong> ${feedback}</p>
     <p>Din sprint er afsluttet. Nye, mere ambitiøse mål er nu sat: 24 for Sikkerhed og 24 for Udvikling. Din tid nulstilles til 30.</p>
     <button id="continueGame">Fortsæt</button>
   `;
@@ -401,7 +443,25 @@ function showInspectAndAdapt() {
   });
 }
 
-// Start med introduktion
+function getAdaptiveFeedback() {
+  let feedback = "";
+  if (gameState.security < gameState.missionGoals.security) {
+    feedback += "Din sikkerhedsstrategi kunne forbedres – overvej at vælge mere detaljerede løsninger i kritiske trin. ";
+  } else {
+    feedback += "Din sikkerhed blev godt håndteret. ";
+  }
+  if (gameState.development < gameState.missionGoals.development) {
+    feedback += "Din udviklingsindsats var under målet; forsøg at investere mere i dybdegående løsninger. ";
+  } else {
+    feedback += "Din udviklingsstrategi var optimal. ";
+  }
+  if (gameState.tasksCompleted < 10) {
+    feedback += "Du gennemførte ikke alle opgaver, hvilket reducerer din samlede score.";
+  }
+  return feedback;
+}
+
+// Start spillet med introduktion
 showIntro();
 
 export { gameState, updateDashboard, openModal, closeModal, renderActiveTask };
