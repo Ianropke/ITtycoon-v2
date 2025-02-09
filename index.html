@@ -26,7 +26,9 @@
       <div class="header-content">
         <span class="logo">🚀</span>
         <h1>IT‑Tycoon</h1>
-        <button id="helpButton" class="help-btn">Få hjælp</button>
+        <button id="helpButton" class="modern-btn help-btn">
+          <i class="fa fa-question-circle"></i> Få hjælp
+        </button>
       </div>
     </header>
 
@@ -49,8 +51,8 @@
         <div id="activeTask">
           <h2>Aktiv Opgave</h2>
         </div>
-        <!-- Knap til at åbne modal for opgavevalg (erstatning for tidligere liste) -->
-        <button id="newTaskButton" class="new-task-btn">
+        <!-- Knap til at åbne modal for opgavevalg -->
+        <button id="newTaskButton" class="modern-btn big-new-task-btn">
           <i class="fas fa-plus"></i> Vælg ny opgave
         </button>
       </div>
@@ -59,10 +61,8 @@
     <!-- Modal-vindue -->
     <div id="modal" class="modal hidden">
       <div class="modal-content">
-        <!-- Her placeres body i #modalBody og knapper i #modalFooter -->
         <div class="modal-body" id="modalBody"></div>
         <div class="modal-footer" id="modalFooter"></div>
-        <!-- Luk-ikon -->
         <span id="modalClose" class="close">&times;</span>
       </div>
     </div>
