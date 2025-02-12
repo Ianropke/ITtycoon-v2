@@ -29,7 +29,7 @@ body {
   background: var(--background-gradient);
   color: var(--text-color);
   line-height: 1.5;
-  -webkit-text-size-adjust: none; /* undgå auto-zoom på iOS */
+  -webkit-text-size-adjust: none;
 }
 
 /* Header */
@@ -83,10 +83,10 @@ header h1 {
 .container {
   display: flex;
   min-height: calc(100vh - 80px);
-  overflow-x: hidden; /* Undgå horisontal scroll på mobil */
+  overflow-x: hidden;
 }
 
-/* Venstre kolonne: "Vælg ny opgave" og lokationer */
+/* Venstre kolonne: "Ny opgave"-knap og lokationer */
 .left-column {
   width: 40%;
   padding: 1rem;
@@ -97,8 +97,7 @@ header h1 {
   gap: 1rem;
 }
 
-/* Knap til ny opgave */
-#newTaskButton, .big-new-task-btn {
+#newTaskBtn, .big-new-task-btn {
   font-size: 1.2rem;
   padding: 1rem 2rem;
   background-color: #2196f3;
@@ -108,12 +107,11 @@ header h1 {
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
-#newTaskButton:hover, .big-new-task-btn:hover {
+#newTaskBtn:hover, .big-new-task-btn:hover {
   background-color: #1976d2;
   transform: scale(1.03);
 }
 
-/* Lokationer */
 #locationsContainer {
   width: 100%;
 }
@@ -124,7 +122,7 @@ header h1 {
   width: 100%;
 }
 
-/* Lokationsknapper – nu med ekstra luft og min-højde for mobilvenlighed */
+/* Lokationsknapper – med større knapper for mobilvenlighed */
 .location-button {
   padding: 1.2rem 1.8rem;
   font-size: 150%;
@@ -137,10 +135,8 @@ header h1 {
   transition: background-color 0.3s ease, transform 0.2s ease;
   width: 100%;
   text-align: center;
-
-  /* For mobilvenlighed: større min-højde */
   min-height: 48px;
-  margin: 0.3rem 0; /* Luft mellem dem i den vertikale liste */
+  margin: 0.3rem 0;
 }
 .location-button:hover {
   background-color: #43a047;
@@ -171,8 +167,8 @@ header h1 {
 #graphContainer {
   width: 100%;
   position: relative;
-  max-width: 720px;  /* Øget fra 600px -> +20% */
-  height: 48vh;      /* Øget fra 40vh -> +20% */
+  max-width: 720px;  /* Øget fra 600px */
+  height: 48vh;      /* Øget fra 40vh */
 }
 #kpiChart {
   width: 100% !important;
@@ -292,20 +288,30 @@ header h1 {
   margin-left: 0.5rem;
 }
 
-/* Yderligere mobilvenlig opgave-liste 
-   (fx Potential tasks) */
+/* Scrollable liste til potentielle opgaver */
 .scrollable-list {
   max-height: 300px;
   overflow-y: auto;
 }
 
-/* Kun hvis du har .task-item-liste med knapper: 
-   Gør knapper lidt større */
+/* For knapper i task-item */
 .task-item button {
   min-height: 44px;
+  font-size: 1rem;
   margin: 0.4rem 0.2rem;
   padding: 0.6rem 1rem;
-  font-size: 1rem;
+}
+
+/* Animated gradient – kan tilføjes som ekstra klasse til fx baggrunde eller knapper */
+.animated-gradient {
+  background: linear-gradient(270deg, #ff7e5f, #feb47b, #86a8e7, #91eae4);
+  background-size: 400% 400%;
+  animation: gradientAnimation 15s ease infinite;
+}
+@keyframes gradientAnimation {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 /* Responsivt design */
