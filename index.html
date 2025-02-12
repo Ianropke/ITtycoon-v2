@@ -21,17 +21,28 @@
   <body>
     <header>
       <div class="header-content">
-        <span class="logo">🚀</span>
+        <!-- Erstatter den tidligere rocket-logo med en inline SVG af en server -->
+        <div class="logo">
+          <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+            <!-- Serverens krop -->
+            <rect x="8" y="12" width="48" height="36" rx="4" fill="#0275D8"/>
+            <!-- Interne linjer, fx statuslinjer -->
+            <rect x="14" y="18" width="36" height="5" rx="2" fill="#ffffff"/>
+            <rect x="14" y="28" width="36" height="5" rx="2" fill="#ffffff"/>
+            <rect x="14" y="38" width="36" height="5" rx="2" fill="#ffffff"/>
+            <!-- LED-indikator -->
+            <circle cx="32" cy="52" r="3" fill="#f39c12"/>
+          </svg>
+        </div>
         <h1>IT‑Tycoon</h1>
-        <!-- Hjælp-knap – fast placeret i øverste højre hjørne -->
+        <!-- Hjælp-knap -->
         <button id="helpButton" class="help-btn">Få hjælp</button>
       </div>
     </header>
     <div class="container">
-      <!-- Venstre kolonne: "Vælg ny opgave"-knap og Lokationer -->
+      <!-- Venstre kolonne: "Ny opgave"-knap og Lokationer -->
       <div class="left-column">
-        <!-- Ændret ID her fra newTaskButton til newTaskBtn -->
-        <button id="newTaskBtn" class="big-new-task-btn">
+        <button id="newTaskButton" class="big-new-task-btn">
           <i class="fas fa-plus"></i> Vælg ny opgave
         </button>
         <div id="locationsContainer">
@@ -69,4 +80,3 @@
     <script type="module" src="scripts/main.js"></script>
   </body>
 </html>
- 
