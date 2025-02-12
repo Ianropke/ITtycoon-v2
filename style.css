@@ -122,7 +122,7 @@ header h1 {
   width: 100%;
 }
 
-/* Lokationsknapper – med større knapper for mobilvenlighed */
+/* Lokationsknapper – større for mobilvenlighed */
 .location-button {
   padding: 1.2rem 1.8rem;
   font-size: 150%;
@@ -167,8 +167,8 @@ header h1 {
 #graphContainer {
   width: 100%;
   position: relative;
-  max-width: 720px;  /* Øget fra 600px */
-  height: 48vh;      /* Øget fra 40vh */
+  max-width: 720px;
+  height: 48vh;
 }
 #kpiChart {
   width: 100% !important;
@@ -294,7 +294,7 @@ header h1 {
   overflow-y: auto;
 }
 
-/* For knapper i task-item */
+/* Knapper i task-item */
 .task-item button {
   min-height: 44px;
   font-size: 1rem;
@@ -302,11 +302,11 @@ header h1 {
   padding: 0.6rem 1rem;
 }
 
-/* Animated gradient – kan tilføjes som ekstra klasse til fx baggrunde eller knapper */
+/* Animated Gradient – med tydeligere farver og større background-size */
 .animated-gradient {
-  background: linear-gradient(270deg, #ff7e5f, #feb47b, #86a8e7, #91eae4);
-  background-size: 400% 400%;
-  animation: gradientAnimation 15s ease infinite;
+  background: linear-gradient(270deg, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff);
+  background-size: 600% 600%;
+  animation: gradientAnimation 10s ease infinite;
 }
 @keyframes gradientAnimation {
   0% { background-position: 0% 50%; }
