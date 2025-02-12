@@ -29,19 +29,15 @@ gameState.allTasks = [].concat(
   window.infrastrukturTasks,    // 10 opgaver med focus="sikkerhed"
   window.cybersikkerhedTasks    // 10 opgaver med focus="cybersikkerhed" (underforstået "sikkerhed")
 );
-
-// Bland dem vilkårligt
 shuffleArray(gameState.allTasks);
-
-// Start med at trække 7 styk til “mulige opgaver”
 gameState.tasks = gameState.allTasks.splice(0, 7);
 
 /**
- * Tildel ~10% “isHastende” 
+ * Tildel ~10% “isHastende”
  */
 function assignRandomHastende(opgListe) {
   opgListe.forEach(t => {
-    t.isHastende = (Math.random() < 0.1); 
+    t.isHastende = (Math.random() < 0.1);
   });
 }
 assignRandomHastende(gameState.tasks);
@@ -93,7 +89,7 @@ updateTaskProgress();
 /**
  * Render lokationer i venstre side
  */
-const locationList = ["hospital","dokumentation","leverandør","infrastruktur","it‑jura","cybersikkerhed"];
+const locationList = ["hospital", "dokumentation", "leverandør", "infrastruktur", "it‑jura", "cybersikkerhed"];
 function renderLocations() {
   const locDiv = document.getElementById('locations');
   locDiv.innerHTML = "";
@@ -116,38 +112,20 @@ function showHelp() {
     <h2>Hjælp</h2>
     <p>
       <strong>Overordnet Spilkoncept:</strong><br/>
-      I IT‑Tycoon navigerer du i et omfattende IT-landskab. Hver opgave har 
-      3-6 trin med unikke lokationer og til sidst et dokumentations-trin. 
-      Du starter med 30 i Tid og skal balancere dine valg: 
-      Avancerede valg (Choice A) giver større KPI-gevinst, men koster 2 i Tid; 
-      Hurtige valg (Choice B) koster ingen tid, men giver mindre KPI-stigning.
+      I IT‑Tycoon navigerer du i et omfattende IT-landskab som IT‑forvalter under SAFe. 
+      Du skal balancere dine ressourcer og nå specifikke KPI-mål ved at fuldføre opgaver.
     </p>
+    <ul>
+      <li><strong>Tid:</strong> Start på 30. Avancerede valg bruger 2 tid, hurtige valg 0 tid.</li>
+      <li><strong>Sikkerhed &amp; Udvikling:</strong> Begge KPI’er skal nå mindst 22.</li>
+      <li><strong>Opgaver:</strong> Du skal gennemføre 10 opgaver.</li>
+      <li><strong>Hastende Opgaver:</strong> Giver +4 bonus ved succes, men øger CAB-risiko med 10%.</li>
+      <li><strong>Rework:</strong> Hvis CAB afviser en opgave, mister du 1 tid.</li>
+    </ul>
     <p>
-      <strong>Spillets Struktur:</strong><br/>
-      - Opgaver: Vælg en opgave, gennemfør trin ved korrekt lokation.<br/>
-      - Avanceret valg (Choice A): koster 2 tid, men giver flere KPI.<br/>
-      - Hurtigt valg (Choice B): koster 0 tid, men giver færre KPI.<br/>
-      - Hastende Opgaver: +4 bonus hvis succes, men +10% ekstra risiko for CAB-afvisning.<br/>
-      - Rework-straf: 1 tid, hvis en opgave afvises af CAB.
+      Brug Arkitekthjælp for at få anbefalinger – men den kan kun benyttes én gang pr. opgave.
     </p>
-    <p>
-      <strong>Flow & Arkitekthjælp:</strong><br/>
-      Du kan klikke “Vælg ny opgave” for at se potentielle opgaver. 
-      Når du forpligter dig til en opgave, skal du gennemføre alle trin. 
-      Arkitekthjælp viser anbefalede valg og om opgaven er “udvikling” eller “sikkerhed”. 
-      Husk dog at arkitekthjælp kun kan bruges én gang per opgave.
-    </p>
-    <p>
-      <strong>Tips:</strong><br/>
-      - Hold øje med Tiden (30). Avanceret valg bruger 2 tid.<br/>
-      - Du skal gennemføre 10 opgaver og nå 22 i både Sikkerhed og Udvikling 
-        inden tiden løber ud.<br/>
-      - Hvis CAB afviser en opgave, mister du 1 tid til rework, 
-        så vælg dine trin med omhu!
-    </p>
-    <p>
-      God fornøjelse med IT‑Tycoon!
-    </p>
+    <p>God fornøjelse med IT‑Tycoon!</p>
   `;
   openModal(helpHTML, `<button id="closeHelp" class="modern-btn">Luk</button>`);
   document.getElementById('closeHelp').addEventListener('click', () => closeModal());
@@ -158,32 +136,25 @@ function showHelp() {
  */
 function showIntro() {
   const introText = `
-    <h2>Introduktion</h2>
+    <h2>Velkommen til IT‑Tycoon!</h2>
     <p>
-      <em>Velkommen til IT‑Tycoon!</em><br/>
-      I dette spil agerer du IT‑forvalter under SAFe-metodens principper, 
-      hvor du skal balancere tre primære KPI’er: Tid, Sikkerhed og Udvikling. 
-      Din opgave er at nå mindst 22 i både Sikkerhed og Udvikling,
-      og samtidig gennemføre 10 opgaver, inden din Tid (30) løber tør.
+      Du er IT‑forvalter under SAFe-metodens principper. Din mission er at balancere tre primære KPI’er: Tid, Sikkerhed og Udvikling.
     </p>
     <p>
-      Undervejs kan du møde Hastende opgaver, som giver en ekstra bonus 
-      på +4 i den pågældende KPI, men også en øget risiko (+10%) for 
-      at opgaven afvises af CAB. Hvis opgaven afvises, skal du bruge 1 
-      ekstra tid på rework. 
+      Du starter med 30 i Tid, og dine mål er at opnå mindst 22 i både Sikkerhed og Udvikling samt at gennemføre 10 opgaver.
     </p>
     <p>
-      Hver opgave har trin, hvor du skal vælge korrekt lokation og 
-      dernæst beslutte om du tager et Avanceret (2 tid) eller Hurtigt (0 tid) valg. 
-      Avanceret valg giver større KPI, men bruger mere Tid.
-      Hurtigt valg sparer Tid, men giver mindre KPI. 
-      Efter du gennemfører alle trin i en opgave, vil CAB enten godkende 
-      eller afvise dine ændringer.
+      Hver opgave består af 3-6 trin, hvor du skal vælge den korrekte lokation og derefter beslutte, om du vil tage et Avanceret valg (2 tid, højere KPI) eller et Hurtigt valg (0 tid, lavere KPI).
     </p>
-    <p>Klar til at starte rejsen? Held og lykke!</p>
+    <p>
+      Vær opmærksom på hastende opgaver, som giver ekstra bonus (+4 KPI), men også øger risikoen for CAB-afvisning med 10%. Hvis opgaven afvises, mister du 1 tid til rework.
+    </p>
+    <p>Klar til at starte rejsen? Klik på "Start Spillet" for at begynde!</p>
   `;
   openModal(introText, `<button id="startGame" class="modern-btn">Start Spillet</button>`);
-  document.getElementById('startGame').addEventListener('click', () => closeModal(() => showSprintGoal()));
+  document.getElementById('startGame').addEventListener('click', () =>
+    closeModal(() => showSprintGoal())
+  );
 }
 
 /**
@@ -193,30 +164,21 @@ function showSprintGoal() {
   const piHTML = `
     <h2>PI Planning</h2>
     <p>
-      Under PI Planning fastsætter du dine mål og prioriteringer 
-      for den kommende udviklings- og sikkerhedsindsats.
-      Du skal nå mindst 22 i både Sikkerhed og Udvikling, 
-      inden tiden (30) når 0. 
-      Derudover skal du gennemføre 10 opgaver, hvoraf nogle 
-      kan være mærket som Hastende, hvilket giver +4 bonus i KPI 
-      men også +10% øget risiko for at blive afvist af CAB.
+      Under PI Planning fastsætter du dine mål og prioriteringer for den kommende sprint.
+      Dit mål er at nå mindst 22 i både Sikkerhed og Udvikling og fuldføre 10 opgaver, før din Tid (30) løber ud.
     </p>
     <p>
-      Hver opgave er inddelt i trin, hvor du skal vælge den korrekte lokation
-      (fx hospital, infrastruktur, cybersikkerhed, osv.) 
-      og beslutte mellem et Avanceret (2 tid) eller et Hurtigt (0 tid) valg.
-      Avanceret valg bidrager mere til dine KPI’er, mens hurtige valg 
-      er bedre, hvis du vil spare tid.
+      Husk:
+      <br />- Avanceret valg koster 2 Tid og giver større KPI-stigning.
+      <br />- Hurtigt valg koster 0 Tid og giver mindre KPI-stigning.
+      <br />- Hastende opgaver giver en bonus på +4 KPI, men øger CAB-risikoen med 10%.
     </p>
-    <p>
-      Når du er klar, fortsætter du til tutorial, hvor du kan se 
-      den konkrete gennemgang af spillets trin. 
-      God planlægning og fokus på balancen mellem Tid og KPI’er 
-      bliver afgørende for din succes.
-    </p>
+    <p>Tryk "Fortsæt" for at gå videre til tutorial.</p>
   `;
   openModal(piHTML, `<button id="toTutorial" class="modern-btn">Fortsæt</button>`);
-  document.getElementById('toTutorial').addEventListener('click', () => closeModal(() => startTutorial()));
+  document.getElementById('toTutorial').addEventListener('click', () =>
+    closeModal(() => startTutorial())
+  );
 }
 
 /**
@@ -226,29 +188,26 @@ function startTutorial() {
   const tutHTML = `
     <h2>Tutorial</h2>
     <p>
-      1) Klik på “Vælg ny opgave” for at se opgavelisten.<br/>
-      2) Når du forpligter en opgave, skal du gennemføre dens trin 
-         i rækkefølge. Hvert trin kræver et klik på en bestemt 
-         lokation (hospital, infrastruktur, it-jura m.fl.).<br/>
-      3) For hvert trin vælger du enten et Avanceret valg (2 tid, 
-         større KPI) eller et Hurtigt valg (0 tid, lavere KPI).<br/>
-      4) Efter alle trin er afsluttet, skal CAB (Change Advisory Board) 
-         enten godkende eller afvise. Hvis afvist, bruger du 1 tid på rework.
+      <strong>1.</strong> Klik på “Vælg ny opgave” for at åbne opgavelisten.
     </p>
     <p>
-      Du kan bruge Arkitekthjælp én gang pr. opgave for at se, 
-      om opgaven er fokuseret på Sikkerhed eller Udvikling, 
-      og få en anbefaling til valget i trin. 
-      Men pas på ikke at spilde hjælpen på uvæsentlige opgaver!
+      <strong>2.</strong> Forpligt en opgave og gennemfør hvert trin ved at vælge den rigtige lokation.
     </p>
     <p>
-      På grafen i venstre side ser du din aktuelle Tid, Sikkerhed og 
-      Udvikling. Du starter med 30 tid, 0 i Sikkerhed og 0 i Udvikling, 
-      og skal nå mindst 22 i både Sikkerhed og Udvikling, samt gennemføre 
-      10 opgaver. 
+      <strong>3.</strong> Ved hvert trin vælger du enten et Avanceret valg (2 Tid, større KPI) eller et Hurtigt valg (0 Tid, lavere KPI).
     </p>
     <p>
-      Klar? Luk denne tutorial og klik “Vælg ny opgave” for at komme i gang!
+      <strong>4.</strong> Efter alle trin afgør CAB, om opgaven godkendes. Hvis afvist, mister du 1 Tid til rework.
+    </p>
+    <p>
+      <strong>5.</strong> Hastende opgaver giver en bonus på +4 KPI ved succes, men har +10% ekstra risiko for afvisning.
+    </p>
+    <p>
+      Du kan bruge Arkitekthjælp én gang pr. opgave for at få anbefalinger.
+    </p>
+    <p>
+      På grafen i venstre side ser du din aktuelle Tid, Sikkerhed og Udvikling.
+      Klik “Luk” for at afslutte tutorialen og begynde!
     </p>
   `;
   openModal(tutHTML, `<button id="closeTut" class="modern-btn">Luk</button>`);
@@ -337,11 +296,11 @@ function openTaskSelectionModal() {
            ${chosenTask.narrativeIntro || ""}</p>
            <p><em>Fokus:</em> 
            ${chosenTask.focus === "sikkerhed" ? "Sikkerhedsopgave" : "Udviklingsopgave"}</p>`,
-          `<button id="arkHelpClose" class="modern-btn">Luk</button>`
+          `<button id="archClose" class="modern-btn">Luk</button>`
         );
-        document.getElementById('arkHelpClose').addEventListener('click', () => {
-          closeModal(() => openTaskSelectionModal());
-        });
+        document.getElementById('archClose').addEventListener('click', () =>
+          closeModal(() => openTaskSelectionModal())
+        );
       }
     });
   });
@@ -377,7 +336,6 @@ function renderActiveTask(taskObj) {
       }
     });
     stepsHTML += "</p>";
-
     activeDiv.innerHTML += stepsHTML;
 
     const currentStep = taskObj.steps[gameState.currentStepIndex];
@@ -395,7 +353,6 @@ function handleLocationClick(clickedLoc) {
     document.getElementById('noTaskOK').addEventListener('click', () => closeModal());
     return;
   }
-
   const st = gameState.currentTask.steps[gameState.currentStepIndex];
   if (clickedLoc.toLowerCase() === st.location.toLowerCase()) {
     showStepChoices(st);
@@ -413,7 +370,6 @@ function showStepChoices(step) {
   const bodyHTML = `<h2>${step.stepDescription}</h2>${step.stepContext || ""}`;
   let cATxt = step.choiceA.text.replace(/-?\d+\s*tid/, "<span style='color:#800000;'>-2 tid</span>");
   let cBTxt = step.choiceB.text.replace(/-?\d+\s*tid/, "<span style='color:#006400;'>0 tid</span>");
-
   let footHTML = `
     <button id="choiceA" class="modern-btn">${step.choiceA.label} (${cATxt})</button>
     <button id="choiceB" class="modern-btn">${step.choiceB.label} (${cBTxt})</button>
@@ -424,7 +380,6 @@ function showStepChoices(step) {
   if (gameState.revisionCount[gameState.currentStepIndex] < 1) {
     footHTML += ` <button id="undoChoice" class="modern-btn">Fortryd</button>`;
   }
-
   openModal(bodyHTML, footHTML);
 
   if (document.getElementById('undoChoice')) {
@@ -475,7 +430,7 @@ function showStepChoices(step) {
         `<h2>Arkitekthjælp</h2><p>Anbefalet valg: ${step.choiceA.label}</p>`,
         `<button id="archCloseBtn" class="modern-btn">Luk</button>`
       );
-      document.getElementById('archCloseBtn').addEventListener('click', () => 
+      document.getElementById('archCloseBtn').addEventListener('click', () =>
         closeModal(() => showStepChoices(step))
       );
     }
@@ -485,7 +440,6 @@ function showStepChoices(step) {
 function applyChoice(choice) {
   gameState.time -= choice.applyEffect.timeCost;
   if (gameState.time < 0) gameState.time = 0;
-
   if (choice.applyEffect.statChange.security) {
     gameState.security += choice.applyEffect.statChange.security;
   }
@@ -692,7 +646,7 @@ function renderPotentialTasks() {
     const labelType = (taskObj.focus === 'sikkerhed' || taskObj.focus === 'cybersikkerhed')
       ? 'Sikkerhedsopgave'
       : 'Udviklingsopgave';
-    const hast = taskObj.isHastende ? '<span style="color:red;">(Haster!)</span>' : '';
+    const hast = taskObj.isHastende ? '<span class="haster-badge">Haster</span>' : '';
     infoDiv.innerHTML = `<h3>${taskObj.title} ${hast}</h3><p>${taskObj.shortDesc}</p><p>${labelType}</p>`;
     wrap.appendChild(infoDiv);
 
