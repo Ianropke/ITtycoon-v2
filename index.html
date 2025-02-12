@@ -21,32 +21,16 @@
   <body>
     <header>
       <div class="header-content">
-        <!-- Inline SVG som server-ikon -->
-        <div class="logo">
-          <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-            <!-- Serverens krop med afrundede hjørner -->
-            <rect x="10" y="8" width="44" height="48" rx="6" fill="#0275D8"/>
-            <!-- Top række LED-indikatorer -->
-            <circle cx="20" cy="20" r="3" fill="#fff"/>
-            <circle cx="32" cy="20" r="3" fill="#fff"/>
-            <circle cx="44" cy="20" r="3" fill="#fff"/>
-            <!-- Separator -->
-            <line x1="10" y1="32" x2="54" y2="32" stroke="#fff" stroke-width="2"/>
-            <!-- Bund række LED-indikatorer -->
-            <circle cx="20" cy="44" r="3" fill="#fff"/>
-            <circle cx="32" cy="44" r="3" fill="#fff"/>
-            <circle cx="44" cy="44" r="3" fill="#fff"/>
-          </svg>
-        </div>
+        <!-- Raketten indsat som logo -->
+        <span class="logo">🚀</span>
         <h1>IT‑Tycoon</h1>
-        <!-- Hjælp-knap -->
+        <!-- Hjælp-knap – fast placeret i øverste højre hjørne -->
         <button id="helpButton" class="help-btn">Få hjælp</button>
       </div>
     </header>
     <div class="container">
       <!-- Venstre kolonne: "Ny opgave"-knap og Lokationer -->
       <div class="left-column">
-        <!-- Sørg for at bruge id="newTaskBtn" -->
         <button id="newTaskBtn" class="big-new-task-btn">
           <i class="fas fa-plus"></i> Vælg ny opgave
         </button>
@@ -57,7 +41,7 @@
       </div>
       <!-- Højre kolonne: Aktiv opgave og KPI-graf -->
       <div class="right-column">
-        <!-- Aktiv opgave øverst -->
+        <!-- Aktiv opgave flyttes til toppen -->
         <div id="activeTask">
           <h2>Aktiv Opgave</h2>
         </div>
