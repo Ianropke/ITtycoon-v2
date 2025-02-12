@@ -21,17 +21,21 @@
   <body>
     <header>
       <div class="header-content">
-        <!-- Erstatter den tidligere rocket-logo med en inline SVG af en server -->
+        <!-- Inline SVG som server-ikon -->
         <div class="logo">
           <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-            <!-- Serverens krop -->
-            <rect x="8" y="12" width="48" height="36" rx="4" fill="#0275D8"/>
-            <!-- Interne linjer, fx statuslinjer -->
-            <rect x="14" y="18" width="36" height="5" rx="2" fill="#ffffff"/>
-            <rect x="14" y="28" width="36" height="5" rx="2" fill="#ffffff"/>
-            <rect x="14" y="38" width="36" height="5" rx="2" fill="#ffffff"/>
-            <!-- LED-indikator -->
-            <circle cx="32" cy="52" r="3" fill="#f39c12"/>
+            <!-- Serverens krop med afrundede hjørner -->
+            <rect x="10" y="8" width="44" height="48" rx="6" fill="#0275D8"/>
+            <!-- Top række LED-indikatorer -->
+            <circle cx="20" cy="20" r="3" fill="#fff"/>
+            <circle cx="32" cy="20" r="3" fill="#fff"/>
+            <circle cx="44" cy="20" r="3" fill="#fff"/>
+            <!-- Separator -->
+            <line x1="10" y1="32" x2="54" y2="32" stroke="#fff" stroke-width="2"/>
+            <!-- Bund række LED-indikatorer -->
+            <circle cx="20" cy="44" r="3" fill="#fff"/>
+            <circle cx="32" cy="44" r="3" fill="#fff"/>
+            <circle cx="44" cy="44" r="3" fill="#fff"/>
           </svg>
         </div>
         <h1>IT‑Tycoon</h1>
@@ -42,7 +46,8 @@
     <div class="container">
       <!-- Venstre kolonne: "Ny opgave"-knap og Lokationer -->
       <div class="left-column">
-        <button id="newTaskButton" class="big-new-task-btn">
+        <!-- Sørg for at bruge id="newTaskBtn" -->
+        <button id="newTaskBtn" class="big-new-task-btn">
           <i class="fas fa-plus"></i> Vælg ny opgave
         </button>
         <div id="locationsContainer">
@@ -50,9 +55,9 @@
           <div id="locations"></div>
         </div>
       </div>
-      <!-- Højre kolonne: Aktiv opgave OG KPI-graf -->
+      <!-- Højre kolonne: Aktiv opgave og KPI-graf -->
       <div class="right-column">
-        <!-- Aktiv opgave flyttes til toppen -->
+        <!-- Aktiv opgave øverst -->
         <div id="activeTask">
           <h2>Aktiv Opgave</h2>
         </div>
