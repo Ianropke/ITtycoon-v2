@@ -1,18 +1,41 @@
 // scripts/modal.js
-export function openModal(bodyContent, footerContent = "") {
+
+/**
+ * Åbner modal-vinduet med angivet body- og footer-indhold.
+ * @param {string} bodyContent - HTML-indhold til modal-body.
+ * @param {string} footerContent - HTML-indhold til modal-footer.
+ * @param {Function} [callback] - Eventuel callback-funktion, der kaldes efter modal er åbnet.
+ */
+function openModal(bodyContent, footerContent, callback) {
   const modal = document.getElementById('modal');
   const modalBody = document.getElementById('modalBody');
   const modalFooter = document.getElementById('modalFooter');
+  
   modalBody.innerHTML = bodyContent;
   modalFooter.innerHTML = footerContent;
   modal.classList.remove('hidden');
-  gsap.fromTo(modal, { opacity: 0 }, { opacity: 1, duration: 0.5 });
+  
+  if (callback && typeof callback === 'function') {
+    callback();
+  }
 }
 
-export function closeModal(callback) {
+/**
+ * Lukker modal-vinduet og kalder evt. en callback.
+ * @param {Function} [callback] - Callback-funktion, der kaldes efter modal er lukket.
+ */
+function closeModal(callback) {
   const modal = document.getElementById('modal');
-  gsap.to(modal, { opacity: 0, duration: 0.5, onComplete: () => {
-    modal.classList.add('hidden');
-    if (callback) callback();
-  }});
+  modal.classList.add('hidden');
+  
+  if (callback && typeof callback === 'function') {
+    callback();
+  }
 }
+
+// Tilføj event listener til krydset (modalClose) så modal lukkes ved klik.
+document.getElementById('modalClose').addEventListener('click', () => {
+  closeModal();
+});
+
+export { openModal, closeModal };
