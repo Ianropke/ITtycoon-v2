@@ -29,7 +29,7 @@ const gameState = {
 gameState.allTasks = [].concat(
   window.hospitalTasks,         // 10 opgaver med fokus "udvikling"
   window.infrastrukturTasks,    // 10 opgaver med fokus "sikkerhed"
-  window.cybersikkerhedTasks    // 10 opgaver med fokus "cybersikkerhed" (tælles med "sikkerhed")
+  window.cybersikkerhedTasks    // 10 opgaver med fokus "cybersikkerhed" (tælles som "sikkerhed")
 );
 shuffleArray(gameState.allTasks);
 // Start med at trække 7 opgaver som potentielle opgaver
@@ -48,7 +48,7 @@ assignRandomHastende(gameState.tasks);
 /**
  * Chart.js – initialisering af KPI-grafen
  * Grafen viser to grupper: "Tid" og en stacket "Score"-søjle (Sikkerhed + Udvikling).
- * Den lilla farve for "Udvikling" er nu #9b59b6 for bedre synlighed.
+ * Den lilla farve for "Udvikling" er #9b59b6 for bedre synlighed.
  */
 const ctx = document.getElementById('kpiChart').getContext('2d');
 const kpiChart = new Chart(ctx, {
@@ -346,11 +346,21 @@ function handleLocationClick(clickedLoc) {
 
 /**
  * Vis trinvalg – modal med valg af avanceret eller hurtig løsning
+ * Farver for tid: -2 tid => rød (#f44336, fed), 0 tid => grøn (#43A047, fed)
  */
 function showStepChoices(step) {
   const bodyHTML = `<h2>${step.stepDescription}</h2>${step.stepContext || ""}`;
-  let cATxt = step.choiceA.text.replace(/-?\d+\s*tid/, "<span style='color:#800000;'>-2 tid</span>");
-  let cBTxt = step.choiceB.text.replace(/-?\d+\s*tid/, "<span style='color:#006400;'>0 tid</span>");
+  
+  // Farver for tid mere tydelige:
+  let cATxt = step.choiceA.text.replace(
+    /-?\d+\s*tid/,
+    `<span style='color:#f44336; font-weight:bold;'>-2 tid</span>`
+  );
+  let cBTxt = step.choiceB.text.replace(
+    /-?\d+\s*tid/,
+    `<span style='color:#43A047; font-weight:bold;'>0 tid</span>`
+  );
+
   let footHTML = `
     <button id="choiceA" class="modern-btn">${step.choiceA.label} (${cATxt})</button>
     <button id="choiceB" class="modern-btn">${step.choiceB.label} (${cBTxt})</button>
