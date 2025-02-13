@@ -7,7 +7,7 @@
   padding: 0;
 }
 
-/* Variabler */
+/* CSS-variabler */
 :root {
   --primary-color: #0275d8;
   --primary-color-dark: #025aa5;
@@ -62,7 +62,7 @@ header h1 {
   margin: 0;
 }
 
-/* Hjælp-knap – fast i øverste højre hjørne */
+/* Hjælp-knap – fast placeret i øverste højre hjørne */
 .help-btn {
   position: absolute;
   top: 10px;
@@ -97,7 +97,8 @@ header h1 {
   gap: 1rem;
 }
 
-#newTaskBtn, .big-new-task-btn {
+#newTaskBtn,
+.big-new-task-btn {
   font-size: 1.2rem;
   padding: 1rem 2rem;
   background-color: #2196f3;
@@ -107,7 +108,8 @@ header h1 {
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
-#newTaskBtn:hover, .big-new-task-btn:hover {
+#newTaskBtn:hover,
+.big-new-task-btn:hover {
   background-color: #1976d2;
   transform: scale(1.03);
 }
@@ -136,14 +138,13 @@ header h1 {
   width: 100%;
   text-align: center;
   min-height: 48px;
-  margin: 0.3rem 0;
 }
 .location-button:hover {
   background-color: #43a047;
   transform: scale(1.02);
 }
 
-/* Højre kolonne: KPI-graf og aktiv opgave */
+/* Højre kolonne: Aktiv opgave og KPI-graf */
 .right-column {
   width: 60%;
   padding: 1rem;
@@ -154,10 +155,10 @@ header h1 {
   gap: 1rem;
 }
 
-/* Aktiv opgave – fast område */
+/* Aktiv opgave – fast område med fast højde */
 #activeTask {
   width: 100%;
-  min-height: 25vh; /* Fast minimumshøjde til aktiv opgave, så området bevares */
+  min-height: 25vh; /* Fast højde, så overskriften altid er synlig */
   padding: 1rem;
   background: #fff;
   border: 1px solid #ddd;
@@ -165,7 +166,7 @@ header h1 {
   overflow-y: auto;
 }
 
-/* KPI-graf – fast placeret nedenunder aktiv opgave */
+/* KPI-graf – fast placeret under aktiv opgave */
 #graphContainer {
   width: 100%;
   position: relative;
@@ -188,7 +189,7 @@ header h1 {
   color: var(--text-color);
 }
 
-/* Moderne knapper generelt */
+/* Moderne knapper */
 .modern-btn {
   background-color: var(--primary-color);
   color: #fff;
@@ -199,6 +200,7 @@ header h1 {
   font-size: 1rem;
   margin: 0.5rem;
   transition: background-color 0.3s ease, transform 0.2s ease;
+  text-align: center;
 }
 .modern-btn:hover {
   background-color: var(--primary-color-dark);
@@ -248,7 +250,8 @@ header h1 {
 }
 .modal-footer {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center; /* Centrerer knapperne */
+  align-items: center;
   gap: 1rem;
   flex-wrap: wrap;
   padding-top: 1rem;
@@ -296,7 +299,7 @@ header h1 {
   overflow-y: auto;
 }
 
-/* Knapper i task-item */
+/* Juster knapper i task-item for mere ensartet spacing */
 .task-item button {
   min-height: 44px;
   font-size: 1rem;
@@ -304,7 +307,7 @@ header h1 {
   padding: 0.6rem 1rem;
 }
 
-/* Animated Gradient – med tydeligere farver og større background-size */
+/* Animated Gradient – valgfrit */
 .animated-gradient {
   background: linear-gradient(270deg, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff);
   background-size: 600% 600%;
