@@ -47,7 +47,8 @@ assignRandomHastende(gameState.tasks);
 
 /**
  * Chart.js – initialisering af KPI-grafen
- * Nu vises kun to søjler: Tid og Score (Score = security + development)
+ * Grafen viser to grupper: "Tid" og "Score". Score-søjlen er stacket med to datasæt:
+ * Sikkerhed og Udvikling (Score = security + development).
  */
 const ctx = document.getElementById('kpiChart').getContext('2d');
 const kpiChart = new Chart(ctx, {
@@ -56,27 +57,52 @@ const kpiChart = new Chart(ctx, {
     labels: ['Tid', 'Score'],
     datasets: [
       {
-        label: 'KPI',
-        data: [gameState.time, gameState.security + gameState.development],
-        backgroundColor: ['#f39c12', '#8e44ad']
+        label: 'Tid',
+        data: [gameState.time, 0],
+        backgroundColor: '#f39c12',
+        stack: 'time'
+      },
+      {
+        label: 'Sikkerhed',
+        data: [0, gameState.security],
+        backgroundColor: '#27ae60',
+        stack: 'score'
+      },
+      {
+        label: 'Udvikling',
+        data: [0, gameState.development],
+        backgroundColor: '#8e44ad',
+        stack: 'score'
       }
     ]
   },
-  options: { scales: { y: { beginAtZero: true } } }
+  options: {
+    scales: {
+      x: {
+        stacked: true
+      },
+      y: {
+        stacked: true,
+        beginAtZero: true
+      }
+    }
+  }
 });
 
 function updateDashboard() {
   if (gameState.time < 0) gameState.time = 0;
-  kpiChart.data.datasets[0].data = [
-    gameState.time,
-    gameState.security + gameState.development
-  ];
+  kpiChart.data.datasets[0].data = [gameState.time, 0];
+  kpiChart.data.datasets[1].data = [0, gameState.security];
+  kpiChart.data.datasets[2].data = [0, gameState.development];
   kpiChart.update();
 }
 
+/**
+ * Opdater Task Progress – viser antal opgaver og fordelingen
+ */
 function updateTaskProgress() {
-  document.getElementById('taskProgress').textContent =
-    `Opgave ${gameState.tasksCompleted} / 10 - Udvikling: ${gameState.tasksDevelopment}, Sikkerhed: ${gameState.tasksSikkerhed}`;
+  const progressEl = document.getElementById('taskProgress');
+  progressEl.textContent = `Opgave ${gameState.tasksCompleted} / 10 - Udvikling: ${gameState.tasksDevelopment}, Sikkerhed: ${gameState.tasksSikkerhed}`;
 }
 updateTaskProgress();
 
@@ -91,7 +117,7 @@ function renderLocations() {
     const btn = document.createElement('button');
     btn.className = 'location-button';
     btn.innerHTML = loc.toUpperCase() + " " + getIcon(loc);
-    // Tilføj eventlistener, så knapperne bliver interaktive
+    // Tilføj eventlistener for interaktivitet
     btn.addEventListener('click', () => handleLocationClick(loc));
     locDiv.appendChild(btn);
   });
@@ -271,11 +297,10 @@ function startTask(task) {
 }
 
 /**
- * Render aktiv opgave – bevar overskriften "Aktiv Opgave"
+ * Render aktiv opgave – bevar overskriften "Aktiv Opgave" og et fast område
  */
 function renderActiveTask(task) {
   const activeDiv = document.getElementById('activeTask');
-  // Bevar den faste overskrift "Aktiv Opgave"
   activeDiv.innerHTML = `<h2>Aktiv Opgave</h2>`;
   if (task) {
     activeDiv.innerHTML += `<h3>${task.title}</h3><p>${task.shortDesc}</p>`;
@@ -442,8 +467,7 @@ function checkGameOverCondition() {
 }
 
 /**
- * CAB Approvement – vurdering af opgavens kvalitet
- * Rework-straffen er 1 Tid.
+ * CAB Approvement – vurdering af opgavens kvalitet, med rework-straf på 1 Tid.
  */
 function cabApproval() {
   closeModal(() => {
