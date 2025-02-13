@@ -154,21 +154,23 @@ header h1 {
   gap: 1rem;
 }
 
-/* Aktiv opgave */
+/* Aktiv opgave – fast område */
 #activeTask {
   width: 100%;
+  min-height: 25vh; /* Fast minimumshøjde til aktiv opgave, så området bevares */
   padding: 1rem;
   background: #fff;
   border: 1px solid #ddd;
   border-radius: 4px;
+  overflow-y: auto;
 }
 
-/* KPI-graf – 20% større */
+/* KPI-graf – fast placeret nedenunder aktiv opgave */
 #graphContainer {
   width: 100%;
   position: relative;
   max-width: 720px;
-  height: 48vh;
+  height: 48vh;  /* Fast højde til grafen */
 }
 #kpiChart {
   width: 100% !important;
