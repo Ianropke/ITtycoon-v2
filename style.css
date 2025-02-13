@@ -175,13 +175,13 @@ header h1 {
   margin-bottom: 0.5rem;
 }
 
-/* KPI-graf – fast placeret nedenunder aktiv opgave, flyttet 20% længere ned */
+/* KPI-graf – fast placeret nedenunder aktiv opgave, flyttet 10% længere ned */
 #graphContainer {
   width: 100%;
   position: relative;
   max-width: 720px;
   height: var(--fixed-graph-height);
-  margin-top: 20vh; /* 20% af viewport højden */
+  margin-top: 10vh; /* 10% af viewport højden */
   padding-left: 1rem; /* Samme venstremargin som aktiv opgave */
 }
 #kpiChart {
