@@ -6,7 +6,7 @@ import { shuffleArray, getIcon } from './utils.js';
  * Global game state med alle avancerede funktioner
  */
 const gameState = {
-  time: 30,
+  time: 40, // Nu 40 i stedet for 30
   security: 0,
   development: 0,
   currentTask: null,
@@ -135,7 +135,7 @@ function showHelp() {
     <p>
       <strong>Spillets Koncept:</strong><br/>
       Gennemfør opgaver for at maksimere din samlede score – antallet af opgaver plus dine point (Udvikling + Sikkerhed).
-      Du starter med 30 Tid, og hver opgave koster 2 Tid.
+      Du starter med 40 Tid, og hver opgave koster 2 Tid.
     </p>
     <ul>
       <li>Opgaver med fokus på Udvikling giver +3 Udvikling.</li>
@@ -161,7 +161,7 @@ function showIntro() {
       og samtidig bevare så meget Tid som muligt.
     </p>
     <p>
-      Du starter med 30 Tid, og hver opgave koster 2 Tid. Dine valg under opgaverne giver point – enten i Udvikling eller Sikkerhed.
+      Du starter nu med 40 Tid, og hver opgave koster 2 Tid. Dine valg under opgaverne giver point – enten i Udvikling eller Sikkerhed.
       Den samlede score udgøres af antallet af opgaver plus summen af dine point (Udvikling + Sikkerhed).
     </p>
     <p>
@@ -184,7 +184,7 @@ function showSprintGoal() {
     <h2>PI Planning</h2>
     <p>
       Dine primære mål er at gennemføre 10 opgaver og opnå en høj samlet score 
-      (Score = Udvikling + Sikkerhed) inden for den tilgængelige Tid (30).
+      (Score = Udvikling + Sikkerhed) inden for den tilgængelige Tid (40).
     </p>
     <p>
       Husk: Hver opgave koster 2 Tid, og dine valg påvirker, hvor mange point du opnår.
@@ -351,7 +351,7 @@ function handleLocationClick(clickedLoc) {
 function showStepChoices(step) {
   const bodyHTML = `<h2>${step.stepDescription}</h2>${step.stepContext || ""}`;
   
-  // Farver for tid mere tydelige:
+  // Tydeligere farver for tidsomkostninger
   let cATxt = step.choiceA.text.replace(
     /-?\d+\s*tid/,
     `<span style='color:#f44336; font-weight:bold;'>-2 tid</span>`
@@ -680,6 +680,19 @@ document.getElementById('newTaskBtn')?.addEventListener('click', openTaskSelecti
  * Vis Intro ved spillets start
  */
 showIntro();
+
+/** 
+ * (Ekstra) Skub evt. grafen op/ned i CSS 
+ * Du bad specifikt om "Skub grafen 10% op", 
+ * men hvis du vil gøre det i main.js, kan du tilføje:
+ * 
+ * document.getElementById('graphContainer').style.marginTop = "10vh";
+ * 
+ * lige herunder, hvis du ikke allerede styrer det i style.css.
+ */
+
+// Eksempel:
+// document.getElementById('graphContainer').style.marginTop = "10vh";
 
 export {
   gameState,
