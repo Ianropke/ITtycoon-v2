@@ -18,9 +18,7 @@ const gameState = {
   architectHelpUsed: false,
   allTasks: [],
   tasks: [],
-  // Gemmer for hvert trin et objekt: { title: <string>, advanced: <boolean> }
   choiceHistory: [],
-  // Sporer antallet af revisioner for hvert trin (maks. 1 pr. trin)
   revisionCount: [],
   revisionMode: false
 };
@@ -49,7 +47,7 @@ assignRandomHastende(gameState.tasks);
 
 /**
  * Chart.js – initialisering af KPI-grafen
- * Nu vises kun to søjler: Tid og Score (hvor Score = security + development)
+ * Nu vises kun to søjler: Tid og Score (Score = security + development)
  */
 const ctx = document.getElementById('kpiChart').getContext('2d');
 const kpiChart = new Chart(ctx, {
@@ -76,17 +74,14 @@ function updateDashboard() {
   kpiChart.update();
 }
 
-/**
- * Opdater Task Progress – viser antal opgaver og fordelingen
- */
 function updateTaskProgress() {
-  const progressEl = document.getElementById('taskProgress');
-  progressEl.textContent = `Opgave ${gameState.tasksCompleted} / 10 - Udvikling: ${gameState.tasksDevelopment}, Sikkerhed: ${gameState.tasksSikkerhed}`;
+  document.getElementById('taskProgress').textContent =
+    `Opgave ${gameState.tasksCompleted} / 10 - Udvikling: ${gameState.tasksDevelopment}, Sikkerhed: ${gameState.tasksSikkerhed}`;
 }
 updateTaskProgress();
 
 /**
- * Render lokationer i venstre side
+ * Render lokationer (venstre side)
  */
 const locationList = ["hospital", "dokumentation", "leverandør", "infrastruktur", "it‑jura", "cybersikkerhed"];
 function renderLocations() {
@@ -96,7 +91,8 @@ function renderLocations() {
     const btn = document.createElement('button');
     btn.className = 'location-button';
     btn.innerHTML = loc.toUpperCase() + " " + getIcon(loc);
-    // Lokationer er kun visuelle i denne version
+    // Tilføj eventlistener, så knapperne bliver interaktive
+    btn.addEventListener('click', () => handleLocationClick(loc));
     locDiv.appendChild(btn);
   });
 }
@@ -111,7 +107,7 @@ function showHelp() {
     <h2>Hjælp</h2>
     <p>
       <strong>Spillets Koncept:</strong><br/>
-      Gennemfør opgaver for at maksimere din samlede score – dette er antallet af opgaver plus dine point (Udvikling + Sikkerhed).
+      Gennemfør opgaver for at maksimere din samlede score – antallet af opgaver plus dine point (Udvikling + Sikkerhed).
       Du starter med 30 Tid, og hver opgave koster 2 Tid.
     </p>
     <ul>
@@ -260,7 +256,7 @@ function openTaskSelectionModal() {
 }
 
 /**
- * Start opgave – multi‑trin logik
+ * Start opgave – med multi‑trin logik
  */
 function startTask(task) {
   gameState.currentTask = task;
@@ -275,31 +271,33 @@ function startTask(task) {
 }
 
 /**
- * Render aktiv opgave – vis trinvis oversigt
+ * Render aktiv opgave – bevar overskriften "Aktiv Opgave"
  */
 function renderActiveTask(task) {
   const activeDiv = document.getElementById('activeTask');
-  activeDiv.innerHTML = `<h2>${task.title}</h2><p>${task.shortDesc}</p>`;
-  if (task.steps && task.steps.length > 0) {
-    let stepsHTML = "<p style='text-align:left;'>";
-    task.steps.forEach((st, idx) => {
-      if (idx < gameState.currentStepIndex) {
-        stepsHTML += `${idx+1}. ${st.location.toUpperCase()} ${getIcon(st.location)} <span class="done">✔</span><br>`;
-      } else {
-        stepsHTML += `${idx+1}. ${st.location.toUpperCase()} ${getIcon(st.location)}<br>`;
-      }
-    });
-    stepsHTML += "</p>";
-    activeDiv.innerHTML += stepsHTML;
-    const currentStep = task.steps[gameState.currentStepIndex];
-    activeDiv.innerHTML += `
-      <p><strong>Vælg lokation:</strong> ${currentStep.location.toUpperCase()} ${getIcon(currentStep.location)}</p>
-    `;
+  // Bevar den faste overskrift "Aktiv Opgave"
+  activeDiv.innerHTML = `<h2>Aktiv Opgave</h2>`;
+  if (task) {
+    activeDiv.innerHTML += `<h3>${task.title}</h3><p>${task.shortDesc}</p>`;
+    if (task.steps && task.steps.length > 0) {
+      let stepsHTML = "<p style='text-align:left;'>";
+      task.steps.forEach((st, idx) => {
+        if (idx < gameState.currentStepIndex) {
+          stepsHTML += `${idx+1}. ${st.location.toUpperCase()} ${getIcon(st.location)} <span class="done">✔</span><br>`;
+        } else {
+          stepsHTML += `${idx+1}. ${st.location.toUpperCase()} ${getIcon(st.location)}<br>`;
+        }
+      });
+      stepsHTML += "</p>";
+      activeDiv.innerHTML += stepsHTML;
+      const currentStep = task.steps[gameState.currentStepIndex];
+      activeDiv.innerHTML += `<p><strong>Vælg lokation:</strong> ${currentStep.location.toUpperCase()} ${getIcon(currentStep.location)}</p>`;
+    }
   }
 }
 
 /**
- * Håndter lokationsklik – tjekker om den valgte lokation er korrekt
+ * Håndter lokationsklik
  */
 function handleLocationClick(clickedLoc) {
   if (!gameState.currentTask) {
@@ -321,7 +319,7 @@ function handleLocationClick(clickedLoc) {
 }
 
 /**
- * Vis trinvalg – modal med valg af avanceret/hurtig løsning
+ * Vis trinvalg – modal med valg af avanceret eller hurtig løsning
  */
 function showStepChoices(step) {
   const bodyHTML = `<h2>${step.stepDescription}</h2>${step.stepContext || ""}`;
@@ -523,7 +521,7 @@ function cabApproval() {
 }
 
 /**
- * Revision Options – fortryd mulighed for ikke-avanceret valg
+ * Revision Options – mulighed for at fortryde valg (kun for ikke-avancerede valg)
  */
 function showRevisionOptions() {
   let revisableIndices = [];
@@ -559,7 +557,7 @@ function showRevisionOptions() {
 }
 
 /**
- * Task Summary – opsummering af valg og evt. hastende bonus
+ * Task Summary – opsummering af de trufne valg og evt. hastende bonus
  */
 function showTaskSummary() {
   let bonusNote = "";
@@ -587,7 +585,7 @@ function showTaskSummary() {
 }
 
 /**
- * Finish Task – afslutter opgaven, opdaterer score og tilføjer nye opgaver
+ * Finish Task – opgaven afsluttes, score opdateres og nye opgaver tilføjes
  */
 function finishTask() {
   gameState.tasksCompleted++;
