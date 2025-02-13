@@ -6,7 +6,7 @@ import { shuffleArray, getIcon } from './utils.js';
  * Global game state med alle avancerede funktioner
  */
 const gameState = {
-  time: 40, // Nu 40 i stedet for 30
+  time: 40,
   security: 0,
   development: 0,
   currentTask: null,
@@ -29,7 +29,7 @@ const gameState = {
 gameState.allTasks = [].concat(
   window.hospitalTasks,         // 10 opgaver med fokus "udvikling"
   window.infrastrukturTasks,    // 10 opgaver med fokus "sikkerhed"
-  window.cybersikkerhedTasks    // 10 opgaver med fokus "cybersikkerhed" (tælles som "sikkerhed")
+  window.cybersikkerhedTasks    // 10 opgaver med fokus "cybersikkerhed" (tælles med "sikkerhed")
 );
 shuffleArray(gameState.allTasks);
 // Start med at trække 7 opgaver som potentielle opgaver
@@ -71,36 +71,27 @@ const kpiChart = new Chart(ctx, {
       {
         label: 'Udvikling',
         data: [0, gameState.development],
-        backgroundColor: '#9b59b6', // Lysere, mere synlig lilla
+        backgroundColor: '#9b59b6',
         stack: 'score'
       }
     ]
   },
   options: {
     scales: {
-      x: {
-        stacked: true
-      },
-      y: {
-        stacked: true,
-        beginAtZero: true
-      }
+      x: { stacked: true },
+      y: { stacked: true, beginAtZero: true }
     }
   }
 });
 
-/** Opdatering af graf (Tid + stacket Score) */
 function updateDashboard() {
   if (gameState.time < 0) gameState.time = 0;
-  kpiChart.data.datasets[0].data = [gameState.time, 0];          // Tid
-  kpiChart.data.datasets[1].data = [0, gameState.security];      // Sikkerhed
-  kpiChart.data.datasets[2].data = [0, gameState.development];   // Udvikling
+  kpiChart.data.datasets[0].data = [gameState.time, 0];
+  kpiChart.data.datasets[1].data = [0, gameState.security];
+  kpiChart.data.datasets[2].data = [0, gameState.development];
   kpiChart.update();
 }
 
-/**
- * Opdater Task Progress – viser antal opgaver og fordelingen
- */
 function updateTaskProgress() {
   const progressEl = document.getElementById('taskProgress');
   progressEl.textContent = `Opgave ${gameState.tasksCompleted} / 10 - Udvikling: ${gameState.tasksDevelopment}, Sikkerhed: ${gameState.tasksSikkerhed}`;
@@ -118,7 +109,6 @@ function renderLocations() {
     const btn = document.createElement('button');
     btn.className = 'location-button';
     btn.innerHTML = loc.toUpperCase() + " " + getIcon(loc);
-    // Tilføj eventlistener for interaktivitet
     btn.addEventListener('click', () => handleLocationClick(loc));
     locDiv.appendChild(btn);
   });
@@ -151,22 +141,19 @@ function showHelp() {
 }
 
 /**
- * 1) Intro – længere introduktionstekst
+ * 1) Intro – længere og stemningsfuld introduktionstekst
  */
 function showIntro() {
   const introText = `
     <h2>Velkommen til IT‑Tycoon!</h2>
     <p>
-      Du er IT‑forvalter under SAFe-metodens principper. Din mission er at gennemføre så mange opgaver som muligt 
-      og samtidig bevare så meget Tid som muligt.
+      Forestil dig en travl mandag morgen, hvor du træder ind i kontrolrummet for en stor, kompleks organisation. Servere surrer, telefonerne ringer, og tekniske udfordringer venter på at blive løst. Som IT‑forvalter er det dit ansvar at holde systemerne kørende, implementere nye løsninger og sikre, at alting sker inden for en stram tidsramme.
     </p>
     <p>
-      Du starter nu med 40 Tid, og hver opgave koster 2 Tid. Dine valg under opgaverne giver point – enten i Udvikling eller Sikkerhed.
-      Den samlede score udgøres af antallet af opgaver plus summen af dine point (Udvikling + Sikkerhed).
+      Dit mål? At gennemføre så mange opgaver som muligt, før tiden løber ud. Du har 40 Tid til rådighed, og hver opgave koster 2 Tid. Hver opgave, du gennemfører, giver dig point – enten i Udvikling eller i Sikkerhed. Din samlede score er antallet af gennemførte opgaver plus summen af dine point (Udvikling + Sikkerhed).
     </p>
     <p>
-      Vær opmærksom på, at hvis du kun prioriterer én type opgave, øges risikoen for, at CAB afviser dine opgaver i næste PI.
-      Hastende opgaver giver en bonus på +4 point, men medfører +10% ekstra risiko.
+      Men pas på! Hvis du kun fokuserer på én type opgave, kan du risikere at få problemer med CAB-godkendelsen i næste sprint. Nogle opgaver kan også være hastende og give ekstra bonus, men øger samtidig din risiko. Er du klar til at balancere krav, prioritere rigtigt og navigere i en verden af tekniske udfordringer og stramme deadlines?
     </p>
     <p>Klar til at starte? Klik "Start Spillet" for at begynde!</p>
   `;
@@ -351,7 +338,6 @@ function handleLocationClick(clickedLoc) {
 function showStepChoices(step) {
   const bodyHTML = `<h2>${step.stepDescription}</h2>${step.stepContext || ""}`;
   
-  // Tydeligere farver for tidsomkostninger
   let cATxt = step.choiceA.text.replace(
     /-?\d+\s*tid/,
     `<span style='color:#f44336; font-weight:bold;'>-2 tid</span>`
@@ -478,7 +464,7 @@ function checkGameOverCondition() {
 }
 
 /**
- * CAB Approvement – vurdering af opgavens kvalitet, med rework-straf på 1 Tid.
+ * CAB Approvement – vurdering af opgavens kvalitet, med rework-straffen på 1 Tid.
  */
 function cabApproval() {
   closeModal(() => {
@@ -680,19 +666,6 @@ document.getElementById('newTaskBtn')?.addEventListener('click', openTaskSelecti
  * Vis Intro ved spillets start
  */
 showIntro();
-
-/** 
- * (Ekstra) Skub evt. grafen op/ned i CSS 
- * Du bad specifikt om "Skub grafen 10% op", 
- * men hvis du vil gøre det i main.js, kan du tilføje:
- * 
- * document.getElementById('graphContainer').style.marginTop = "10vh";
- * 
- * lige herunder, hvis du ikke allerede styrer det i style.css.
- */
-
-// Eksempel:
-// document.getElementById('graphContainer').style.marginTop = "10vh";
 
 export {
   gameState,
