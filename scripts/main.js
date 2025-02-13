@@ -14,13 +14,13 @@ const gameState = {
   tasksCompleted: 0,
   tasksDevelopment: 0,
   tasksSikkerhed: 0,
-  missionGoals: { security: 22, development: 22 }, // Bruges stadig til CAB-beregning
+  missionGoals: { security: 22, development: 22 },
   architectHelpUsed: false,
   allTasks: [],
   tasks: [],
   // Gemmer for hvert trin et objekt: { title: <string>, advanced: <boolean> }
   choiceHistory: [],
-  // Sporer antallet af revisioner for hvert trin (max 1 per trin)
+  // Sporer antallet af revisioner for hvert trin (maks. 1 pr. trin)
   revisionCount: [],
   revisionMode: false
 };
@@ -49,26 +49,18 @@ assignRandomHastende(gameState.tasks);
 
 /**
  * Chart.js – initialisering af KPI-grafen
+ * Nu vises kun to søjler: Tid og Score (hvor Score = security + development)
  */
 const ctx = document.getElementById('kpiChart').getContext('2d');
 const kpiChart = new Chart(ctx, {
   type: 'bar',
   data: {
-    labels: ['Tid', 'Sikkerhed', 'Udvikling'],
+    labels: ['Tid', 'Score'],
     datasets: [
       {
         label: 'KPI',
-        data: [gameState.time, gameState.security, gameState.development],
-        backgroundColor: ['#f39c12', '#27ae60', '#8e44ad']
-      },
-      {
-        label: 'Sprintmål',
-        data: [null, gameState.missionGoals.security, gameState.missionGoals.development],
-        type: 'line',
-        borderColor: 'red',
-        borderWidth: 2,
-        fill: false,
-        pointRadius: 0
+        data: [gameState.time, gameState.security + gameState.development],
+        backgroundColor: ['#f39c12', '#8e44ad']
       }
     ]
   },
@@ -77,7 +69,10 @@ const kpiChart = new Chart(ctx, {
 
 function updateDashboard() {
   if (gameState.time < 0) gameState.time = 0;
-  kpiChart.data.datasets[0].data = [gameState.time, gameState.security, gameState.development];
+  kpiChart.data.datasets[0].data = [
+    gameState.time,
+    gameState.security + gameState.development
+  ];
   kpiChart.update();
 }
 
@@ -91,7 +86,7 @@ function updateTaskProgress() {
 updateTaskProgress();
 
 /**
- * Render lokationer (venstre side)
+ * Render lokationer i venstre side
  */
 const locationList = ["hospital", "dokumentation", "leverandør", "infrastruktur", "it‑jura", "cybersikkerhed"];
 function renderLocations() {
@@ -101,7 +96,7 @@ function renderLocations() {
     const btn = document.createElement('button');
     btn.className = 'location-button';
     btn.innerHTML = loc.toUpperCase() + " " + getIcon(loc);
-    // I denne version er lokationer kun visuelle
+    // Lokationer er kun visuelle i denne version
     locDiv.appendChild(btn);
   });
 }
@@ -116,15 +111,16 @@ function showHelp() {
     <h2>Hjælp</h2>
     <p>
       <strong>Spillets Koncept:</strong><br/>
-      Gennemfør opgaver for at maksimere din samlede score, som er antallet af opgaver plus dine samlede point (Udvikling + Sikkerhed). 
+      Gennemfør opgaver for at maksimere din samlede score – dette er antallet af opgaver plus dine point (Udvikling + Sikkerhed).
       Du starter med 30 Tid, og hver opgave koster 2 Tid.
     </p>
     <ul>
-      <li><strong>Point:</strong> Opgaver med fokus på Udvikling giver +3 Udvikling, mens dem med fokus på Sikkerhed giver +3 Sikkerhed.</li>
-      <li><strong>Hastende opgaver:</strong> Giver en bonus på +4 point ved succes, men øger risikoen for CAB-afvisning med 10%.</li>
-      <li><strong>Balance:</strong> Hvis du kun prioriterer én type opgave, øges risikoen for, at CAB afviser dine opgaver i næste PI.</li>
+      <li>Opgaver med fokus på Udvikling giver +3 Udvikling.</li>
+      <li>Opgaver med fokus på Sikkerhed giver +3 Sikkerhed.</li>
+      <li>Hastende opgaver giver en bonus på +4 point ved succes, men øger CAB-risiko med 10%.</li>
+      <li>En ubalanceret opgavefordeling øger risikoen for CAB-afvisning i næste PI.</li>
     </ul>
-    <p>Din strategi skal derfor balancere opgavegennemførelse og tidsstyring.</p>
+    <p>Din strategi skal balancere opgavegennemførelse og tidsstyring.</p>
     <p>God fornøjelse med IT‑Tycoon!</p>
   `;
   openModal(helpHTML, `<button id="closeHelp" class="modern-btn">Luk</button>`);
@@ -132,24 +128,24 @@ function showHelp() {
 }
 
 /**
- * 1) Intro – med længere og mere struktureret tekst
+ * 1) Intro – længere introduktionstekst
  */
 function showIntro() {
   const introText = `
     <h2>Velkommen til IT‑Tycoon!</h2>
     <p>
       Du er IT‑forvalter under SAFe-metodens principper. Din mission er at gennemføre så mange opgaver som muligt 
-      og bevare så meget tid som muligt.
+      og samtidig bevare så meget Tid som muligt.
     </p>
     <p>
-      Du starter med 30 Tid. Hver opgave koster 2 Tid, og dine valg under hver opgave giver point – enten i Udvikling eller i Sikkerhed.
-      Din samlede score beregnes som antallet af opgaver gennemført plus summen af dine point (Udvikling + Sikkerhed).
+      Du starter med 30 Tid, og hver opgave koster 2 Tid. Dine valg under opgaverne giver point – enten i Udvikling eller Sikkerhed.
+      Den samlede score udgøres af antallet af opgaver plus summen af dine point (Udvikling + Sikkerhed).
     </p>
     <p>
-      Vær opmærksom på, at hvis du fokuserer for ensidigt (kun Udvikling eller kun Sikkerhed), vil CAB i næste PI øge risikoen for afvisning.
-      Opgaver kan desuden være hastende, hvilket giver en bonus på +4 point ved succes, men øger også risikoen for afvisning med 10%.
+      Vær opmærksom på, at hvis du kun prioriterer én type opgave, øges risikoen for, at CAB afviser dine opgaver i næste PI.
+      Hastende opgaver giver en bonus på +4 point, men medfører +10% ekstra risiko.
     </p>
-    <p>Klar til at starte rejsen? Klik "Start Spillet" for at begynde!</p>
+    <p>Klar til at starte? Klik "Start Spillet" for at begynde!</p>
   `;
   openModal(introText, `<button id="startGame" class="modern-btn">Start Spillet</button>`);
   document.getElementById('startGame').addEventListener('click', () =>
@@ -164,12 +160,12 @@ function showSprintGoal() {
   const piHTML = `
     <h2>PI Planning</h2>
     <p>
-      Dine primære mål er at gennemføre 10 opgaver og opnå en så høj samlet score som muligt 
-      (point = Udvikling + Sikkerhed), inden din Tid (30) løber ud.
+      Dine primære mål er at gennemføre 10 opgaver og opnå en høj samlet score 
+      (Score = Udvikling + Sikkerhed) inden for den tilgængelige Tid (30).
     </p>
     <p>
-      Husk: Hver opgave koster 2 Tid, og dine valg (Avanceret vs. Hurtig) påvirker, hvor mange point du opnår.
-      En ubalanceret strategi øger risikoen for CAB-afvisning i næste PI.
+      Husk: Hver opgave koster 2 Tid, og dine valg påvirker, hvor mange point du opnår.
+      Hvis du ensidigt prioriterer én dimension, øges risikoen for CAB-afvisning i næste PI.
     </p>
     <p>Tryk "Fortsæt" for at gå videre til tutorial.</p>
   `;
@@ -189,23 +185,21 @@ function startTutorial() {
       1. Klik på “Vælg ny opgave” for at åbne opgavelisten.
     </p>
     <p>
-      2. Vælg en opgave – hver opgave koster 2 Tid og giver +3 point baseret på opgavens fokus.
+      2. Vælg en opgave – hver opgave koster 2 Tid og giver +3 point, afhængigt af opgavens fokus.
     </p>
     <p>
-      3. Din samlede score udgøres af antallet af opgaver plus summen af alle point (Udvikling + Sikkerhed).
+      3. Din samlede score udgøres af antallet af opgaver plus summen af dine point (Udvikling + Sikkerhed).
     </p>
     <p>
       4. Hvis du kun prioriterer én dimension, øges risikoen for CAB-afvisning i næste PI.
     </p>
     <p>
-      5. Hastende opgaver giver en bonus på +4 point, men øger risikoen for afvisning med 10%.
+      5. Hastende opgaver giver +4 bonus, men medfører +10% ekstra risiko.
     </p>
     <p>Afslut tutorialen ved at klikke "Luk" og begynd at vælge opgaver!</p>
   `;
   openModal(tutHTML, `<button id="closeTut" class="modern-btn">Luk</button>`);
-  document.getElementById('closeTut').addEventListener('click', () =>
-    closeModal()
-  );
+  document.getElementById('closeTut').addEventListener('click', () => closeModal());
 }
 
 /**
@@ -266,7 +260,7 @@ function openTaskSelectionModal() {
 }
 
 /**
- * Start opgave – gennemføres med multi‑trin logik
+ * Start opgave – multi‑trin logik
  */
 function startTask(task) {
   gameState.currentTask = task;
@@ -275,13 +269,13 @@ function startTask(task) {
   gameState.choiceHistory = new Array(task.steps.length);
   gameState.revisionCount = new Array(task.steps.length).fill(0);
   gameState.revisionMode = false;
-
+  
   closeModal();
   renderActiveTask(task);
 }
 
 /**
- * Render aktiv opgave med trinvis oversigt
+ * Render aktiv opgave – vis trinvis oversigt
  */
 function renderActiveTask(task) {
   const activeDiv = document.getElementById('activeTask');
@@ -305,7 +299,7 @@ function renderActiveTask(task) {
 }
 
 /**
- * Håndter lokationsklik
+ * Håndter lokationsklik – tjekker om den valgte lokation er korrekt
  */
 function handleLocationClick(clickedLoc) {
   if (!gameState.currentTask) {
@@ -318,7 +312,8 @@ function handleLocationClick(clickedLoc) {
     showStepChoices(st);
   } else {
     openModal(
-      `<h2>Forkert lokation</h2><p>Du valgte ${clickedLoc.toUpperCase()}, men skal bruge ${st.location.toUpperCase()}.</p>`,
+      `<h2>Forkert lokation</h2>
+       <p>Du valgte ${clickedLoc.toUpperCase()}, men skal bruge ${st.location.toUpperCase()}.</p>`,
       `<button id="locWrong" class="modern-btn">OK</button>`
     );
     document.getElementById('locWrong').addEventListener('click', () => closeModal());
@@ -326,7 +321,7 @@ function handleLocationClick(clickedLoc) {
 }
 
 /**
- * Vis trinvalg
+ * Vis trinvalg – modal med valg af avanceret/hurtig løsning
  */
 function showStepChoices(step) {
   const bodyHTML = `<h2>${step.stepDescription}</h2>${step.stepContext || ""}`;
@@ -431,7 +426,7 @@ function proceedToNextStep() {
 }
 
 /**
- * Tjek game over – slutspil når Tid=0 eller 10 opgaver fuldført
+ * Tjek game over – spillet slutter, når Tid=0 eller 10 opgaver er gennemført
  */
 function checkGameOverCondition() {
   if (gameState.time <= 0 || gameState.tasksCompleted >= 10) {
@@ -451,7 +446,6 @@ function checkGameOverCondition() {
 /**
  * CAB Approvement – vurdering af opgavens kvalitet
  * Rework-straffen er 1 Tid.
- * Ekstra: Hvis der er en ubalance i opgavefordelingen, reduceres chancen.
  */
 function cabApproval() {
   closeModal(() => {
@@ -465,18 +459,16 @@ function cabApproval() {
       missionGoal = gameState.missionGoals.security;
     }
     
-    // Basis chance beregnes ud fra KPI
     const allAdvanced = gameState.choiceHistory.every(ch => ch && ch.advanced);
     let chance = allAdvanced ? 1 : Math.min(1, focusKPI / missionGoal);
     
     let extraNote = "";
-    // Ekstra risiko hvis opgaven er hastende
     if (t.isHastende) {
       chance -= 0.1;
       if (chance < 0) chance = 0;
       extraNote += `<p style="color:red;">Hastende opgave: +10% risiko for afvisning, +4 bonus ved succes.</p>`;
     }
-    // Ekstra risiko ved ubalance: Hvis for meget af fokus er på den ene kategori
+    
     let total = gameState.tasksDevelopment + gameState.tasksSikkerhed;
     if (total > 0) {
       if (t.focus === 'udvikling') {
@@ -531,7 +523,7 @@ function cabApproval() {
 }
 
 /**
- * Revision Options – muligheden for at fortryde et valg, hvis det ikke var avanceret
+ * Revision Options – fortryd mulighed for ikke-avanceret valg
  */
 function showRevisionOptions() {
   let revisableIndices = [];
@@ -567,12 +559,11 @@ function showRevisionOptions() {
 }
 
 /**
- * Task Summary – vis en opsummering af de trufne valg og evt. hastende bonus
+ * Task Summary – opsummering af valg og evt. hastende bonus
  */
 function showTaskSummary() {
   let bonusNote = "";
   if (gameState.currentTask.isHastende) {
-    // Bonus: +4 point til den relevante KPI
     if (gameState.currentTask.focus === "udvikling") {
       gameState.development += 4;
       bonusNote = `<p style="color:green;">Hastende bonus: +4 Udvikling!</p>`;
@@ -596,7 +587,7 @@ function showTaskSummary() {
 }
 
 /**
- * Finish Task – opgaven afsluttes, score opdateres og nye opgaver tilføjes
+ * Finish Task – afslutter opgaven, opdaterer score og tilføjer nye opgaver
  */
 function finishTask() {
   gameState.tasksCompleted++;
@@ -604,9 +595,7 @@ function finishTask() {
   openModal("<h2>Info</h2><p>Opgaven er fuldført!</p>", `<button id="taskDone" class="modern-btn">OK</button>`);
   document.getElementById('taskDone').addEventListener('click', () => {
     closeModal(() => {
-      // Fjern fuldført opgave
       gameState.tasks = gameState.tasks.filter(t => t !== gameState.currentTask);
-      // Tilføj 2 nye opgaver
       const newOnes = gameState.allTasks.splice(0,2);
       assignRandomHastende(newOnes);
       gameState.tasks = gameState.tasks.concat(newOnes);
