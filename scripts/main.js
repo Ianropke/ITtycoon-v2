@@ -47,8 +47,8 @@ assignRandomHastende(gameState.tasks);
 
 /**
  * Chart.js – initialisering af KPI-grafen
- * Grafen viser to grupper: "Tid" og "Score". Score-søjlen er stacket med to datasæt:
- * Sikkerhed og Udvikling (Score = security + development).
+ * Grafen viser to grupper: "Tid" og en stacket "Score"-søjle (Sikkerhed + Udvikling).
+ * Den lilla farve for "Udvikling" er nu #9b59b6 for bedre synlighed.
  */
 const ctx = document.getElementById('kpiChart').getContext('2d');
 const kpiChart = new Chart(ctx, {
@@ -71,7 +71,7 @@ const kpiChart = new Chart(ctx, {
       {
         label: 'Udvikling',
         data: [0, gameState.development],
-        backgroundColor: '#8e44ad',
+        backgroundColor: '#9b59b6', // Lysere, mere synlig lilla
         stack: 'score'
       }
     ]
@@ -89,11 +89,12 @@ const kpiChart = new Chart(ctx, {
   }
 });
 
+/** Opdatering af graf (Tid + stacket Score) */
 function updateDashboard() {
   if (gameState.time < 0) gameState.time = 0;
-  kpiChart.data.datasets[0].data = [gameState.time, 0];
-  kpiChart.data.datasets[1].data = [0, gameState.security];
-  kpiChart.data.datasets[2].data = [0, gameState.development];
+  kpiChart.data.datasets[0].data = [gameState.time, 0];          // Tid
+  kpiChart.data.datasets[1].data = [0, gameState.security];      // Sikkerhed
+  kpiChart.data.datasets[2].data = [0, gameState.development];   // Udvikling
   kpiChart.update();
 }
 
@@ -618,7 +619,7 @@ function finishTask() {
   document.getElementById('taskDone').addEventListener('click', () => {
     closeModal(() => {
       gameState.tasks = gameState.tasks.filter(t => t !== gameState.currentTask);
-      const newOnes = gameState.allTasks.splice(0,2);
+      const newOnes = gameState.allTasks.splice(0, 2);
       assignRandomHastende(newOnes);
       gameState.tasks = gameState.tasks.concat(newOnes);
       
