@@ -11,7 +11,7 @@ const gameState = {
   development: 0,
   currentTask: null,
   currentStepIndex: 0,
-  tasksCompleted: 0,  // Nu gælder 5 opgaver pr. PI
+  tasksCompleted: 0,  // PI slutter når 5 opgaver er gennemført
   tasksDevelopment: 0,
   tasksSikkerhed: 0,
   missionGoals: { security: 22, development: 22 },
@@ -24,7 +24,7 @@ const gameState = {
 };
 
 /**
- * Definér lokationslisten – nu tilgængelig for alle funktioner
+ * Definér lokationslisten – tilgængelig for alle funktioner
  */
 const locationList = ["hospital", "dokumentation", "leverandør", "infrastruktur", "it‑jura", "cybersikkerhed"];
 
@@ -88,7 +88,6 @@ const kpiChart = new Chart(ctx, {
   }
 });
 
-/** Opdatering af graf (Tid + stacket Score) */
 function updateDashboard() {
   if (gameState.time < 0) gameState.time = 0;
   kpiChart.data.datasets[0].data = [gameState.time, 0];
@@ -98,9 +97,6 @@ function updateDashboard() {
   updateNarrative();
 }
 
-/**
- * Opdater Task Progress – viser antal opgaver og fordelingen
- */
 function updateTaskProgress() {
   const progressEl = document.getElementById('taskProgress');
   if (progressEl) {
@@ -111,8 +107,8 @@ function updateTaskProgress() {
 updateTaskProgress();
 
 /**
- * Render KPI tooltips – vis info om Tid, Udvikling og Sikkerhed
- * Forudsætter et element med id="kpiInfo" i index.
+ * Render KPI tooltips – info om Tid, Udvikling og Sikkerhed
+ * Forudsætter et element med id="kpiInfo" findes i index.
  */
 function renderKpiTooltips() {
   const kpiInfo = document.getElementById('kpiInfo');
@@ -133,7 +129,7 @@ function renderKpiTooltips() {
 renderKpiTooltips();
 
 /**
- * Render lokationer (venstre side)
+ * Render lokationer (venstre side) – tilføjer også tooltips for hver lokation.
  */
 function renderLocations() {
   const locDiv = document.getElementById('locations');
@@ -142,7 +138,7 @@ function renderLocations() {
     const btn = document.createElement('button');
     btn.className = 'location-button';
     btn.innerHTML = loc.toUpperCase() + " " + getIcon(loc);
-    btn.title = `Info om ${loc}`;  // Tooltip for lokationen
+    btn.title = `Info om ${loc}`;  // Tooltip til lokationen
     btn.addEventListener('click', () => handleLocationClick(loc));
     locDiv.appendChild(btn);
   });
@@ -151,7 +147,7 @@ renderLocations();
 
 /**
  * Dynamisk narrativ opdatering – viser løbende feedback til spilleren
- * Forudsætter et element med id="narrativeUpdate" i index.
+ * Forudsætter et element med id="narrativeUpdate" findes i index.
  */
 function updateNarrative() {
   const narrativeEl = document.getElementById('narrativeUpdate');
@@ -508,8 +504,7 @@ function proceedToNextStep() {
 }
 
 /**
- * Tjek game over – spillet slutter, når Tid=0.
- * PI-feedback: Når 5 opgaver er gennemført, vises en spændende feedbackmodal.
+ * Tjek game over – spillet slutter, når Tid=0 eller 5 opgaver er gennemført
  */
 function checkGameOverCondition() {
   if (gameState.time <= 0) {
@@ -519,7 +514,7 @@ function checkGameOverCondition() {
     openModal(`<h2>Spillet er slut</h2><p>${message}</p>`, "");
     setTimeout(() => location.reload(), 4000);
   }
-  // Hvis 5 opgaver er gennemført, giver vi PI-feedback
+  // Hvis 5 opgaver er gennemført, vis PI-feedback
   else if (gameState.tasksCompleted >= 5) {
     showPIFeedback();
   }
@@ -527,6 +522,7 @@ function checkGameOverCondition() {
 
 /**
  * PI Feedback – vis spændende feedback, når 5 opgaver er gennemført.
+ * Denne funktion er kun defineret én gang.
  */
 function showPIFeedback() {
   const totalPoints = gameState.security + gameState.development;
@@ -534,18 +530,17 @@ function showPIFeedback() {
     <h2>PI Feedback</h2>
     <p>Fantastisk arbejde! Du har gennemført 5 opgaver.</p>
     <p>Din samlede score er ${totalPoints} point.</p>
-    <p>Du har vist en god balance mellem opgavernes udførelse og tidsstyring.</p>
-    <p>Forbered dig nu på næste sprint – justér din strategi og fortsæt med at optimere din performance!</p>
+    <p>Du har vist, at du kan balancere opgaver og tid – en kritisk egenskab for en succesfuld IT‑forvalter.</p>
+    <p>Forbered dig nu på næste PI – justér din strategi og sæt nye mål!</p>
   `;
-  openModal(feedbackHTML, `<button id="continuePI" class="modern-btn">Fortsæt til næste PI</button>`);
+  openModal(feedbackHTML, `<button id="continuePI" class="modern-btn">Start Næste PI</button>`);
   document.getElementById('continuePI').addEventListener('click', () => {
     closeModal(() => {
-      // Nulstil opgaveantal og tid for næste PI
+      // Nulstil opgavelisten for næste PI
       gameState.tasksCompleted = 0;
       gameState.time = 40;
       updateDashboard();
       updateTaskProgress();
-      // Ryd aktiv opgave og vis potentielle opgaver
       document.getElementById('activeTask').innerHTML = '<h2>Aktiv Opgave</h2>';
       gameState.currentTask = null;
       gameState.currentStepIndex = 0;
@@ -577,23 +572,6 @@ function cabApproval() {
       chance -= 0.1;
       if (chance < 0) chance = 0;
       extraNote += `<p style="color:red;">Hastende opgave: +10% risiko for afvisning, +4 bonus ved succes.</p>`;
-    }
-    
-    let total = gameState.tasksDevelopment + gameState.tasksSikkerhed;
-    if (total > 0) {
-      if (t.focus === 'udvikling') {
-        let ratio = gameState.tasksDevelopment / total;
-        if (ratio > 0.8) {
-          chance -= 0.1;
-          extraNote += `<p style="color:red;">Overdreven fokus på udvikling øger risikoen for CAB-afvisning.</p>`;
-        }
-      } else {
-        let ratio = gameState.tasksSikkerhed / total;
-        if (ratio > 0.8) {
-          chance -= 0.1;
-          extraNote += `<p style="color:red;">Overdreven fokus på sikkerhed øger risikoen for CAB-afvisning.</p>`;
-        }
-      }
     }
     
     const approvalPct = Math.floor(chance * 100);
@@ -702,7 +680,6 @@ function showTaskSummary() {
 function finishTask() {
   gameState.tasksCompleted++;
   updateTaskProgress();
-  // Hvis ikke PI er afsluttet, vis standard besked
   if (gameState.tasksCompleted < 5) {
     openModal("<h2>Info</h2><p>Opgaven er fuldført!</p>", `<button id="taskDone" class="modern-btn">OK</button>`);
     document.getElementById('taskDone').addEventListener('click', () => {
@@ -720,7 +697,6 @@ function finishTask() {
       });
     });
   } else {
-    // Hvis 5 opgaver er gennemført, vis PI-feedback
     showPIFeedback();
   }
 }
@@ -740,7 +716,6 @@ function showPIFeedback() {
   openModal(feedbackHTML, `<button id="continuePI" class="modern-btn">Start Næste PI</button>`);
   document.getElementById('continuePI').addEventListener('click', () => {
     closeModal(() => {
-      // Nulstil opgavelisten for næste PI
       gameState.tasksCompleted = 0;
       gameState.time = 40;
       updateDashboard();
@@ -751,6 +726,158 @@ function showPIFeedback() {
       renderPotentialTasks();
     });
   });
+}
+
+/**
+ * CAB Approvement – vurdering af opgavens kvalitet, med rework-straffen på 1 Tid.
+ */
+function cabApproval() {
+  closeModal(() => {
+    const t = gameState.currentTask;
+    let focusKPI, missionGoal;
+    if (t.focus === 'udvikling') {
+      focusKPI = gameState.development;
+      missionGoal = gameState.missionGoals.development;
+    } else {
+      focusKPI = gameState.security;
+      missionGoal = gameState.missionGoals.security;
+    }
+    
+    const allAdvanced = gameState.choiceHistory.every(ch => ch && ch.advanced);
+    let chance = allAdvanced ? 1 : Math.min(1, focusKPI / missionGoal);
+    
+    let extraNote = "";
+    if (t.isHastende) {
+      chance -= 0.1;
+      if (chance < 0) chance = 0;
+      extraNote += `<p style="color:red;">Hastende opgave: +10% risiko for afvisning, +4 bonus ved succes.</p>`;
+    }
+    
+    const approvalPct = Math.floor(chance * 100);
+    const riskPct = 100 - approvalPct;
+    
+    const cabHTML = `
+      <h2>CAB (Change Advisory Board)</h2>
+      ${extraNote}
+      <p>Godkendelsesprocent: ${approvalPct}%</p>
+      <p>Risiko for afvisning: ${riskPct}%</p>
+    `;
+    let footHTML = `<button id="evaluateCAB" class="modern-btn">Evaluér nu</button>`;
+    if (!allAdvanced) {
+      footHTML += ` <button id="goBackCAB" class="modern-btn">Gå tilbage</button>`;
+    }
+    
+    openModal(cabHTML, footHTML);
+    
+    document.getElementById('evaluateCAB').addEventListener('click', () => {
+      if (Math.random() < chance) {
+        showTaskSummary();
+      } else {
+        openModal("<h2>CAB Afvisning</h2><p>Rework er påkrævet, og du mister 1 Tid.</p>", `<button id="reworkBtn" class="modern-btn">OK</button>`);
+        document.getElementById('reworkBtn').addEventListener('click', () => {
+          gameState.time -= 1;
+          if (gameState.time < 0) gameState.time = 0;
+          updateDashboard();
+          closeModal(() => cabApproval());
+        });
+      }
+    });
+    
+    if (!allAdvanced) {
+      document.getElementById('goBackCAB').addEventListener('click', () => showRevisionOptions());
+    }
+  });
+}
+
+/**
+ * Revision Options – mulighed for at fortryde valg (kun for ikke-avancerede valg)
+ */
+function showRevisionOptions() {
+  let revisableIndices = [];
+  for (let i = 0; i < gameState.choiceHistory.length; i++) {
+    if (gameState.choiceHistory[i] && !gameState.choiceHistory[i].advanced && gameState.revisionCount[i] < 1) {
+      revisableIndices.push(i);
+    }
+  }
+  if (revisableIndices.length === 0) {
+    openModal("<h2>Ingen revidérbare trin</h2><p>Alle trin er enten avancerede eller allerede revideret.</p>", `<button id="noRev" class="modern-btn">OK</button>`);
+    document.getElementById('noRev').addEventListener('click', () => closeModal(() => cabApproval()));
+    return;
+  }
+  let listHTML = "<h2>Vælg et trin at revidere</h2><ul>";
+  revisableIndices.forEach(idx => {
+    let stDesc = gameState.currentTask.steps[idx].stepDescription;
+    listHTML += `<li><button class="revisionBtn modern-btn" data-idx="${idx}">Trin ${idx+1}: ${stDesc}</button></li>`;
+  });
+  listHTML += "</ul>";
+  
+  openModal(listHTML, "");
+  document.querySelectorAll('.revisionBtn').forEach(b => {
+    b.addEventListener('click', e => {
+      let chosenIdx = parseInt(e.target.getAttribute('data-idx'));
+      gameState.revisionCount[chosenIdx]++;
+      gameState.revisionMode = true;
+      closeModal(() => {
+        gameState.currentStepIndex = chosenIdx;
+        showStepChoices(gameState.currentTask.steps[chosenIdx]);
+      });
+    });
+  });
+}
+
+/**
+ * Task Summary – opsummering af dine valg og evt. hastende bonus
+ */
+function showTaskSummary() {
+  let bonusNote = "";
+  if (gameState.currentTask.isHastende) {
+    if (gameState.currentTask.focus === "udvikling") {
+      gameState.development += 4;
+      bonusNote = `<p style="color:green;">Hastende bonus: +4 Udvikling!</p>`;
+    } else {
+      gameState.security += 4;
+      bonusNote = `<p style="color:green;">Hastende bonus: +4 Sikkerhed!</p>`;
+    }
+    updateDashboard();
+  }
+  
+  let summaryHTML = "<h2>Opsummering af dine valg</h2><ul>";
+  gameState.choiceHistory.forEach((ch, i) => {
+    if (ch) {
+      summaryHTML += `<li>Trin ${i+1}: ${ch.title}</li>`;
+    }
+  });
+  summaryHTML += "</ul>" + bonusNote;
+  
+  openModal(summaryHTML, `<button id="afterSummary" class="modern-btn">Fortsæt</button>`);
+  document.getElementById('afterSummary').addEventListener('click', () => closeModal(() => finishTask()));
+}
+
+/**
+ * Finish Task – opgaven afsluttes, score opdateres og nye opgaver tilføjes
+ */
+function finishTask() {
+  gameState.tasksCompleted++;
+  updateTaskProgress();
+  if (gameState.tasksCompleted < 5) {
+    openModal("<h2>Info</h2><p>Opgaven er fuldført!</p>", `<button id="taskDone" class="modern-btn">OK</button>`);
+    document.getElementById('taskDone').addEventListener('click', () => {
+      closeModal(() => {
+        gameState.tasks = gameState.tasks.filter(t => t !== gameState.currentTask);
+        const newOnes = gameState.allTasks.splice(0, 2);
+        assignRandomHastende(newOnes);
+        gameState.tasks = gameState.tasks.concat(newOnes);
+      
+        document.getElementById('activeTask').innerHTML = '<h2>Aktiv Opgave</h2>';
+        gameState.currentTask = null;
+        gameState.currentStepIndex = 0;
+        renderPotentialTasks();
+        checkGameOverCondition();
+      });
+    });
+  } else {
+    showPIFeedback();
+  }
 }
 
 /**
