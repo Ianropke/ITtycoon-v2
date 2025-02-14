@@ -6,12 +6,12 @@ import { shuffleArray, getIcon } from './utils.js';
  * Global game state med alle avancerede funktioner
  */
 const gameState = {
-  time: 50, // Spilleren starter med 50 Tid
+  time: 40, // Spilleren starter med 40 Tid
   security: 0,
   development: 0,
   currentTask: null,
   currentStepIndex: 0,
-  tasksCompleted: 0,
+  tasksCompleted: 0,  // Nu gælder 5 opgaver pr. PI
   tasksDevelopment: 0,
   tasksSikkerhed: 0,
   missionGoals: { security: 22, development: 22 },
@@ -52,6 +52,7 @@ assignRandomHastende(gameState.tasks);
 
 /**
  * Chart.js – initialisering af KPI-grafen
+ * Grafen viser to grupper: "Tid" og en stacket "Score"-søjle (Sikkerhed + Udvikling).
  */
 const ctx = document.getElementById('kpiChart').getContext('2d');
 const kpiChart = new Chart(ctx, {
@@ -87,6 +88,7 @@ const kpiChart = new Chart(ctx, {
   }
 });
 
+/** Opdatering af graf (Tid + stacket Score) */
 function updateDashboard() {
   if (gameState.time < 0) gameState.time = 0;
   kpiChart.data.datasets[0].data = [gameState.time, 0];
@@ -96,17 +98,20 @@ function updateDashboard() {
   updateNarrative();
 }
 
+/**
+ * Opdater Task Progress – viser antal opgaver og fordelingen
+ */
 function updateTaskProgress() {
   const progressEl = document.getElementById('taskProgress');
   if (progressEl) {
-    progressEl.textContent = `Opgave ${gameState.tasksCompleted} / 10 - Udvikling: ${gameState.tasksDevelopment}, Sikkerhed: ${gameState.tasksSikkerhed}`;
+    progressEl.textContent = `Opgave ${gameState.tasksCompleted} / 5 - Udvikling: ${gameState.tasksDevelopment}, Sikkerhed: ${gameState.tasksSikkerhed}`;
   }
   updateNarrative();
 }
 updateTaskProgress();
 
 /**
- * Render KPI tooltips – til info om Tid, Udvikling og Sikkerhed
+ * Render KPI tooltips – vis info om Tid, Udvikling og Sikkerhed
  * Forudsætter et element med id="kpiInfo" i index.
  */
 function renderKpiTooltips() {
@@ -137,7 +142,7 @@ function renderLocations() {
     const btn = document.createElement('button');
     btn.className = 'location-button';
     btn.innerHTML = loc.toUpperCase() + " " + getIcon(loc);
-    btn.title = `Info om ${loc}`;  // Tilføj tooltip til lokation
+    btn.title = `Info om ${loc}`;  // Tooltip for lokationen
     btn.addEventListener('click', () => handleLocationClick(loc));
     locDiv.appendChild(btn);
   });
@@ -152,11 +157,11 @@ function updateNarrative() {
   const narrativeEl = document.getElementById('narrativeUpdate');
   if (!narrativeEl) return;
   let narrative = "";
-  const progress = gameState.tasksCompleted / 10;
+  const progress = gameState.tasksCompleted / 5;
   if (progress >= 0.6 && progress < 0.8) {
-    narrative = "Du er nu 60% af vejen til at nå dine mål!";
+    narrative = "Du er nu 60% af vejen til at gennemføre PI!";
   } else if (progress >= 0.8) {
-    narrative = "Du nærmer dig dine mål – godt klaret!";
+    narrative = "Du nærmer dig målet for denne PI – godt klaret!";
   } else {
     narrative = "Fortsæt med at gennemføre opgaver for at øge din score.";
   }
@@ -222,18 +227,18 @@ function showIntro() {
 }
 
 /**
- * 2) Sprintmål (PI Planning)
+ * 2) Sprintmål (PI Planning) – nu med 5 opgaver
  */
 function showSprintGoal() {
   const piHTML = `
     <h2>PI Planning</h2>
     <p>
-      Dine primære mål er at gennemføre 10 opgaver og opnå en høj samlet score 
+      Dine primære mål for denne PI er at gennemføre 5 opgaver og opnå en høj samlet score 
       (Score = Udvikling + Sikkerhed) inden for den tilgængelige Tid (50).
     </p>
     <p>
       Husk: Hver opgave koster 2 Tid, og dine valg påvirker, hvor mange point du opnår.
-      Hvis du ensidigt prioriterer én dimension, øges risikoen for CAB-afvisning i næste PI.
+      Ensidige valg øger risikoen for CAB-afvisning i næste PI.
     </p>
     <p>Tryk "Fortsæt" for at gå videre til tutorial.</p>
   `;
@@ -503,21 +508,50 @@ function proceedToNextStep() {
 }
 
 /**
- * Tjek game over – spillet slutter, når Tid=0 eller 10 opgaver er gennemført
+ * Tjek game over – spillet slutter, når Tid=0.
+ * PI-feedback: Når 5 opgaver er gennemført, vises en spændende feedbackmodal.
  */
 function checkGameOverCondition() {
-  if (gameState.time <= 0 || gameState.tasksCompleted >= 10) {
-    let message = "";
-    if (gameState.tasksCompleted < 10) {
-      message = "Tiden er opbrugt, men du nåede ikke at fuldføre 10 opgaver.";
-    } else {
-      message = "Du har gennemført 10 opgaver!";
-    }
+  if (gameState.time <= 0) {
+    let message = "Tiden er opbrugt!";
     const totalPoints = gameState.security + gameState.development;
     message += `<br>Samlet score: ${totalPoints} point<br>Fordeling: Udvikling: ${gameState.tasksDevelopment}, Sikkerhed: ${gameState.tasksSikkerhed}`;
     openModal(`<h2>Spillet er slut</h2><p>${message}</p>`, "");
     setTimeout(() => location.reload(), 4000);
   }
+  // Hvis 5 opgaver er gennemført, giver vi PI-feedback
+  else if (gameState.tasksCompleted >= 5) {
+    showPIFeedback();
+  }
+}
+
+/**
+ * PI Feedback – vis spændende feedback, når 5 opgaver er gennemført.
+ */
+function showPIFeedback() {
+  const totalPoints = gameState.security + gameState.development;
+  const feedbackHTML = `
+    <h2>PI Feedback</h2>
+    <p>Fantastisk arbejde! Du har gennemført 5 opgaver.</p>
+    <p>Din samlede score er ${totalPoints} point.</p>
+    <p>Du har vist en god balance mellem opgavernes udførelse og tidsstyring.</p>
+    <p>Forbered dig nu på næste sprint – justér din strategi og fortsæt med at optimere din performance!</p>
+  `;
+  openModal(feedbackHTML, `<button id="continuePI" class="modern-btn">Fortsæt til næste PI</button>`);
+  document.getElementById('continuePI').addEventListener('click', () => {
+    closeModal(() => {
+      // Nulstil opgaveantal og tid for næste PI
+      gameState.tasksCompleted = 0;
+      gameState.time = 40;
+      updateDashboard();
+      updateTaskProgress();
+      // Ryd aktiv opgave og vis potentielle opgaver
+      document.getElementById('activeTask').innerHTML = '<h2>Aktiv Opgave</h2>';
+      gameState.currentTask = null;
+      gameState.currentStepIndex = 0;
+      renderPotentialTasks();
+    });
+  });
 }
 
 /**
@@ -668,19 +702,53 @@ function showTaskSummary() {
 function finishTask() {
   gameState.tasksCompleted++;
   updateTaskProgress();
-  openModal("<h2>Info</h2><p>Opgaven er fuldført!</p>", `<button id="taskDone" class="modern-btn">OK</button>`);
-  document.getElementById('taskDone').addEventListener('click', () => {
-    closeModal(() => {
-      gameState.tasks = gameState.tasks.filter(t => t !== gameState.currentTask);
-      const newOnes = gameState.allTasks.splice(0, 2);
-      assignRandomHastende(newOnes);
-      gameState.tasks = gameState.tasks.concat(newOnes);
+  // Hvis ikke PI er afsluttet, vis standard besked
+  if (gameState.tasksCompleted < 5) {
+    openModal("<h2>Info</h2><p>Opgaven er fuldført!</p>", `<button id="taskDone" class="modern-btn">OK</button>`);
+    document.getElementById('taskDone').addEventListener('click', () => {
+      closeModal(() => {
+        gameState.tasks = gameState.tasks.filter(t => t !== gameState.currentTask);
+        const newOnes = gameState.allTasks.splice(0, 2);
+        assignRandomHastende(newOnes);
+        gameState.tasks = gameState.tasks.concat(newOnes);
       
+        document.getElementById('activeTask').innerHTML = '<h2>Aktiv Opgave</h2>';
+        gameState.currentTask = null;
+        gameState.currentStepIndex = 0;
+        renderPotentialTasks();
+        checkGameOverCondition();
+      });
+    });
+  } else {
+    // Hvis 5 opgaver er gennemført, vis PI-feedback
+    showPIFeedback();
+  }
+}
+
+/**
+ * PI Feedback – vis spændende feedback, når 5 opgaver er gennemført.
+ */
+function showPIFeedback() {
+  const totalPoints = gameState.security + gameState.development;
+  const feedbackHTML = `
+    <h2>PI Feedback</h2>
+    <p>Fantastisk arbejde! Du har gennemført 5 opgaver.</p>
+    <p>Din samlede score er ${totalPoints} point.</p>
+    <p>Du har vist, at du kan balancere opgaver og tid – en kritisk egenskab for en succesfuld IT‑forvalter.</p>
+    <p>Forbered dig nu på næste PI – justér din strategi og sæt nye mål!</p>
+  `;
+  openModal(feedbackHTML, `<button id="continuePI" class="modern-btn">Start Næste PI</button>`);
+  document.getElementById('continuePI').addEventListener('click', () => {
+    closeModal(() => {
+      // Nulstil opgavelisten for næste PI
+      gameState.tasksCompleted = 0;
+      gameState.time = 40;
+      updateDashboard();
+      updateTaskProgress();
       document.getElementById('activeTask').innerHTML = '<h2>Aktiv Opgave</h2>';
       gameState.currentTask = null;
       gameState.currentStepIndex = 0;
       renderPotentialTasks();
-      checkGameOverCondition();
     });
   });
 }
