@@ -6,7 +6,7 @@ import { shuffleArray, getIcon } from './utils.js';
  * Global game state med alle avancerede funktioner
  */
 const gameState = {
-  time: 40,
+  time: 40, // Spilleren starter nu med 40 Tid
   security: 0,
   development: 0,
   currentTask: null,
@@ -84,19 +84,77 @@ const kpiChart = new Chart(ctx, {
   }
 });
 
+/** Opdatering af graf (Tid + stacket Score) */
 function updateDashboard() {
   if (gameState.time < 0) gameState.time = 0;
   kpiChart.data.datasets[0].data = [gameState.time, 0];
   kpiChart.data.datasets[1].data = [0, gameState.security];
   kpiChart.data.datasets[2].data = [0, gameState.development];
   kpiChart.update();
+  updateNarrative(); // Opdater narrativ efter dashboardændringer
 }
 
+/**
+ * Opdater Task Progress – viser antal opgaver og fordelingen
+ */
 function updateTaskProgress() {
   const progressEl = document.getElementById('taskProgress');
   progressEl.textContent = `Opgave ${gameState.tasksCompleted} / 10 - Udvikling: ${gameState.tasksDevelopment}, Sikkerhed: ${gameState.tasksSikkerhed}`;
+  updateNarrative(); // Også her opdateres narrativ
 }
 updateTaskProgress();
+
+/**
+ * Render dynamiske KPI tooltips – info-ikoner med forklaringer
+ * Forudsætter et DOM-element med id="kpiInfo" findes i index.
+ */
+function renderKpiTooltips() {
+  const kpiInfo = document.getElementById('kpiInfo');
+  if (kpiInfo) {
+    kpiInfo.innerHTML = `
+      <div class="tooltip-item">
+        <i class="fas fa-clock" title="Din samlede tid. Hver opgave koster 2 Tid."></i> Tid
+      </div>
+      <div class="tooltip-item">
+        <i class="fas fa-code" title="Udviklingspoint: point for at løse opgaver med fokus på udvikling."></i> Udvikling
+      </div>
+      <div class="tooltip-item">
+        <i class="fas fa-shield-alt" title="Sikkerhedspoint: point for at løse opgaver med fokus på sikkerhed."></i> Sikkerhed
+      </div>
+    `;
+  }
+}
+renderKpiTooltips();
+
+/**
+ * Dynamisk narrativ opdatering – viser løbende feedback til spilleren
+ * Forudsætter et DOM-element med id="narrativeUpdate" findes i index.
+ */
+function updateNarrative() {
+  const narrativeEl = document.getElementById('narrativeUpdate');
+  if (!narrativeEl) return;
+  let narrative = "";
+  const progress = gameState.tasksCompleted / 10;
+  if (progress >= 0.6 && progress < 0.8) {
+    narrative = "Du er nu 60% af vejen til at nå dine mål!";
+  } else if (progress >= 0.8) {
+    narrative = "Du nærmer dig dine mål – godt klaret!";
+  } else {
+    narrative = "Fortsæt med at gennemføre opgaver for at øge din score.";
+  }
+  // Eksempel på advarsel om ensidig prioritering
+  const total = gameState.tasksDevelopment + gameState.tasksSikkerhed;
+  if (total > 0) {
+    const ratioDev = gameState.tasksDevelopment / total;
+    const ratioSec = gameState.tasksSikkerhed / total;
+    if (ratioDev > 0.8) {
+      narrative += " CAB advarer: Overdreven fokus på udvikling kan øge risikoen for afvisning!";
+    } else if (ratioSec > 0.8) {
+      narrative += " CAB advarer: Overdreven fokus på sikkerhed kan øge risikoen for afvisning!";
+    }
+  }
+  narrativeEl.innerHTML = narrative;
+}
 
 /**
  * Render lokationer (venstre side)
@@ -153,7 +211,7 @@ function showIntro() {
       Dit mål? At gennemføre så mange opgaver som muligt, før tiden løber ud. Du har 40 Tid til rådighed, og hver opgave koster 2 Tid. Hver opgave, du gennemfører, giver dig point – enten i Udvikling eller i Sikkerhed. Din samlede score er antallet af gennemførte opgaver plus summen af dine point (Udvikling + Sikkerhed).
     </p>
     <p>
-      Men pas på! Hvis du kun fokuserer på én type opgave, kan du risikere at få problemer med CAB-godkendelsen i næste sprint. Nogle opgaver kan også være hastende og give ekstra bonus, men øger samtidig din risiko. Er du klar til at balancere krav, prioritere rigtigt og navigere i en verden af tekniske udfordringer og stramme deadlines?
+      Men pas på! Hvis du kun fokuserer på én type opgave, kan du risikere at få problemer med CAB-godkendelsen i næste sprint. Nogle opgaver kan også være hastende og give ekstra bonus, men øger samtidig din risiko.
     </p>
     <p>Klar til at starte? Klik "Start Spillet" for at begynde!</p>
   `;
