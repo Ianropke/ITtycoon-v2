@@ -21,7 +21,6 @@
   <body>
     <header>
       <div class="header-content">
-        <!-- Raketten indsat som logo -->
         <span class="logo">🚀</span>
         <h1>IT‑Tycoon</h1>
         <!-- Hjælp-knap – fast placeret i øverste højre hjørne -->
@@ -29,7 +28,7 @@
       </div>
     </header>
     <div class="container">
-      <!-- Venstre kolonne: "Ny opgave"-knap og Lokationer -->
+      <!-- Venstre kolonne: "Vælg ny opgave"-knap og lokationer -->
       <div class="left-column">
         <button id="newTaskBtn" class="big-new-task-btn">
           <i class="fas fa-plus"></i> Vælg ny opgave
@@ -39,15 +38,21 @@
           <div id="locations"></div>
         </div>
       </div>
-      <!-- Højre kolonne: Aktiv opgave og KPI-graf -->
+      <!-- Højre kolonne: Aktiv opgave, KPI-graf, potentielle opgaver og ekstra info -->
       <div class="right-column">
-        <!-- Aktiv opgave flyttes til toppen -->
         <div id="activeTask">
           <h2>Aktiv Opgave</h2>
         </div>
         <div id="graphContainer">
           <canvas id="kpiChart"></canvas>
-          <div id="taskProgress" class="task-progress">Opgave 0/10</div>
+          <div id="taskProgress" class="task-progress">Opgave 0/5</div>
+          <!-- KPI tooltips -->
+          <div id="kpiInfo"></div>
+          <!-- Dynamisk narrativ feedback -->
+          <div id="narrativeUpdate"></div>
+        </div>
+        <div id="potentialTasks">
+          <h2>Potentielle Opgaver</h2>
         </div>
       </div>
     </div>
@@ -63,7 +68,7 @@
     <script src="scripts/tasks/hospitalTasks.js"></script>
     <script src="scripts/tasks/infrastrukturTasks.js"></script>
     <script src="scripts/tasks/cybersikkerhedTasks.js"></script>
-    <!-- Moduler (ES6) -->
+    <!-- Indlæs moduler (ES6) -->
     <script type="module" src="scripts/modal.js"></script>
     <script type="module" src="scripts/utils.js"></script>
     <script type="module" src="scripts/main.js"></script>
