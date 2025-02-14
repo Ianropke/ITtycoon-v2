@@ -21,8 +21,6 @@
   --modal-max-height: 60vh;
   --btn-padding: 0.8rem 1.2rem;
   --modal-padding: 1.5rem;
-  --fixed-active-height: 25vh;  /* Fast højde for aktiv opgave */
-  --fixed-graph-height: 48vh;   /* Fast højde til graf */
 }
 
 /* Global styling */
@@ -31,7 +29,6 @@ body {
   background: var(--background-gradient);
   color: var(--text-color);
   line-height: 1.5;
-  -webkit-text-size-adjust: none;
 }
 
 /* Header */
@@ -40,7 +37,7 @@ header {
   color: #fff;
   padding: 1rem 2rem;
   position: relative;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -64,7 +61,7 @@ header h1 {
   margin: 0;
 }
 
-/* Hjælp-knap – fast placeret i øverste højre hjørne */
+/* Hjælp-knap – fast i øverste højre hjørne */
 .help-btn {
   position: absolute;
   top: 10px;
@@ -85,20 +82,20 @@ header h1 {
 .container {
   display: flex;
   min-height: calc(100vh - 80px);
-  overflow-x: hidden;
 }
 
-/* Venstre kolonne: "Ny opgave"-knap og lokationer */
+/* Venstre kolonne: "Vælg ny opgave"-knap og Lokationer */
 .left-column {
   width: 40%;
   padding: 1rem;
-  background-color: rgba(255, 255, 255, 0.95);
+  background-color: rgba(255,255,255,0.95);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1rem;
 }
 
+/* Knappen for at vælge ny opgave */
 #newTaskBtn,
 .big-new-task-btn {
   font-size: 1.2rem;
@@ -116,21 +113,21 @@ header h1 {
   transform: scale(1.03);
 }
 
+/* Lokationer */
 #locationsContainer {
   width: 100%;
 }
 #locations {
   display: flex;
   flex-direction: column;
-  /* Mindsket afstand mellem lokationsknapper */
-  gap: 0.5rem; /* Tidligere 1.2rem */
+  gap: 0.8rem; /* Mindre mellemrum mellem de grønne knapper */
   width: 100%;
 }
 
-/* Lokationsknapper – mindre margin for at spare plads */
+/* Lokationsknapper */
 .location-button {
   padding: 1.2rem 1.8rem;
-  font-size: 150%;
+  font-size: 1.1rem;
   border: 2px solid var(--secondary-color);
   background-color: var(--secondary-color);
   color: #fff;
@@ -140,66 +137,117 @@ header h1 {
   transition: background-color 0.3s ease, transform 0.2s ease;
   width: 100%;
   text-align: center;
-  min-height: 48px;
-  margin: 0.1rem 0; /* Tidligere 0.3rem 0 */
 }
 .location-button:hover {
   background-color: #43a047;
   transform: scale(1.02);
 }
 
-/* Højre kolonne: Aktiv opgave og KPI-graf */
+/* Højre kolonne: Aktiv opgave, KPI-graf, potential tasks */
 .right-column {
   width: 60%;
   padding: 1rem;
-  background-color: rgba(255, 255, 255, 0.95);
+  background-color: rgba(255,255,255,0.95);
   display: flex;
   flex-direction: column;
-  /* Mindsket gap for at bringe grafen tættere på Aktiv Opgave */
-  gap: 0.5rem; /* Tidligere 1rem */
-  align-items: stretch;
+  gap: 1rem;
 }
 
-/* Aktiv opgave – fast område med fast højde og bevaret overskrift */
+/* Aktiv opgave */
 #activeTask {
-  width: 100%;
-  min-height: var(--fixed-active-height);
-  padding: 1rem;
   background: #fff;
   border: 1px solid #ddd;
   border-radius: 4px;
-  overflow-y: auto;
-  margin-left: 0;
-  padding-left: 1rem;
-}
-#activeTask h2 {
-  margin-bottom: 0.5rem;
+  padding: 1rem;
 }
 
-/* KPI-graf */
+/* KPI-graf – gør den lidt større */
 #graphContainer {
   width: 100%;
   position: relative;
-  max-width: 720px;
-  height: var(--fixed-graph-height);
-  /* Sænk margin-top, så grafen er tættere på aktiv opgave */
-  margin-top: 2vh; /* Tidligere 10vh */
-  padding-left: 1rem;
+  max-width: 720px; /* Ca. 20% større end 600px */
+  height: 48vh;
+  margin: 0 auto;   /* Centrerer den horisontalt */
 }
+
+/* Canvas til KPI */
 #kpiChart {
   width: 100% !important;
   height: auto !important;
 }
 
+/* Task progress overlay */
 .task-progress {
   position: absolute;
   top: 10px;
   right: 10px;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255,255,255,0.9);
   padding: 8px 12px;
   border-radius: 4px;
   font-size: 1rem;
   color: var(--text-color);
+}
+
+/* Container til KPI-ikoner + narrativ feedback */
+#infoContainer {
+  display: flex;
+  flex-wrap: wrap; /* hvis skærmen er smal, rykkes elementer ned */
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+#kpiInfo {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.tooltip-item {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.95rem;
+}
+
+#narrativeUpdate {
+  flex: 1;
+  color: #555;
+  font-style: italic;
+  min-width: 200px;
+}
+
+/* Potential tasks-liste */
+#potentialTasks {
+  margin-top: 1rem;
+  width: 100%;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 1rem;
+}
+
+/* Opgaveelementer */
+.task-item {
+  border: 1px solid #ddd;
+  padding: 0.75rem;
+  margin-bottom: 0.4rem;
+  display: flex;
+  flex-direction: column;
+  border-radius: 4px;
+  background-color: #fff;
+  color: var(--text-color);
+}
+.task-item h3 {
+  margin-bottom: 0.3rem;
+}
+.haster-badge {
+  background-color: var(--haster-color);
+  color: #fff;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  margin-left: 0.3rem;
 }
 
 /* Moderne knapper generelt */
@@ -211,9 +259,8 @@ header h1 {
   padding: var(--btn-padding);
   cursor: pointer;
   font-size: 1rem;
-  margin: 0.5rem;
+  margin: 0.3rem 0;
   transition: background-color 0.3s ease, transform 0.2s ease;
-  text-align: center;
 }
 .modern-btn:hover {
   background-color: var(--primary-color-dark);
@@ -227,7 +274,7 @@ header h1 {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: rgba(0,0,0,0.6);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -263,7 +310,7 @@ header h1 {
 }
 .modal-footer {
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   gap: 1rem;
   flex-wrap: wrap;
   padding-top: 1rem;
@@ -287,48 +334,12 @@ header h1 {
 .task-table th,
 .task-table td {
   padding: 0.75rem;
-  text-align: center;
+  text-align: left;
   border: 1px solid #ddd;
 }
 .task-table th {
   background-color: #f0f0f0;
   font-weight: 600;
-}
-
-/* Hastende badge */
-.haster-badge {
-  background-color: var(--haster-color);
-  color: #fff;
-  padding: 0.3rem 0.6rem;
-  border-radius: 4px;
-  font-size: 0.8rem;
-  margin-left: 0.5rem;
-}
-
-/* Scrollable liste til potentielle opgaver */
-.scrollable-list {
-  max-height: 300px;
-  overflow-y: auto;
-}
-
-/* Knapper i task-item */
-.task-item button {
-  min-height: 44px;
-  font-size: 1rem;
-  margin: 0.4rem 0.2rem;
-  padding: 0.6rem 1rem;
-}
-
-/* Animated Gradient – hvis ønsket */
-.animated-gradient {
-  background: linear-gradient(270deg, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff);
-  background-size: 600% 600%;
-  animation: gradientAnimation 10s ease infinite;
-}
-@keyframes gradientAnimation {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
 }
 
 /* Responsivt design */
@@ -353,5 +364,8 @@ header h1 {
   .modal-content {
     max-width: 95vw;
     max-height: 75vh;
+  }
+  .location-button {
+    font-size: 1rem;
   }
 }
