@@ -6,7 +6,7 @@ import { shuffleArray, getIcon } from './utils.js';
  * Global game state med alle avancerede funktioner
  */
 const gameState = {
-  time: 50, // Ændret til 50 fra starten
+  time: 50, // Spilleren starter med 50 Tid
   security: 0,
   development: 0,
   currentTask: null,
@@ -22,6 +22,11 @@ const gameState = {
   revisionCount: [],
   revisionMode: false
 };
+
+/**
+ * Definér lokationslisten – nu tilgængelig for alle funktioner
+ */
+const locationList = ["hospital", "dokumentation", "leverandør", "infrastruktur", "it‑jura", "cybersikkerhed"];
 
 /**
  * Saml opgaver fra de tre task-filer og bland dem
@@ -47,8 +52,6 @@ assignRandomHastende(gameState.tasks);
 
 /**
  * Chart.js – initialisering af KPI-grafen
- * Grafen viser to grupper: "Tid" og en stacket "Score"-søjle (Sikkerhed + Udvikling).
- * Den lilla farve for "Udvikling" er #9b59b6 for bedre synlighed.
  */
 const ctx = document.getElementById('kpiChart').getContext('2d');
 const kpiChart = new Chart(ctx, {
@@ -84,7 +87,6 @@ const kpiChart = new Chart(ctx, {
   }
 });
 
-/** Opdatering af graf (Tid + stacket Score) */
 function updateDashboard() {
   if (gameState.time < 0) gameState.time = 0;
   kpiChart.data.datasets[0].data = [gameState.time, 0];
@@ -94,9 +96,6 @@ function updateDashboard() {
   updateNarrative();
 }
 
-/**
- * Opdater Task Progress – viser antal opgaver og fordelingen
- */
 function updateTaskProgress() {
   const progressEl = document.getElementById('taskProgress');
   if (progressEl) {
@@ -107,8 +106,8 @@ function updateTaskProgress() {
 updateTaskProgress();
 
 /**
- * Render KPI tooltips – vis info om Tid, Udvikling og Sikkerhed
- * Forudsætter et DOM-element med id="kpiInfo"
+ * Render KPI tooltips – til info om Tid, Udvikling og Sikkerhed
+ * Forudsætter et element med id="kpiInfo" i index.
  */
 function renderKpiTooltips() {
   const kpiInfo = document.getElementById('kpiInfo');
@@ -130,25 +129,15 @@ renderKpiTooltips();
 
 /**
  * Render lokationer (venstre side)
- * Her tilføjes også tooltips for hver lokation.
  */
 function renderLocations() {
   const locDiv = document.getElementById('locations');
   locDiv.innerHTML = "";
-  const locationTooltips = {
-    "hospital": "Hospital: Patientjournaler, LIMS m.m.",
-    "dokumentation": "Dokumentation: Opdatering af system- og procesdokumentation.",
-    "leverandør": "Leverandør: Kontakt til hardware/softwareleverandører.",
-    "infrastruktur": "Infrastruktur: Netværk, servere og IT-udstyr.",
-    "it‑jura": "IT‑Jura: Juridiske aspekter af IT-drift.",
-    "cybersikkerhed": "Cybersikkerhed: Beskyttelse mod cybertrusler."
-  };
   locationList.forEach(loc => {
     const btn = document.createElement('button');
     btn.className = 'location-button';
     btn.innerHTML = loc.toUpperCase() + " " + getIcon(loc);
-    // Tilføj tooltip for lokationen
-    btn.title = locationTooltips[loc] || "";
+    btn.title = `Info om ${loc}`;  // Tilføj tooltip til lokation
     btn.addEventListener('click', () => handleLocationClick(loc));
     locDiv.appendChild(btn);
   });
@@ -157,7 +146,7 @@ renderLocations();
 
 /**
  * Dynamisk narrativ opdatering – viser løbende feedback til spilleren
- * Forudsætter et DOM-element med id="narrativeUpdate" findes i index.
+ * Forudsætter et element med id="narrativeUpdate" i index.
  */
 function updateNarrative() {
   const narrativeEl = document.getElementById('narrativeUpdate');
@@ -171,7 +160,6 @@ function updateNarrative() {
   } else {
     narrative = "Fortsæt med at gennemføre opgaver for at øge din score.";
   }
-  // Eksempel på advarsel om ensidig prioritering
   const total = gameState.tasksDevelopment + gameState.tasksSikkerhed;
   if (total > 0) {
     const ratioDev = gameState.tasksDevelopment / total;
@@ -403,7 +391,6 @@ function handleLocationClick(clickedLoc) {
 
 /**
  * Vis trinvalg – modal med valg af avanceret eller hurtig løsning
- * Farver for tid: -2 tid => rød (#f44336, fed), 0 tid => grøn (#43A047, fed)
  */
 function showStepChoices(step) {
   const bodyHTML = `<h2>${step.stepDescription}</h2>${step.stepContext || ""}`;
@@ -648,7 +635,7 @@ function showRevisionOptions() {
 }
 
 /**
- * Task Summary – opsummering af de trufne valg og evt. hastende bonus
+ * Task Summary – opsummering af dine valg og evt. hastende bonus
  */
 function showTaskSummary() {
   let bonusNote = "";
@@ -700,11 +687,10 @@ function finishTask() {
 
 /**
  * Render potentielle opgaver – vises i højre kolonne
- * Tilføjet fejlhåndtering: hvis elementet ikke findes, returneres funktionen.
  */
 function renderPotentialTasks() {
   const potDiv = document.getElementById('potentialTasks');
-  if (!potDiv) return; // Undgå fejl hvis elementet ikke findes
+  if (!potDiv) return;
   potDiv.innerHTML = `<h2>Potentielle Opgaver</h2>`;
   gameState.tasks.forEach((task, idx) => {
     const div = document.createElement('div');
