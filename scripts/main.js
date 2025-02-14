@@ -6,7 +6,7 @@ import { shuffleArray, getIcon } from './utils.js';
  * Global game state med alle avancerede funktioner
  */
 const gameState = {
-  time: 40, // Spilleren starter nu med 40 Tid
+  time: 50, // Ændret til 50 fra starten
   security: 0,
   development: 0,
   currentTask: null,
@@ -91,7 +91,7 @@ function updateDashboard() {
   kpiChart.data.datasets[1].data = [0, gameState.security];
   kpiChart.data.datasets[2].data = [0, gameState.development];
   kpiChart.update();
-  updateNarrative(); // Opdater narrativ efter dashboardændringer
+  updateNarrative();
 }
 
 /**
@@ -99,32 +99,61 @@ function updateDashboard() {
  */
 function updateTaskProgress() {
   const progressEl = document.getElementById('taskProgress');
-  progressEl.textContent = `Opgave ${gameState.tasksCompleted} / 10 - Udvikling: ${gameState.tasksDevelopment}, Sikkerhed: ${gameState.tasksSikkerhed}`;
-  updateNarrative(); // Også her opdateres narrativ
+  if (progressEl) {
+    progressEl.textContent = `Opgave ${gameState.tasksCompleted} / 10 - Udvikling: ${gameState.tasksDevelopment}, Sikkerhed: ${gameState.tasksSikkerhed}`;
+  }
+  updateNarrative();
 }
 updateTaskProgress();
 
 /**
- * Render dynamiske KPI tooltips – info-ikoner med forklaringer
- * Forudsætter et DOM-element med id="kpiInfo" findes i index.
+ * Render KPI tooltips – vis info om Tid, Udvikling og Sikkerhed
+ * Forudsætter et DOM-element med id="kpiInfo"
  */
 function renderKpiTooltips() {
   const kpiInfo = document.getElementById('kpiInfo');
   if (kpiInfo) {
     kpiInfo.innerHTML = `
       <div class="tooltip-item">
-        <i class="fas fa-clock" title="Din samlede tid. Hver opgave koster 2 Tid."></i> Tid
+        <i class="fas fa-clock" title="Din samlede Tid. Hver opgave koster 2 Tid."></i> Tid
       </div>
       <div class="tooltip-item">
-        <i class="fas fa-code" title="Udviklingspoint: point for at løse opgaver med fokus på udvikling."></i> Udvikling
+        <i class="fas fa-code" title="Udviklingspoint: Point for opgaver med fokus på udvikling."></i> Udvikling
       </div>
       <div class="tooltip-item">
-        <i class="fas fa-shield-alt" title="Sikkerhedspoint: point for at løse opgaver med fokus på sikkerhed."></i> Sikkerhed
+        <i class="fas fa-shield-alt" title="Sikkerhedspoint: Point for opgaver med fokus på sikkerhed."></i> Sikkerhed
       </div>
     `;
   }
 }
 renderKpiTooltips();
+
+/**
+ * Render lokationer (venstre side)
+ * Her tilføjes også tooltips for hver lokation.
+ */
+function renderLocations() {
+  const locDiv = document.getElementById('locations');
+  locDiv.innerHTML = "";
+  const locationTooltips = {
+    "hospital": "Hospital: Patientjournaler, LIMS m.m.",
+    "dokumentation": "Dokumentation: Opdatering af system- og procesdokumentation.",
+    "leverandør": "Leverandør: Kontakt til hardware/softwareleverandører.",
+    "infrastruktur": "Infrastruktur: Netværk, servere og IT-udstyr.",
+    "it‑jura": "IT‑Jura: Juridiske aspekter af IT-drift.",
+    "cybersikkerhed": "Cybersikkerhed: Beskyttelse mod cybertrusler."
+  };
+  locationList.forEach(loc => {
+    const btn = document.createElement('button');
+    btn.className = 'location-button';
+    btn.innerHTML = loc.toUpperCase() + " " + getIcon(loc);
+    // Tilføj tooltip for lokationen
+    btn.title = locationTooltips[loc] || "";
+    btn.addEventListener('click', () => handleLocationClick(loc));
+    locDiv.appendChild(btn);
+  });
+}
+renderLocations();
 
 /**
  * Dynamisk narrativ opdatering – viser løbende feedback til spilleren
@@ -157,23 +186,6 @@ function updateNarrative() {
 }
 
 /**
- * Render lokationer (venstre side)
- */
-const locationList = ["hospital", "dokumentation", "leverandør", "infrastruktur", "it‑jura", "cybersikkerhed"];
-function renderLocations() {
-  const locDiv = document.getElementById('locations');
-  locDiv.innerHTML = "";
-  locationList.forEach(loc => {
-    const btn = document.createElement('button');
-    btn.className = 'location-button';
-    btn.innerHTML = loc.toUpperCase() + " " + getIcon(loc);
-    btn.addEventListener('click', () => handleLocationClick(loc));
-    locDiv.appendChild(btn);
-  });
-}
-renderLocations();
-
-/**
  * Hjælp-knap
  */
 document.getElementById('helpButton').addEventListener('click', showHelp);
@@ -183,7 +195,7 @@ function showHelp() {
     <p>
       <strong>Spillets Koncept:</strong><br/>
       Gennemfør opgaver for at maksimere din samlede score – antallet af opgaver plus dine point (Udvikling + Sikkerhed).
-      Du starter med 40 Tid, og hver opgave koster 2 Tid.
+      Du starter med 50 Tid, og hver opgave koster 2 Tid.
     </p>
     <ul>
       <li>Opgaver med fokus på Udvikling giver +3 Udvikling.</li>
@@ -208,7 +220,7 @@ function showIntro() {
       Forestil dig en travl mandag morgen, hvor du træder ind i kontrolrummet for en stor, kompleks organisation. Servere surrer, telefonerne ringer, og tekniske udfordringer venter på at blive løst. Som IT‑forvalter er det dit ansvar at holde systemerne kørende, implementere nye løsninger og sikre, at alting sker inden for en stram tidsramme.
     </p>
     <p>
-      Dit mål? At gennemføre så mange opgaver som muligt, før tiden løber ud. Du har 40 Tid til rådighed, og hver opgave koster 2 Tid. Hver opgave, du gennemfører, giver dig point – enten i Udvikling eller i Sikkerhed. Din samlede score er antallet af gennemførte opgaver plus summen af dine point (Udvikling + Sikkerhed).
+      Dit mål? At gennemføre så mange opgaver som muligt, før tiden løber ud. Du har 50 Tid til rådighed, og hver opgave koster 2 Tid. Hver opgave, du gennemfører, giver dig point – enten i Udvikling eller i Sikkerhed. Din samlede score er antallet af gennemførte opgaver plus summen af dine point (Udvikling + Sikkerhed).
     </p>
     <p>
       Men pas på! Hvis du kun fokuserer på én type opgave, kan du risikere at få problemer med CAB-godkendelsen i næste sprint. Nogle opgaver kan også være hastende og give ekstra bonus, men øger samtidig din risiko.
@@ -229,7 +241,7 @@ function showSprintGoal() {
     <h2>PI Planning</h2>
     <p>
       Dine primære mål er at gennemføre 10 opgaver og opnå en høj samlet score 
-      (Score = Udvikling + Sikkerhed) inden for den tilgængelige Tid (40).
+      (Score = Udvikling + Sikkerhed) inden for den tilgængelige Tid (50).
     </p>
     <p>
       Husk: Hver opgave koster 2 Tid, og dine valg påvirker, hvor mange point du opnår.
@@ -688,9 +700,11 @@ function finishTask() {
 
 /**
  * Render potentielle opgaver – vises i højre kolonne
+ * Tilføjet fejlhåndtering: hvis elementet ikke findes, returneres funktionen.
  */
 function renderPotentialTasks() {
   const potDiv = document.getElementById('potentialTasks');
+  if (!potDiv) return; // Undgå fejl hvis elementet ikke findes
   potDiv.innerHTML = `<h2>Potentielle Opgaver</h2>`;
   gameState.tasks.forEach((task, idx) => {
     const div = document.createElement('div');
