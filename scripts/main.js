@@ -7,7 +7,7 @@ import { checkForEvents } from './events.js';
  * Global game state
  */
 const gameState = {
-  time: 45,                      // Starttid for hver PI
+  time: 45,                      // Starttid for første PI (ændres ved PI-feedback)
   security: 0,
   development: 0,
   currentTask: null,
@@ -27,6 +27,8 @@ const gameState = {
   totalSecurityChoices: 0,       // Tæller sikkerhedsvalg
   totalDevelopmentChoices: 0     // Tæller udviklingsvalg
 };
+
+window.gameState = gameState; // Gør gameState global, hvis nødvendigt
 
 /** Lokationsliste */
 const locationList = [
@@ -113,20 +115,16 @@ function renderLocations() {
 }
 renderLocations();
 
-/** 
- * updateNarrative() – Tilføjer flere tekstbeskeder 
- * baseret på fremdrift, tid og (udvikling vs. sikkerhed).
- */
+/** Narrativ feedback */
 function updateNarrative() {
   const narrativeEl = document.getElementById('narrativeUpdate');
   if (!narrativeEl) return;
 
   let narrative = "";
-  const progress = gameState.tasksCompleted / 5; // fx 5 opgaver pr. PI
+  const progress = gameState.tasksCompleted / 5;
   const total = gameState.totalDevelopmentChoices + gameState.totalSecurityChoices;
   const ratioDev = total > 0 ? (gameState.totalDevelopmentChoices / total) : 0;
 
-  // Ekstra beskeder om fremdrift
   if (progress >= 1.0) {
     narrative += "Du har fuldført alle opgaver i denne PI – flot arbejde!";
   } else if (progress >= 0.8) {
@@ -141,12 +139,10 @@ function updateNarrative() {
     narrative += "PI er i gang, vælg en opgave for at starte!";
   }
 
-  // Advarsel om lav tid
   if (gameState.time < 10) {
     narrative += " Pas på! Du er ved at løbe tør for Tid.";
   }
 
-  // Bibeholder besked om ratio
   if (total > 0) {
     if (ratioDev > 0.65) {
       narrative += " CAB advarer: Overdreven fokus på udvikling øger risikoen for hackerangreb!";
@@ -610,13 +606,14 @@ function showPIFeedback() {
   openModal(feedbackHTML, `<button id="continuePI" class="modern-btn">Start Næste PI</button>`);
   document.getElementById('continuePI').addEventListener('click', () => {
     closeModal(() => {
+      // Nulstil PI – starttid sættes nu til 40, og alle strafvariabler nulstilles
       gameState.tasksCompleted = 0;
-      gameState.time = 45;
+      gameState.time = 40;
       gameState.security = 0;
       gameState.development = 0;
       gameState.totalSecurityChoices = 0;
       gameState.totalDevelopmentChoices = 0;
-      gameState.extraCABRiskThisPI = gameState.extraCABRiskNextPI;
+      gameState.extraCABRiskThisPI = 0;
       gameState.extraCABRiskNextPI = 0;
       gameState.quickChoicesThisPI = 0;
       updateDashboard();
