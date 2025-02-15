@@ -1,184 +1,173 @@
-// scripts/events.js
+// scripts/events.js (eller i main.js, hvis du vil have det samlet)
 
-/**
- * checkForEvents – Gennemgår en liste af 20 hændelser og returnerer den første, der udløses.
- * 
- * @param {Object} gameState - Det globale spiltilstandsobjekt.
- * @returns {Object} { eventOccurred: boolean, eventMessage: string }
- */
-export function checkForEvents(gameState) {
-  const events = [
-    {
-      name: "Hackerangreb",
-      condition: (gs) => {
-        const total = gs.totalDevelopmentChoices + gs.totalSecurityChoices;
-        return total > 0 && (gs.totalDevelopmentChoices / total) > 0.65;
-      },
-      probability: 0.3,
-      message: "Et hackerangreb rammer din infrastruktur! Du mister 4 Tid.",
-      effect: (gs) => { gs.time = Math.max(0, gs.time - 4); }
+// 20 events, hvor condition(...) returnerer true, hvis eventet kan udløses
+// effect(...) udfører eventets konsekvenser (f.eks. minus tid)
+// message er den tekst, der vises i pop-up'en
+export const eventsList = [
+  {
+    name: "Hacker infiltration",
+    condition: (devRatio, secRatio) => secRatio < 0.3, 
+    effect: (gameState) => {
+      gameState.time = Math.max(0, gameState.time - 3);
     },
-    {
-      name: "Audit Udført",
-      condition: (gs) => {
-        const total = gs.totalDevelopmentChoices + gs.totalSecurityChoices;
-        return total > 0 && (gs.totalSecurityChoices / total) > 0.65;
-      },
-      probability: 0.25,
-      message: "En audit afslører mangler i sikkerheden! Du mister 3 Tid.",
-      effect: (gs) => { gs.time = Math.max(0, gs.time - 3); }
+    message: "Et hackerangreb infiltrerer dit system! Du mister 3 Tid på at håndtere det."
+  },
+  {
+    name: "Phishing spree",
+    condition: (devRatio, secRatio) => secRatio < 0.4,
+    effect: (gameState) => {
+      gameState.security = Math.max(0, gameState.security - 2);
     },
-    {
-      name: "Systemfejl",
-      condition: (gs) => Math.random() < 0.2,
-      probability: 0.4,
-      message: "En systemfejl opstår – dine point reduceres med 20%.",
-      effect: (gs) => {
-        gs.security = Math.floor(gs.security * 0.8);
-        gs.development = Math.floor(gs.development * 0.8);
-      }
+    message: "En bølge af phishing-angreb rammer organisationen! Du mister 2 Sikkerhed."
+  },
+  {
+    name: "Major data breach",
+    condition: (devRatio, secRatio) => secRatio < 0.2,
+    effect: (gameState) => {
+      gameState.time = Math.max(0, gameState.time - 5);
+      gameState.security = Math.max(0, gameState.security - 3);
     },
-    {
-      name: "Held og Lykke",
-      condition: (gs) => Math.random() < 0.3,
-      probability: 0.5,
-      message: "Du får et heldigt gennembrud – 5 ekstra Tid til din rådighed!",
-      effect: (gs) => { gs.time += 5; }
+    message: "Et massivt databrud koster dig tid og sikkerhed! -5 Tid og -3 Sikkerhed."
+  },
+  {
+    name: "Crypto-miner infiltration",
+    condition: (devRatio, secRatio) => secRatio < 0.3,
+    effect: (gameState) => {
+      gameState.time = Math.max(0, gameState.time - 2);
+      gameState.security = Math.max(0, gameState.security - 1);
     },
-    {
-      name: "Budgetnedskæringer",
-      condition: (gs) => Math.random() < 0.15,
-      probability: 0.4,
-      message: "Budgetnedskæringer reducerer dine ressourcer – du mister 2 Tid.",
-      effect: (gs) => { gs.time = Math.max(0, gs.time - 2); }
+    message: "Fjendtlig crypto-mining software opdaget! -2 Tid og -1 Sikkerhed."
+  },
+  {
+    name: "Botched Dev Release",
+    condition: (devRatio, secRatio) => devRatio > 0.7,
+    effect: (gameState) => {
+      gameState.development = Math.max(0, gameState.development - 2);
     },
-    {
-      name: "Innovationsgennembrud",
-      condition: (gs) => Math.random() < 0.25,
-      probability: 0.5,
-      message: "Et innovativt gennembrud øger dine udviklingspoint med 3!",
-      effect: (gs) => { gs.development += 3; }
+    message: "Et nyt release fejler i produktion – du mister 2 Udvikling."
+  },
+  {
+    name: "Burnout i dev team",
+    condition: (devRatio, secRatio) => devRatio > 0.7,
+    effect: (gameState) => {
+      gameState.time = Math.max(0, gameState.time - 4);
     },
-    {
-      name: "Medarbejdersamarbejde",
-      condition: (gs) => Math.random() < 0.2,
-      probability: 0.5,
-      message: "Dine medarbejdere arbejder effektivt sammen – du får 2 ekstra sikkerhedspoint.",
-      effect: (gs) => { gs.security += 2; }
+    message: "Dev-teamet oplever burnout! Du bruger 4 ekstra Tid på at reorganisere."
+  },
+  {
+    name: "Nye Dev Tools",
+    condition: (devRatio, secRatio) => devRatio > 0.5,
+    effect: (gameState) => {
+      gameState.development += 2;
     },
-    {
-      name: "IT-Support Intervention",
-      condition: (gs) => Math.random() < 0.3,
-      probability: 0.4,
-      message: "En hurtig IT-support intervention forhindrer større problemer – du får 2 ekstra Tid.",
-      effect: (gs) => { gs.time += 2; }
+    message: "Du får adgang til nye dev-værktøjer – +2 Udvikling!"
+  },
+  {
+    name: "Brugerkritik",
+    condition: (devRatio, secRatio) => devRatio >= 0.3 && devRatio <= 0.7,
+    effect: (gameState) => {
+      gameState.time = Math.max(0, gameState.time - 2);
     },
-    {
-      name: "Kritisk Systemnedbrud",
-      condition: (gs) => Math.random() < 0.1,
-      probability: 0.7,
-      message: "Et kritisk systemnedbrud rammer – du mister 5 Tid.",
-      effect: (gs) => { gs.time = Math.max(0, gs.time - 5); }
+    message: "Brugerne klager over mangel på funktioner og stabilitet – du mister 2 Tid på damage control."
+  },
+  {
+    name: "Unexpected synergy",
+    condition: (devRatio, secRatio) => devRatio > 0.8,
+    effect: (gameState) => {
+      gameState.development += 3;
     },
-    {
-      name: "Kunde Klager",
-      condition: (gs) => Math.random() < 0.2,
-      probability: 0.3,
-      message: "Kunder klager over ineffektivitet – dine point reduceres med 2.",
-      effect: (gs) => {
-        gs.security = Math.max(0, gs.security - 2);
-        gs.development = Math.max(0, gs.development - 2);
-      }
+    message: "En fantastisk synergi opstår i dev-teamet! +3 Udvikling."
+  },
+  {
+    name: "Legal compliance snag",
+    condition: (devRatio, secRatio) => secRatio > 0.8,
+    effect: (gameState) => {
+      gameState.security = Math.max(0, gameState.security - 2);
+      gameState.development = Math.max(0, gameState.development - 1);
     },
-    {
-      name: "Netværksoptimering",
-      condition: (gs) => Math.random() < 0.2,
-      probability: 0.4,
-      message: "Netværket optimeres – du får 3 ekstra sikkerhedspoint!",
-      effect: (gs) => { gs.security += 3; }
+    message: "Overfokusering på sikkerhed har skabt juridiske flaskehalse – -2 Sikkerhed og -1 Udvikling."
+  },
+  {
+    name: "IT meltdown",
+    condition: (devRatio, secRatio) => devRatio > 0.9,
+    effect: (gameState) => {
+      gameState.time = Math.max(0, gameState.time - 6);
+      gameState.development = Math.max(0, gameState.development - 3);
     },
-    {
-      name: "Ny Softwareudrulning",
-      condition: (gs) => Math.random() < 0.2,
-      probability: 0.4,
-      message: "Ny softwareudrulning øger dine udviklingspoint med 3.",
-      effect: (gs) => { gs.development += 3; }
+    message: "Et total meltdown i systemet efter for stor dev-eksperimentering! -6 Tid og -3 Udvikling."
+  },
+  {
+    name: "Massive server crash",
+    condition: (devRatio, secRatio) => secRatio > 0.9,
+    effect: (gameState) => {
+      gameState.time = Math.max(0, gameState.time - 5);
+      gameState.security = Math.max(0, gameState.security - 2);
     },
-    {
-      name: "Træningssession",
-      condition: (gs) => Math.random() < 0.25,
-      probability: 0.5,
-      message: "Effektiv træning øger både sikkerhed og udviklingspoint med 2!",
-      effect: (gs) => { gs.security += 2; gs.development += 2; }
+    message: "Serverne bryder sammen under ekstrem sikkerhedsprotokol! -5 Tid, -2 Sikkerhed."
+  },
+  {
+    name: "Generous sponsor",
+    condition: (devRatio, secRatio) => devRatio > 0.6,
+    effect: (gameState) => {
+      gameState.time += 3;
     },
-    {
-      name: "Sikkerhedsopgradering",
-      condition: (gs) => Math.random() < 0.2,
-      probability: 0.4,
-      message: "En sikkerhedsopgradering giver dig 3 ekstra sikkerhedspoint!",
-      effect: (gs) => { gs.security += 3; }
+    message: "En sponsor er imponeret over jeres innovation – +3 Tid!"
+  },
+  {
+    name: "Inspiring dev conference",
+    condition: (devRatio, secRatio) => devRatio > 0.5,
+    effect: (gameState) => {
+      gameState.development += 2;
     },
-    {
-      name: "Udviklingskonference",
-      condition: (gs) => Math.random() < 0.2,
-      probability: 0.4,
-      message: "Deltagelse i en udviklingskonference øger dine udviklingspoint med 3.",
-      effect: (gs) => { gs.development += 3; }
+    message: "Dev-teamet deltager i en inspirerende konference – +2 Udvikling!"
+  },
+  {
+    name: "Freelance security consultant",
+    condition: (devRatio, secRatio) => secRatio > 0.5,
+    effect: (gameState) => {
+      gameState.security += 2;
     },
-    {
-      name: "Forbedret Systemovervågning",
-      condition: (gs) => Math.random() < 0.2,
-      probability: 0.5,
-      message: "Forbedret systemovervågning reducerer risikoen – du får 2 ekstra Tid.",
-      effect: (gs) => { gs.time += 2; }
+    message: "Du hyrer en ekstern sikkerhedskonsulent – +2 Sikkerhed!"
+  },
+  {
+    name: "Bureaucratic overhead",
+    condition: (devRatio, secRatio) => Math.random() < 0.3, // 30% chance generelt
+    effect: (gameState) => {
+      gameState.time = Math.max(0, gameState.time - 2);
     },
-    {
-      name: "Mindre Systemfejl",
-      condition: (gs) => Math.random() < 0.15,
-      probability: 0.5,
-      message: "En mindre systemfejl opstår – du mister 1 Tid.",
-      effect: (gs) => { gs.time = Math.max(0, gs.time - 1); }
+    message: "Bureaukrati og møder stjæler tid – -2 Tid."
+  },
+  {
+    name: "Lightning meltdown",
+    condition: (devRatio, secRatio) => devRatio < 0.4, 
+    effect: (gameState) => {
+      gameState.development = Math.max(0, gameState.development - 2);
     },
-    {
-      name: "Opgraderingsbonus",
-      condition: (gs) => Math.random() < 0.2,
-      probability: 0.5,
-      message: "En vellykket opgradering giver dig 4 ekstra Tid!",
-      effect: (gs) => { gs.time += 4; }
+    message: "Et lynnedslag lammer dele af systemet, og dev-teamet må rulle kode tilbage! -2 Udvikling."
+  },
+  {
+    name: "Power outage",
+    condition: (devRatio, secRatio) => secRatio < 0.4,
+    effect: (gameState) => {
+      gameState.time = Math.max(0, gameState.time - 3);
     },
-    {
-      name: "Datafejl",
-      condition: (gs) => Math.random() < 0.15,
-      probability: 0.4,
-      message: "En datafejl reducerer dine point med 20%.",
-      effect: (gs) => {
-        gs.security = Math.floor(gs.security * 0.8);
-        gs.development = Math.floor(gs.development * 0.8);
-      }
+    message: "Strømsvigt i datacentret! -3 Tid på at genoprette systemerne."
+  },
+  {
+    name: "Public acclaim",
+    condition: (devRatio, secRatio) => devRatio > 0.7,
+    effect: (gameState) => {
+      gameState.development += 3;
     },
-    {
-      name: "Teknologisk Gennembrud",
-      condition: (gs) => Math.random() < 0.2,
-      probability: 0.5,
-      message: "Et teknologisk gennembrud øger både sikkerhed og udviklingspoint med 4!",
-      effect: (gs) => { gs.security += 4; gs.development += 4; }
+    message: "Offentligheden roser jeres nye features! +3 Udvikling."
+  },
+  {
+    name: "Audit fiasco",
+    condition: (devRatio, secRatio) => secRatio < 0.3,
+    effect: (gameState) => {
+      gameState.security = Math.max(0, gameState.security - 3);
+      gameState.time = Math.max(0, gameState.time - 2);
     },
-    {
-      name: "Ekspert Rådgivning",
-      condition: (gs) => Math.random() < 0.2,
-      probability: 0.5,
-      message: "Ekspert rådgivning øger din samlede score med 5 point.",
-      effect: (gs) => { gs.security += 2; gs.development += 3; }
-    }
-  ];
-
-  for (let event of events) {
-    if (event.condition(gameState)) {
-      if (Math.random() < event.probability) {
-        event.effect(gameState);
-        return { eventOccurred: true, eventMessage: event.message };
-      }
-    }
+    message: "En ekstern audit afslører alvorlige sikkerhedsbrister! -3 Sikkerhed, -2 Tid."
   }
-  return { eventOccurred: false, eventMessage: "" };
-}
+];
