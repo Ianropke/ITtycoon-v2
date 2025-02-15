@@ -27,9 +27,8 @@
         <button id="helpButton" class="help-btn">Få hjælp</button>
       </div>
     </header>
-
     <div class="container">
-      <!-- Venstre kolonne: "Vælg ny opgave"-knap og Lokationer -->
+      <!-- Venstre kolonne: "Vælg ny opgave"-knap og lokationer -->
       <div class="left-column">
         <button id="newTaskBtn" class="big-new-task-btn">
           <i class="fas fa-plus"></i> Vælg ny opgave
@@ -39,33 +38,26 @@
           <div id="locations"></div>
         </div>
       </div>
-
-      <!-- Højre kolonne: Aktiv opgave, KPI-graf, infoContainer og potentielle opgaver -->
+      <!-- Højre kolonne: Aktiv opgave, KPI-graf, info og potentielle opgaver -->
       <div class="right-column">
-        <!-- Aktiv opgave -->
+        <!-- Aktiv opgave – overskrift bevares -->
         <div id="activeTask">
           <h2>Aktiv Opgave</h2>
         </div>
-
         <!-- KPI-graf -->
         <div id="graphContainer">
           <canvas id="kpiChart"></canvas>
           <div id="taskProgress" class="task-progress">Opgave 0/5</div>
         </div>
-
-        <!-- Container til KPI-ikoner og narrativ feedback -->
+        <!-- Container til KPI-info (legend) og narrativ feedback -->
         <div id="infoContainer">
           <div id="kpiInfo"></div>
           <div id="narrativeUpdate"></div>
         </div>
-
-        <!-- Potentielle opgaver -->
-        <div id="potentialTasks">
-          <h2>Potentielle Opgaver</h2>
-        </div>
+        <!-- Fjern overskriften "Potentielle Opgaver" – behold kun containeren -->
+        <div id="potentialTasks"></div>
       </div>
     </div>
-
     <!-- Modal-vindue -->
     <div id="modal" class="modal hidden">
       <div class="modal-content">
@@ -74,13 +66,11 @@
         <span id="modalClose" class="close">&times;</span>
       </div>
     </div>
-
-    <!-- Indlæs opgave-filer (Tasks) -->
+    <!-- Indlæs opgave-filer -->
     <script src="scripts/tasks/hospitalTasks.js"></script>
     <script src="scripts/tasks/infrastrukturTasks.js"></script>
     <script src="scripts/tasks/cybersikkerhedTasks.js"></script>
-
-    <!-- Moduler (ES6) -->
+    <!-- Indlæs ES6-moduler -->
     <script type="module" src="scripts/modal.js"></script>
     <script type="module" src="scripts/utils.js"></script>
     <script type="module" src="scripts/main.js"></script>
