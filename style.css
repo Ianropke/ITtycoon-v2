@@ -338,6 +338,27 @@ header h1 {
   margin-left: 0.3rem;
 }
 
+/* Event-pop-up-klasse med pulsende effekt */
+.event-modal {
+  animation: eventPulse 1.5s infinite;
+  border: 3px solid #f44336;  /* Tyk rød kant */
+  background-color: #ffecec;  /* Lys rødlig baggrund */
+}
+@keyframes eventPulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.6);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 25px 10px rgba(244, 67, 54, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(244, 67, 54, 0);
+  }
+}
+
 /* Responsivt design */
 @media (max-width: 768px) {
   .container {
