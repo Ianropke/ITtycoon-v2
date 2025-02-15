@@ -1,7 +1,7 @@
 // scripts/main.js
 import { openModal, closeModal } from './modal.js';
 import { shuffleArray, getIcon } from './utils.js';
-import { checkForEvents } from './events.js'; // Event-modul for tilfældige hændelser
+import { checkForEvents } from './events.js';
 
 /**
  * Global game state
@@ -281,7 +281,7 @@ function openTaskSelectionModal() {
   });
 }
 
-/** Start en opgave */
+/** Start opgave */
 function startTask(task) {
   gameState.currentTask = task;
   gameState.currentStepIndex = 0;
@@ -442,7 +442,7 @@ function proceedToNextStep() {
   }
 }
 
-/** Tjek game over */
+/** Tjek for game over eller afslut PI */
 function checkGameOverCondition() {
   if (gameState.time <= 0) {
     let message = "Tiden er opbrugt!";
@@ -455,13 +455,12 @@ function checkGameOverCondition() {
   }
 }
 
-/** PI Feedback – defineret én gang */
+/** PI Feedback */
 function showPIFeedback() {
   const totalPoints = gameState.security + gameState.development;
   if (totalPoints > gameState.highscore) {
     gameState.highscore = totalPoints;
   }
-  // Tjek for ekstra hændelser via events.js
   const eventResult = checkForEvents(gameState);
   let eventMsg = "";
   if (eventResult.eventOccurred) {
@@ -478,7 +477,6 @@ function showPIFeedback() {
   openModal(feedbackHTML, `<button id="continuePI" class="modern-btn">Start Næste PI</button>`);
   document.getElementById('continuePI').addEventListener('click', () => {
     closeModal(() => {
-      // Nulstil til næste PI
       gameState.tasksCompleted = 0;
       gameState.time = 45;
       gameState.security = 0;
@@ -566,7 +564,7 @@ function showRevisionOptions() {
   }
   if (revisableIndices.length === 0) {
     openModal("<h2>Ingen revidérbare trin</h2><p>Alle trin er enten avancerede eller allerede revideret.</p>", `<button id="noRev" class="modern-btn">OK</button>`);
-    document.getElementById('noRev').addEventListener('click', () =>
+    document.getElementById('noRev').addEventListener('click', () => 
       closeModal(() => cabApproval())
     );
     return;
@@ -612,10 +610,12 @@ function showTaskSummary() {
   });
   summaryHTML += "</ul>" + bonusNote;
   openModal(summaryHTML, `<button id="afterSummary" class="modern-btn">Fortsæt</button>`);
-  document.getElementById('afterSummary').addEventListener('click', () => closeModal(() => finishTask()));
+  document.getElementById('afterSummary').addEventListener('click', () => 
+    closeModal(() => finishTask())
+  );
 }
 
-/** Finish Task */
+/** Afslut opgave */
 function finishTask() {
   gameState.tasksCompleted++;
   updateTaskProgress();
