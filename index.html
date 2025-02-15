@@ -28,7 +28,7 @@
       </div>
     </header>
     <div class="container">
-      <!-- Venstre kolonne: "Vælg ny opgave"-knap og lokationer -->
+      <!-- Venstre kolonne: "Vælg ny opgave"-knap og Lokationer -->
       <div class="left-column">
         <button id="newTaskBtn" class="big-new-task-btn">
           <i class="fas fa-plus"></i> Vælg ny opgave
@@ -38,15 +38,16 @@
           <div id="locations"></div>
         </div>
       </div>
-      <!-- Højre kolonne: Aktiv opgave, KPI-graf, info og potentielle opgaver -->
+      <!-- Højre kolonne: Aktiv opgave, KPI-graf, infoContainer og potentielle opgaver -->
       <div class="right-column">
-        <!-- Aktiv opgave – overskrift bevares -->
+        <!-- Aktiv opgave -->
         <div id="activeTask">
           <h2>Aktiv Opgave</h2>
         </div>
         <!-- KPI-graf -->
         <div id="graphContainer">
-          <canvas id="kpiChart"></canvas>
+          <!-- Tilføj bredde og højde attributter for at sikre, at grafen vises -->
+          <canvas id="kpiChart" width="720" height="300"></canvas>
           <div id="taskProgress" class="task-progress">Opgave 0/5</div>
         </div>
         <!-- Container til KPI-info (legend) og narrativ feedback -->
