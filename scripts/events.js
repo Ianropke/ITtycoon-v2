@@ -1,12 +1,9 @@
-// scripts/events.js (eller i main.js, hvis du vil have det samlet)
+// scripts/events.js
 
-// 20 events, hvor condition(...) returnerer true, hvis eventet kan udløses
-// effect(...) udfører eventets konsekvenser (f.eks. minus tid)
-// message er den tekst, der vises i pop-up'en
 export const eventsList = [
   {
     name: "Hacker infiltration",
-    condition: (devRatio, secRatio) => secRatio < 0.3, 
+    condition: (devRatio, secRatio) => secRatio < 0.3,
     effect: (gameState) => {
       gameState.time = Math.max(0, gameState.time - 3);
     },
@@ -27,7 +24,7 @@ export const eventsList = [
       gameState.time = Math.max(0, gameState.time - 5);
       gameState.security = Math.max(0, gameState.security - 3);
     },
-    message: "Et massivt databrud koster dig tid og sikkerhed! -5 Tid og -3 Sikkerhed."
+    message: "Et massivt databrud koster dig 5 Tid og 3 Sikkerhed."
   },
   {
     name: "Crypto-miner infiltration",
@@ -36,7 +33,7 @@ export const eventsList = [
       gameState.time = Math.max(0, gameState.time - 2);
       gameState.security = Math.max(0, gameState.security - 1);
     },
-    message: "Fjendtlig crypto-mining software opdaget! -2 Tid og -1 Sikkerhed."
+    message: "Crypto-mining software infiltrerer systemet – du mister 2 Tid og 1 Sikkerhed."
   },
   {
     name: "Botched Dev Release",
@@ -44,7 +41,7 @@ export const eventsList = [
     effect: (gameState) => {
       gameState.development = Math.max(0, gameState.development - 2);
     },
-    message: "Et nyt release fejler i produktion – du mister 2 Udvikling."
+    message: "Et fejlslagent release rammer markedet – du mister 2 Udvikling."
   },
   {
     name: "Burnout i dev team",
@@ -52,7 +49,7 @@ export const eventsList = [
     effect: (gameState) => {
       gameState.time = Math.max(0, gameState.time - 4);
     },
-    message: "Dev-teamet oplever burnout! Du bruger 4 ekstra Tid på at reorganisere."
+    message: "Dev-teamet oplever burnout – du mister 4 Tid på reorganisering."
   },
   {
     name: "Nye Dev Tools",
@@ -68,7 +65,7 @@ export const eventsList = [
     effect: (gameState) => {
       gameState.time = Math.max(0, gameState.time - 2);
     },
-    message: "Brugerne klager over mangel på funktioner og stabilitet – du mister 2 Tid på damage control."
+    message: "Brugerne klager over manglende funktioner – du mister 2 Tid."
   },
   {
     name: "Unexpected synergy",
@@ -76,7 +73,7 @@ export const eventsList = [
     effect: (gameState) => {
       gameState.development += 3;
     },
-    message: "En fantastisk synergi opstår i dev-teamet! +3 Udvikling."
+    message: "Der opstår en fantastisk synergi i dev-teamet – +3 Udvikling!"
   },
   {
     name: "Legal compliance snag",
@@ -85,7 +82,7 @@ export const eventsList = [
       gameState.security = Math.max(0, gameState.security - 2);
       gameState.development = Math.max(0, gameState.development - 1);
     },
-    message: "Overfokusering på sikkerhed har skabt juridiske flaskehalse – -2 Sikkerhed og -1 Udvikling."
+    message: "Juridiske udfordringer med sikkerheden – du mister 2 Sikkerhed og 1 Udvikling."
   },
   {
     name: "IT meltdown",
@@ -94,7 +91,7 @@ export const eventsList = [
       gameState.time = Math.max(0, gameState.time - 6);
       gameState.development = Math.max(0, gameState.development - 3);
     },
-    message: "Et total meltdown i systemet efter for stor dev-eksperimentering! -6 Tid og -3 Udvikling."
+    message: "Et IT-meltdown rammer – du mister 6 Tid og 3 Udvikling."
   },
   {
     name: "Massive server crash",
@@ -103,7 +100,7 @@ export const eventsList = [
       gameState.time = Math.max(0, gameState.time - 5);
       gameState.security = Math.max(0, gameState.security - 2);
     },
-    message: "Serverne bryder sammen under ekstrem sikkerhedsprotokol! -5 Tid, -2 Sikkerhed."
+    message: "Serverne bryder sammen – du mister 5 Tid og 2 Sikkerhed."
   },
   {
     name: "Generous sponsor",
@@ -111,7 +108,7 @@ export const eventsList = [
     effect: (gameState) => {
       gameState.time += 3;
     },
-    message: "En sponsor er imponeret over jeres innovation – +3 Tid!"
+    message: "En sponsor imponeres – +3 Tid!"
   },
   {
     name: "Inspiring dev conference",
@@ -127,23 +124,23 @@ export const eventsList = [
     effect: (gameState) => {
       gameState.security += 2;
     },
-    message: "Du hyrer en ekstern sikkerhedskonsulent – +2 Sikkerhed!"
+    message: "Du hyrer en sikkerhedskonsulent – +2 Sikkerhed!"
   },
   {
     name: "Bureaucratic overhead",
-    condition: (devRatio, secRatio) => Math.random() < 0.3, // 30% chance generelt
+    condition: (devRatio, secRatio) => Math.random() < 0.3,
     effect: (gameState) => {
       gameState.time = Math.max(0, gameState.time - 2);
     },
-    message: "Bureaukrati og møder stjæler tid – -2 Tid."
+    message: "Bureaukrati stjæler tid – du mister 2 Tid."
   },
   {
     name: "Lightning meltdown",
-    condition: (devRatio, secRatio) => devRatio < 0.4, 
+    condition: (devRatio, secRatio) => devRatio < 0.4,
     effect: (gameState) => {
       gameState.development = Math.max(0, gameState.development - 2);
     },
-    message: "Et lynnedslag lammer dele af systemet, og dev-teamet må rulle kode tilbage! -2 Udvikling."
+    message: "Et lynnedslag lammer dev-teamet – du mister 2 Udvikling."
   },
   {
     name: "Power outage",
@@ -151,7 +148,7 @@ export const eventsList = [
     effect: (gameState) => {
       gameState.time = Math.max(0, gameState.time - 3);
     },
-    message: "Strømsvigt i datacentret! -3 Tid på at genoprette systemerne."
+    message: "Strømsvigt rammer – du mister 3 Tid."
   },
   {
     name: "Public acclaim",
@@ -159,7 +156,7 @@ export const eventsList = [
     effect: (gameState) => {
       gameState.development += 3;
     },
-    message: "Offentligheden roser jeres nye features! +3 Udvikling."
+    message: "Offentligheden roser jeres nye features – +3 Udvikling!"
   },
   {
     name: "Audit fiasco",
@@ -168,6 +165,33 @@ export const eventsList = [
       gameState.security = Math.max(0, gameState.security - 3);
       gameState.time = Math.max(0, gameState.time - 2);
     },
-    message: "En ekstern audit afslører alvorlige sikkerhedsbrister! -3 Sikkerhed, -2 Tid."
+    message: "En audit afslører alvorlige brister – du mister 3 Sikkerhed og 2 Tid."
   }
 ];
+
+/**
+ * triggerRandomEvent – Vælger et tilfældigt event, hvis betingelserne er opfyldt, og udløser effekten.
+ */
+export function triggerRandomEvent(gameState) {
+  const eventChance = 0.25;
+  if (Math.random() > eventChance) return;
+
+  const totalPoints = gameState.security + gameState.development;
+  if (totalPoints === 0) return;
+
+  const devRatio = gameState.development / totalPoints;
+  const secRatio = gameState.security / totalPoints;
+
+  const possibleEvents = eventsList.filter(ev => ev.condition(devRatio, secRatio));
+  if (possibleEvents.length === 0) return;
+
+  const chosenEvent = possibleEvents[Math.floor(Math.random() * possibleEvents.length)];
+  chosenEvent.effect(gameState);
+
+  // Vis pop-up – her antages, at openModal/closeModal er globale eller tilgængelige via import i main.js
+  const eventMsg = `<h2>Hændelse!</h2><p>${chosenEvent.message}</p>`;
+  openModal(eventMsg, `<button id="eventOk" class="modern-btn">OK</button>`);
+  document.getElementById('eventOk').addEventListener('click', () => closeModal());
+  
+  return { eventOccurred: true, eventMessage: chosenEvent.message };
+}
