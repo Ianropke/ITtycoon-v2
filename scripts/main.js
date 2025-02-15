@@ -309,7 +309,7 @@ function renderActiveTask(task) {
       stepsHTML += "</p>";
       activeDiv.innerHTML += stepsHTML;
       const currentStep = task.steps[gameState.currentStepIndex];
-      activeDiv.innerHTML += `<p><strong>Vælg lokation:</strong> ${currentStep.location.toUpperCase()} ${getIcon(currentStep.location)}</p>`;
+      activeDiv.innerHTML += `<p><strong>Vælg lokation:</strong> ${currentStep.location.toUpperCase()} ${getIcon(st.location)}</p>`;
       highlightCorrectLocation(currentStep.location);
     }
   }
@@ -366,11 +366,18 @@ function showStepChoices(step) {
     applyChoice(advChoice);
     gameState.choiceHistory[gameState.currentStepIndex] = { title: step.choiceA.label, advanced: true };
 
-    // Hvis det var sidste trin (dokumentation), fjern highlight og sæt step til "fuldført"
+    // Hvis det var sidste trin
     if (gameState.currentStepIndex === gameState.currentTask.steps.length - 1) {
       highlightCorrectLocation(null);
-      gameState.currentStepIndex = gameState.currentTask.steps.length; // marker alle trin som fuldført
-      closeModal(() => cabApproval());
+      gameState.currentStepIndex = gameState.currentTask.steps.length;
+      closeModal(() => {
+        if (gameState.revisionMode) {
+          gameState.revisionMode = false;
+          cabApproval();
+        } else {
+          cabApproval();
+        }
+      });
     } else {
       closeModal(() => {
         if (gameState.revisionMode) {
@@ -390,10 +397,18 @@ function showStepChoices(step) {
     applyChoice(quickChoice);
     gameState.choiceHistory[gameState.currentStepIndex] = { title: step.choiceB.label, advanced: false };
 
+    // Hvis sidste trin
     if (gameState.currentStepIndex === gameState.currentTask.steps.length - 1) {
       highlightCorrectLocation(null);
       gameState.currentStepIndex = gameState.currentTask.steps.length;
-      closeModal(() => cabApproval());
+      closeModal(() => {
+        if (gameState.revisionMode) {
+          gameState.revisionMode = false;
+          cabApproval();
+        } else {
+          cabApproval();
+        }
+      });
     } else {
       closeModal(() => {
         if (gameState.revisionMode) {
@@ -429,7 +444,7 @@ function proceedToNextStep() {
     renderActiveTask(t);
     highlightCorrectLocation(t.steps[gameState.currentStepIndex].location);
 
-    // TRIGGER EVENT MELLEM TRIN (hvis du ønsker det)
+    // TRIGGER EVENT MELLEM TRIN
     triggerRandomEvent(gameState);
 
   } else {
