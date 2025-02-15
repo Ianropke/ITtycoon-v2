@@ -24,8 +24,8 @@ const gameState = {
   extraCABRiskThisPI: 0,
   totalSecurityChoices: 0,       // Tæller sikkerhedsvalg
   totalDevelopmentChoices: 0,    // Tæller udviklingsvalg
-  timePenaltyNextPI: 0,          // Hvis event siger "mindre tid" i næste PI
-  timeBonusNextPI: 0             // Hvis event siger "ekstra tid" i næste PI
+  timePenaltyNextPI: 0,          // Event-straf til næste PI
+  timeBonusNextPI: 0             // Event-bonus til næste PI
 };
 
 window.gameState = gameState; // Gør gameState global, hvis nødvendigt
@@ -108,8 +108,7 @@ renderLocations();
 
 /**
  * highlightCorrectLocation
- * Nu unhighlighter vi kun, hvis currentStepIndex >= steps.length (opgaven HELT slut),
- * så sidste trin (dokumentation) også pulserer.
+ * Unhighlighter først, når currentStepIndex >= steps.length (opgaven HELT slut).
  */
 function highlightCorrectLocation(correctLocation) {
   if (
@@ -173,13 +172,11 @@ function checkForEvents(gameState) {
   let eventOccurred = false;
   let eventMessage = "";
 
-  // Summér dine KPI
   const totalPoints = gameState.security + gameState.development;
   if (totalPoints === 0) {
     return { eventOccurred, eventMessage };
   }
 
-  // Ratio for sikkerhed vs. udvikling
   const securityRatio = gameState.security / totalPoints;
   const developmentRatio = gameState.development / totalPoints;
 
@@ -226,7 +223,7 @@ function showIntro() {
       <li>🚀 <strong>Mission:</strong> Du er IT‑forvalter og skal styre komplekse systemer i en digital tidsalder.</li>
       <li>⏱️ <strong>Tidspres:</strong> Hver beslutning påvirker din Tid – vær skarp og handl hurtigt.</li>
       <li>🎯 <strong>Mål:</strong> Fuldfør opgaver og optimer systemerne for at opnå en høj samlet score.</li>
-      <li>💡 <strong>CAB:</strong> Change Advisory Board – et panel af eksperter, der evaluerer dine ændringer. Forkerte valg medfører straf.</li>
+      <li>💡 <strong>CAB:</strong> Change Advisory Board – et panel af eksperter, der evaluerer dine ændringer. Forkerte valg kan medføre straf.</li>
       <li>🤖 <strong>Strategi:</strong> Dine valg giver point i enten Udvikling eller Sikkerhed. En afbalanceret strategi er nøglen til succes.</li>
     </ul>
     <p style="margin-top:1rem;">Er du klar til at træde ind i rollen som digital strateg?</p>
@@ -371,7 +368,7 @@ function showStepChoices(step) {
   let cATxt = step.choiceA.text.replace(/-?\d+\s*tid/, "<span style='color:#f44336; font-weight:bold;'>-2 tid</span>");
   let cBTxt = step.choiceB.text.replace(/-?\d+\s*tid/, "<span style='color:#43A047; font-weight:bold;'>0 tid</span>");
   
-  // Fjernet arkitekthjælp, kun A, B og Fortryd
+  // Knapper: Valg A, Valg B, Fortryd
   let footHTML = `
     <button id="choiceA" class="modern-btn">${step.choiceA.label} (${cATxt})</button>
     <button id="choiceB" class="modern-btn">${step.choiceB.label} (${cBTxt})</button>
@@ -484,7 +481,7 @@ function cabApproval() {
 
     // CAB-beregning
     const allAdvanced = gameState.choiceHistory.every(ch => ch && ch.advanced);
-    let chance = allAdvanced ? 1 : Math.min(1, focusKPI / 22); // 22 er bare et reference-mål
+    let chance = allAdvanced ? 1 : Math.min(1, focusKPI / 22); // 22 = reference
     let extraNote = "";
     if (t.isHastende) {
       chance -= 0.1;
@@ -592,6 +589,9 @@ function showTaskSummary() {
 }
 
 function finishTask() {
+  // Fjern highlight/puls med det samme
+  highlightCorrectLocation(null);
+
   gameState.tasksCompleted++;
   updateTaskProgress();
   openModal("<h2>Info</h2><p>Opgaven er fuldført!</p>", `<button id="taskDone" class="modern-btn">OK</button>`);
@@ -637,13 +637,13 @@ function showPIFeedback() {
       // Nulstil PI – starttid sættes til 40 plus/minus event
       gameState.tasksCompleted = 0;
       let newTime = 40;
-      // Hvis der er en straf
+      // Straf
       if (gameState.timePenaltyNextPI > 0) {
         newTime -= gameState.timePenaltyNextPI;
         if (newTime < 0) newTime = 0;
         gameState.timePenaltyNextPI = 0;
       }
-      // Hvis der er en bonus
+      // Bonus
       if (gameState.timeBonusNextPI > 0) {
         newTime += gameState.timeBonusNextPI;
         gameState.timeBonusNextPI = 0;
