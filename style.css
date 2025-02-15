@@ -42,7 +42,6 @@ header {
   align-items: center;
   justify-content: center;
 }
-
 .header-content {
   width: 100%;
   display: flex;
@@ -50,12 +49,10 @@ header {
   justify-content: center;
   position: relative;
 }
-
 .header-content .logo {
   font-size: 2.5rem;
   margin-right: 0.5rem;
 }
-
 header h1 {
   font-size: 2rem;
   margin: 0;
@@ -94,8 +91,6 @@ header h1 {
   align-items: center;
   gap: 1rem;
 }
-
-/* Knappen for at vælge ny opgave */
 #newTaskBtn,
 .big-new-task-btn {
   font-size: 1.2rem;
@@ -112,19 +107,15 @@ header h1 {
   background-color: #1976d2;
   transform: scale(1.03);
 }
-
-/* Lokationer */
 #locationsContainer {
   width: 100%;
 }
 #locations {
   display: flex;
   flex-direction: column;
-  gap: 0.8rem; /* Mindre mellemrum mellem de grønne knapper */
+  gap: 0.8rem;
   width: 100%;
 }
-
-/* Lokationsknapper */
 .location-button {
   padding: 1.2rem 1.8rem;
   font-size: 1.1rem;
@@ -143,7 +134,7 @@ header h1 {
   transform: scale(1.02);
 }
 
-/* Højre kolonne: Aktiv opgave, KPI-graf, potential tasks */
+/* Højre kolonne: Aktiv opgave, KPI-graf, info og potentielle opgaver */
 .right-column {
   width: 60%;
   padding: 1rem;
@@ -152,31 +143,23 @@ header h1 {
   flex-direction: column;
   gap: 1rem;
 }
-
-/* Aktiv opgave */
 #activeTask {
   background: #fff;
   border: 1px solid #ddd;
   border-radius: 4px;
   padding: 1rem;
 }
-
-/* KPI-graf – gør den lidt større */
 #graphContainer {
   width: 100%;
   position: relative;
-  max-width: 720px; /* Ca. 20% større end 600px */
+  max-width: 720px;
   height: 48vh;
-  margin: 0 auto;   /* Centrerer den horisontalt */
+  margin: 0 auto;
 }
-
-/* Canvas til KPI */
 #kpiChart {
   width: 100% !important;
   height: auto !important;
 }
-
-/* Task progress overlay */
 .task-progress {
   position: absolute;
   top: 10px;
@@ -188,28 +171,25 @@ header h1 {
   color: var(--text-color);
 }
 
-/* Container til KPI-ikoner + narrativ feedback */
+/* Container til KPI-info (legend) og narrativ feedback */
 #infoContainer {
   display: flex;
-  flex-wrap: wrap; /* hvis skærmen er smal, rykkes elementer ned */
+  flex-wrap: wrap;
   align-items: center;
   gap: 1rem;
   margin-top: 1rem;
 }
-
 #kpiInfo {
   display: flex;
   gap: 1rem;
   align-items: center;
 }
-
 .tooltip-item {
   display: flex;
   align-items: center;
   gap: 0.3rem;
   font-size: 0.95rem;
 }
-
 #narrativeUpdate {
   flex: 1;
   color: #555;
@@ -217,9 +197,8 @@ header h1 {
   min-width: 200px;
 }
 
-/* Potential tasks-liste */
+/* Potentielle opgaver: Container uden overskrift */
 #potentialTasks {
-  margin-top: 1rem;
   width: 100%;
   background: #fff;
   border: 1px solid #ddd;
