@@ -90,7 +90,8 @@ header h1 {
   align-items: center;
   gap: 1rem;
 }
-/* Fjern puls-animation fra ny opgave-knap */
+
+/* "Vælg ny opgave"-knap – pulserer uden farveskift */
 #newTaskBtn,
 .big-new-task-btn {
   font-size: 1.2rem;
@@ -101,11 +102,18 @@ header h1 {
   color: #fff;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
+  animation: pulseNewTask 1.5s infinite;
 }
 #newTaskBtn:hover,
 .big-new-task-btn:hover {
   background-color: #1976d2;
   transform: scale(1.03);
+}
+
+@keyframes pulseNewTask {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
 }
 
 #locationsContainer {
