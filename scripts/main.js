@@ -226,7 +226,7 @@ function startTutorial() {
 /** "Vælg ny opgave"-knap */
 document.getElementById('newTaskBtn').addEventListener('click', openTaskSelectionModal);
 
-/** Opgavevalg – vis opgavelisten i en modal */
+/** Opgavevalg – modal */
 function openTaskSelectionModal() {
   if (gameState.currentTask) {
     openModal("<h2>Advarsel</h2><p>Du har allerede en aktiv opgave!</p>", `<button id="activeWarn" class="modern-btn">OK</button>`);
