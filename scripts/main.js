@@ -14,7 +14,7 @@ const gameState = {
   currentStepIndex: 0,
   tasksCompleted: 0,             // PI slutter ved 5 opgaver
   missionGoals: { security: 22, development: 22 },
-  architectHelpUsed: false,
+  architectHelpUsed: false,      // Nu ikke brugt, da arkitekthjælp fjernes
   allTasks: [],
   tasks: [],
   choiceHistory: [],
@@ -107,7 +107,7 @@ function renderLocations() {
 renderLocations();
 
 /**
- * highlightCorrectLocation – Fremhæv den korrekte lokation, med undtagelse af det sidste trin ("dokumentation")
+ * highlightCorrectLocation – Fremhæv den korrekte lokation (undtagen hvis det er sidste trin, der altid skal være "dokumentation")
  */
 function highlightCorrectLocation(correctLocation) {
   if (!gameState.currentTask || gameState.currentStepIndex >= gameState.currentTask.steps.length - 1) {
@@ -142,9 +142,9 @@ function updateNarrative() {
   } else if (progress >= 0.4) {
     narrative += "Du er næsten halvvejs – fortsæt den gode indsats!";
   } else if (progress > 0) {
-    narrative += "Du er kommet i gang, men der er stadig en del at nå.";
+    narrative += "IT-arkitekten siger: PI er i gang, vælg en opgave for at starte – du er kommet i gang, men der er stadig en del at nå.";
   } else {
-    narrative += "PI er i gang, vælg en opgave for at starte!";
+    narrative += "IT-arkitekten siger: PI er i gang, vælg en opgave for at starte!";
   }
   if (gameState.time < 10) {
     narrative += " Pas på! Du er ved at løbe tør for Tid.";
@@ -170,9 +170,9 @@ function showHelp() {
       <li>⚙️ <strong>Formål:</strong> Gennemfør 5 opgaver pr. PI for at få en høj samlet score.</li>
       <li>⌛ <strong>Tid:</strong> Du starter med 50 Tid (hver opgave koster 2 Tid).</li>
       <li>💻 <strong>Point:</strong> Dine valg giver point – samlet score = opgaver + point.</li>
-      <li>🚨 <strong>Hastende opgaver:</strong> Giver ekstra bonus (+4), men øger CAB-risiko med 10% – og hvis du ikke vælger den avancerede løsning, trækkes 5 point i straf.</li>
+      <li>🚨 <strong>Hastende opgaver:</strong> Giver ekstra bonus (+4), men øger CAB-risiko med 10% – og hvis du vælger let løsning, trækkes 5 point i straf.</li>
       <li>⚖️ <strong>Balance:</strong> Over 65% udviklingsvalg øger risikoen for hackerangreb; under 35% øger ineffektivitet.</li>
-      <li>🔍 <strong>CAB (Change Advisory Board):</strong> Et panel af eksperter, der vurderer dine ændringer. CAB ser på, om du har afvejet dine beslutninger korrekt – og straf (5 point) for lette valg på hastende opgaver bliver fratrukket din score.</li>
+      <li>🔍 <strong>CAB:</strong> Et panel af eksperter, der evaluerer dine ændringer. Forkerte valg kan medføre straf.</li>
     </ul>
     <p style="margin-top:1rem;">Held og lykke med IT‑Tycoon!</p>
   `;
@@ -185,11 +185,11 @@ function showIntro() {
   const introText = `
     <h2>Velkommen til IT‑Tycoon!</h2>
     <ul style="text-align:left; margin:0 auto; max-width:500px; line-height:1.6;">
-      <li>🚀 <strong>Mission:</strong> Du er IT‑forvalter, som skal styre komplekse systemer i en digital tidsalder.</li>
+      <li>🚀 <strong>Mission:</strong> Du er IT‑forvalter og skal styre komplekse systemer i en digital tidsalder.</li>
       <li>⏱️ <strong>Tidspres:</strong> Hver beslutning påvirker din Tid – vær skarp og handl hurtigt.</li>
       <li>🎯 <strong>Mål:</strong> Fuldfør opgaver og optimer systemerne for at opnå en høj samlet score.</li>
-      <li>💡 <strong>CAB:</strong> Change Advisory Board – et panel af eksperter, der evaluerer dine ændringer. Forkerte valg (fx lette løsninger på hastende opgaver) medfører straf.</li>
-      <li>🤖 <strong>Strategi:</strong> Dine valg giver point i enten Udvikling eller Sikkerhed, og samlet score = opgaver + point.</li>
+      <li>💡 <strong>CAB:</strong> Change Advisory Board – et panel af eksperter, der evaluerer dine ændringer. Forkerte valg medfører straf, fx 5 point, hvis du ikke vælger den avancerede løsning på hastende opgaver.</li>
+      <li>🤖 <strong>Strategi:</strong> Dine valg giver point i enten Udvikling eller Sikkerhed. En afbalanceret strategi er nøglen til succes.</li>
     </ul>
     <p style="margin-top:1rem;">Er du klar til at træde ind i rollen som digital strateg?</p>
   `;
@@ -206,7 +206,7 @@ function showTutorial() {
       <li>2️⃣ Vælg en opgave – hver opgave koster 2 Tid og giver 3 point (udvikling eller sikkerhed).</li>
       <li>3️⃣ Samlet score = antal opgaver + point (sikkerhed + udvikling).</li>
       <li>4️⃣ Over 65% udviklingsvalg øger risikoen for hackerangreb!</li>
-      <li>5️⃣ Hastende opgaver giver ekstra bonus (+4), men hvis du ikke vælger den avancerede løsning, trækkes 5 point i straf.</li>
+      <li>5️⃣ Hastende opgaver giver ekstra bonus (+4), men hvis du vælger let løsning, trækkes 5 point i straf.</li>
     </ul>
     <p style="margin-top:1rem;">Afslut denne tutorial og begynd at vælge opgaver!</p>
   `;
@@ -273,7 +273,7 @@ function openTaskSelectionModal() {
 function startTask(task) {
   gameState.currentTask = task;
   gameState.currentStepIndex = 0;
-  gameState.architectHelpUsed = false;
+  // Arkitekthjælp fjernes helt – ingen reference
   gameState.choiceHistory = new Array(task.steps.length);
   gameState.revisionCount = new Array(task.steps.length).fill(0);
   gameState.revisionMode = false;
@@ -284,9 +284,14 @@ function startTask(task) {
 
 function renderActiveTask(task) {
   const activeDiv = document.getElementById('activeTask');
+  // Behold overskriften "Aktiv Opgave"
   activeDiv.innerHTML = `<h2>Aktiv Opgave</h2>`;
   if (task) {
     activeDiv.innerHTML += `<h3>${task.title}</h3><p>${task.shortDesc}</p>`;
+    // Vis narrativeIntro lige efter shortDesc, hvis den findes
+    if (task.narrativeIntro) {
+      activeDiv.innerHTML += `<p>${task.narrativeIntro}</p>`;
+    }
     if (task.steps && task.steps.length > 0) {
       let stepsHTML = "<p style='text-align:left;'>";
       task.steps.forEach((st, idx) => {
@@ -300,7 +305,7 @@ function renderActiveTask(task) {
       activeDiv.innerHTML += stepsHTML;
       const currentStep = task.steps[gameState.currentStepIndex];
       activeDiv.innerHTML += `<p><strong>Vælg lokation:</strong> ${currentStep.location.toUpperCase()} ${getIcon(currentStep.location)}</p>`;
-      // Fremhæv den korrekte lokation, med undtagelse af sidste trin ("dokumentation")
+      // Fremhæv den korrekte lokation, med undtagelse af sidste trin
       highlightCorrectLocation(currentStep.location);
     }
   }
@@ -308,7 +313,7 @@ function renderActiveTask(task) {
 
 function handleLocationClick(clickedLoc) {
   if (!gameState.currentTask) {
-    openModal("<h2>Advarsel</h2><p>Vælg en opgave og forpligt dig først!</p>", `<button id="noTaskOK" class="modern-btn">OK</button>`);
+    openModal("<h2>Advarsel</h2><p>IT-arkitekten siger: Vælg en opgave og forpligt dig først!</p>", `<button id="noTaskOK" class="modern-btn">OK</button>`);
     document.getElementById('noTaskOK').addEventListener('click', () => closeModal());
     return;
   }
@@ -331,12 +336,10 @@ function showStepChoices(step) {
   let cATxt = step.choiceA.text.replace(/-?\d+\s*tid/, "<span style='color:#f44336; font-weight:bold;'>-2 tid</span>");
   let cBTxt = step.choiceB.text.replace(/-?\d+\s*tid/, "<span style='color:#43A047; font-weight:bold;'>0 tid</span>");
   
+  // Fjern arkitekthjælpsknappen – kun valg A, valg B og eventuelt Fortryd
   let footHTML = `
     <button id="choiceA" class="modern-btn">${step.choiceA.label} (${cATxt})</button>
     <button id="choiceB" class="modern-btn">${step.choiceB.label} (${cBTxt})</button>
-    <button id="archHelpStep" class="modern-btn">
-      ${gameState.architectHelpUsed ? "Arkitekthjælp brugt" : "Brug Arkitekthjælp"}
-    </button>
   `;
   if (gameState.revisionCount[gameState.currentStepIndex] < 1) {
     footHTML += ` <button id="undoChoice" class="modern-btn">Fortryd</button>`;
@@ -386,19 +389,6 @@ function showStepChoices(step) {
         proceedToNextStep();
       }
     });
-  });
-  
-  document.getElementById('archHelpStep').addEventListener('click', () => {
-    if (!gameState.architectHelpUsed) {
-      gameState.architectHelpUsed = true;
-      openModal(
-        `<h2>Arkitekthjælp</h2><p>Anbefalet valg: ${step.choiceA.label}</p>`,
-        `<button id="archCloseBtn" class="modern-btn">Luk</button>`
-      );
-      document.getElementById('archCloseBtn').addEventListener('click', () =>
-        closeModal(() => showStepChoices(step))
-      );
-    }
   });
 }
 
@@ -452,11 +442,10 @@ function cabApproval() {
       focusKPI = gameState.security;
       missionGoal = gameState.missionGoals.security;
     }
-    // Hvis opgaven er hastende og der er mindst ét let valg, træk 5 point i straf
+    // Hvis opgaven er hastende og mindst ét trin er løst med en hurtig (let) løsning, trækkes 5 point i straf.
     if (t.isHastende && gameState.choiceHistory.some(ch => ch && ch.advanced === false)) {
       focusKPI = Math.max(0, focusKPI - 5);
-      // Tilføj en note om straf
-      var penaltyNote = `<p style="color:red;">Du har modtaget 5 point i straf for at vælge let løsning på en hastende opgave.</p>`;
+      var penaltyNote = `<p style="color:red;">Du har fået 5 point i straf for at vælge den lette løsning på en hastende opgave.</p>`;
     } else {
       var penaltyNote = "";
     }
