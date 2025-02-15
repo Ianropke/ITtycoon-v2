@@ -107,10 +107,9 @@ function renderLocations() {
 renderLocations();
 
 /**
- * highlightCorrectLocation – Fremhæv den korrekte lokation, med undtagelse af det sidste trin ("dokumentation").
+ * highlightCorrectLocation – Fremhæv den korrekte lokation, med undtagelse af det sidste trin ("dokumentation")
  */
 function highlightCorrectLocation(correctLocation) {
-  // Hvis vi er på det sidste trin, fjern alle highlight-effekter
   if (!gameState.currentTask || gameState.currentStepIndex >= gameState.currentTask.steps.length - 1) {
     document.querySelectorAll('.location-button').forEach(btn => btn.classList.remove('highlight'));
     return;
@@ -171,8 +170,9 @@ function showHelp() {
       <li>⚙️ <strong>Formål:</strong> Gennemfør 5 opgaver pr. PI for at få en høj samlet score.</li>
       <li>⌛ <strong>Tid:</strong> Du starter med 50 Tid (hver opgave koster 2 Tid).</li>
       <li>💻 <strong>Point:</strong> Dine valg giver point – samlet score = opgaver + point.</li>
-      <li>🚨 <strong>Hastende opgaver:</strong> Giver ekstra bonus (+4), men øger CAB-risiko med 10%.</li>
+      <li>🚨 <strong>Hastende opgaver:</strong> Giver ekstra bonus (+4), men øger CAB-risiko med 10% – og hvis du ikke vælger den avancerede løsning, trækkes 5 point i straf.</li>
       <li>⚖️ <strong>Balance:</strong> Over 65% udviklingsvalg øger risikoen for hackerangreb; under 35% øger ineffektivitet.</li>
+      <li>🔍 <strong>CAB (Change Advisory Board):</strong> Et panel af eksperter, der vurderer dine ændringer. CAB ser på, om du har afvejet dine beslutninger korrekt – og straf (5 point) for lette valg på hastende opgaver bliver fratrukket din score.</li>
     </ul>
     <p style="margin-top:1rem;">Held og lykke med IT‑Tycoon!</p>
   `;
@@ -180,15 +180,16 @@ function showHelp() {
   document.getElementById('closeHelp').addEventListener('click', () => closeModal());
 }
 
-/** Intro – Pop-up 1: Scene-setting */
+/** Intro – Pop-up 1: Scene-setting inkl. forklaring af CAB */
 function showIntro() {
   const introText = `
     <h2>Velkommen til IT‑Tycoon!</h2>
     <ul style="text-align:left; margin:0 auto; max-width:500px; line-height:1.6;">
-      <li>🚀 <strong>Mission:</strong> Du er IT‑forvalter og skal styre komplekse systemer i en digital tidsalder.</li>
+      <li>🚀 <strong>Mission:</strong> Du er IT‑forvalter, som skal styre komplekse systemer i en digital tidsalder.</li>
       <li>⏱️ <strong>Tidspres:</strong> Hver beslutning påvirker din Tid – vær skarp og handl hurtigt.</li>
       <li>🎯 <strong>Mål:</strong> Fuldfør opgaver og optimer systemerne for at opnå en høj samlet score.</li>
-      <li>💡 <strong>Overraskelser:</strong> Dynamiske hændelser vil teste din strategi undervejs.</li>
+      <li>💡 <strong>CAB:</strong> Change Advisory Board – et panel af eksperter, der evaluerer dine ændringer. Forkerte valg (fx lette løsninger på hastende opgaver) medfører straf.</li>
+      <li>🤖 <strong>Strategi:</strong> Dine valg giver point i enten Udvikling eller Sikkerhed, og samlet score = opgaver + point.</li>
     </ul>
     <p style="margin-top:1rem;">Er du klar til at træde ind i rollen som digital strateg?</p>
   `;
@@ -205,7 +206,7 @@ function showTutorial() {
       <li>2️⃣ Vælg en opgave – hver opgave koster 2 Tid og giver 3 point (udvikling eller sikkerhed).</li>
       <li>3️⃣ Samlet score = antal opgaver + point (sikkerhed + udvikling).</li>
       <li>4️⃣ Over 65% udviklingsvalg øger risikoen for hackerangreb!</li>
-      <li>5️⃣ Hastende opgaver giver ekstra bonus, men medfører øget risiko.</li>
+      <li>5️⃣ Hastende opgaver giver ekstra bonus (+4), men hvis du ikke vælger den avancerede løsning, trækkes 5 point i straf.</li>
     </ul>
     <p style="margin-top:1rem;">Afslut denne tutorial og begynd at vælge opgaver!</p>
   `;
@@ -238,7 +239,7 @@ function openTaskSelectionModal() {
   });
   const hastendeNote = hasHastende 
     ? `<div style="background-color:#ffe9e9; border:1px solid red; padding:0.5rem;">
-         <strong>Hastende opgaver!</strong> (+4 bonus, +10% ekstra risiko)
+         <strong>Hastende opgaver!</strong> (+4 bonus, +10% ekstra risiko, 5 point straf for let løsning)
        </div>` 
     : "";
   const modalBody = `
@@ -299,7 +300,7 @@ function renderActiveTask(task) {
       activeDiv.innerHTML += stepsHTML;
       const currentStep = task.steps[gameState.currentStepIndex];
       activeDiv.innerHTML += `<p><strong>Vælg lokation:</strong> ${currentStep.location.toUpperCase()} ${getIcon(currentStep.location)}</p>`;
-      // Fremhæv den korrekte lokation, med undtagelse af sidste trin
+      // Fremhæv den korrekte lokation, med undtagelse af sidste trin ("dokumentation")
       highlightCorrectLocation(currentStep.location);
     }
   }
@@ -451,13 +452,21 @@ function cabApproval() {
       focusKPI = gameState.security;
       missionGoal = gameState.missionGoals.security;
     }
+    // Hvis opgaven er hastende og der er mindst ét let valg, træk 5 point i straf
+    if (t.isHastende && gameState.choiceHistory.some(ch => ch && ch.advanced === false)) {
+      focusKPI = Math.max(0, focusKPI - 5);
+      // Tilføj en note om straf
+      var penaltyNote = `<p style="color:red;">Du har modtaget 5 point i straf for at vælge let løsning på en hastende opgave.</p>`;
+    } else {
+      var penaltyNote = "";
+    }
     const allAdvanced = gameState.choiceHistory.every(ch => ch && ch.advanced);
     let chance = allAdvanced ? 1 : Math.min(1, focusKPI / missionGoal);
     let extraNote = "";
     if (t.isHastende) {
       chance -= 0.1;
       if (chance < 0) chance = 0;
-      extraNote += `<p style="color:red;">Hastende opgave: +10% risiko, +4 bonus ved succes.</p>`;
+      extraNote += `<p style="color:red;">Hastende opgave: +10% ekstra risiko, +4 bonus ved succes.</p>`;
     }
     if (gameState.extraCABRiskThisPI > 0) {
       chance -= gameState.extraCABRiskThisPI;
@@ -468,6 +477,7 @@ function cabApproval() {
     const riskPct = 100 - approvalPct;
     const cabHTML = `
       <h2>CAB</h2>
+      ${penaltyNote}
       ${extraNote}
       <p>Godkendelsesprocent: ${approvalPct}%</p>
       <p>Risiko for afvisning: ${riskPct}%</p>
