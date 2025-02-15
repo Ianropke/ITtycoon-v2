@@ -1,3 +1,5 @@
+/* style.css */
+
 /* Reset og grundindstillinger */
 *,
 *::before,
@@ -81,7 +83,7 @@ header h1 {
   min-height: calc(100vh - 80px);
 }
 
-/* Venstre kolonne: "Vælg ny opgave"-knap og Lokationer */
+/* Venstre kolonne: "Vælg ny opgave"-knap og lokationer */
 .left-column {
   width: 40%;
   padding: 1rem;
@@ -172,12 +174,13 @@ header h1 {
 }
 
 /* Container til KPI-info og narrativ feedback */
+/* Vi reducerer margin-top fra 1rem -> 0.5rem for at halvere afstanden */
 #infoContainer {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 1rem;
-  margin-top: 1rem;
+  margin-top: 0.5rem; /* Halveret afstand */
 }
 #kpiInfo {
   display: flex;
