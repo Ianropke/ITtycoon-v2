@@ -102,13 +102,17 @@ header h1 {
   color: #fff;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
-  /* Pulserende animation – ingen farveændring */
   animation: pulseTask 1.5s infinite;
 }
 #newTaskBtn:hover,
 .big-new-task-btn:hover {
   background-color: #1976d2;
   transform: scale(1.03);
+}
+@keyframes pulseTask {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
 }
 #locationsContainer {
   width: 100%;
@@ -156,13 +160,6 @@ header h1 {
     transform: scale(1);
     box-shadow: 0 0 0 0 rgba(255, 152, 0, 0);
   }
-}
-
-/* Pulserende effekt for "Vælg ny opgave" knappen */
-@keyframes pulseTask {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
 }
 
 /* Højre kolonne: Aktiv opgave, KPI-graf og info */
@@ -286,14 +283,17 @@ header h1 {
   line-height: 1.6;
   margin-bottom: 1rem;
 }
+
+/* VIGTIGT: centrer knapper i footeren */
 .modal-footer {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center; /* Centrerer knapperne */
   gap: 1rem;
   flex-wrap: wrap;
   padding-top: 1rem;
   border-top: 1px solid #ddd;
 }
+
 .close {
   position: absolute;
   top: 10px;
