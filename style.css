@@ -171,7 +171,7 @@ header h1 {
   color: var(--text-color);
 }
 
-/* Container til KPI-info (legend) og narrativ feedback */
+/* Container til KPI-info og narrativ feedback */
 #infoContainer {
   display: flex;
   flex-wrap: wrap;
@@ -197,7 +197,7 @@ header h1 {
   min-width: 200px;
 }
 
-/* Moderne knapper generelt */
+/* Moderne knapper */
 .modern-btn {
   background-color: var(--primary-color);
   color: #fff;
@@ -289,7 +289,7 @@ header h1 {
   font-weight: 600;
 }
 
-/* Opgaveelementer i modalen (eksempelvis) */
+/* Opgaveelementer i modalen */
 .task-item {
   border: 1px solid #ddd;
   padding: 0.75rem;
