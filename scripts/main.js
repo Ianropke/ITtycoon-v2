@@ -1,6 +1,7 @@
 // scripts/main.js
 import { openModal, closeModal } from './modal.js';
 import { shuffleArray, getIcon } from './utils.js';
+import { triggerRandomEvent } from './events.js'; // <-- Importér din events-funktion her
 
 /**
  * Global game state
@@ -165,35 +166,6 @@ function updateNarrative() {
     }
   }
   narrativeEl.innerHTML = narrative;
-}
-
-/** checkForEvents – Eksempel på event logik */
-function checkForEvents(gameState) {
-  let eventOccurred = false;
-  let eventMessage = "";
-
-  const totalPoints = gameState.security + gameState.development;
-  if (totalPoints === 0) {
-    return { eventOccurred, eventMessage };
-  }
-
-  const securityRatio = gameState.security / totalPoints;
-  const developmentRatio = gameState.development / totalPoints;
-
-  // Hvis securityRatio < 0.35 => negativ hændelse
-  if (securityRatio < 0.35) {
-    eventOccurred = true;
-    eventMessage = "CAB bemærker lav sikkerhed – du starter næste PI med 5 mindre Tid!";
-    gameState.timePenaltyNextPI = 5;
-  }
-  // Hvis developmentRatio > 0.65 => positiv hændelse
-  else if (developmentRatio > 0.65) {
-    eventOccurred = true;
-    eventMessage = "Et heldigt gennembrud! Du får 3 ekstra Tid i næste PI.";
-    gameState.timeBonusNextPI = 3;
-  }
-
-  return { eventOccurred, eventMessage };
 }
 
 /** Hjælp-knap */
@@ -445,6 +417,10 @@ function proceedToNextStep() {
     gameState.currentStepIndex++;
     renderActiveTask(t);
     highlightCorrectLocation(t.steps[gameState.currentStepIndex].location);
+
+    // TRIGGER EVENT MELLEM TRIN (hvis du ønsker det):
+    triggerRandomEvent(gameState);
+
   } else {
     cabApproval();
   }
@@ -589,7 +565,7 @@ function showTaskSummary() {
 }
 
 function finishTask() {
-  // Fjern highlight/puls med det samme
+  // Fjern highlight/puls med det samme (f.eks. dokumentation)
   highlightCorrectLocation(null);
 
   gameState.tasksCompleted++;
@@ -597,13 +573,20 @@ function finishTask() {
   openModal("<h2>Info</h2><p>Opgaven er fuldført!</p>", `<button id="taskDone" class="modern-btn">OK</button>`);
   document.getElementById('taskDone').addEventListener('click', () => {
     closeModal(() => {
+      // Fjern opgaven fra tasks
       gameState.tasks = gameState.tasks.filter(t => t !== gameState.currentTask);
+      // Tilføj 2 nye opgaver
       const newOnes = gameState.allTasks.splice(0, 2);
       newOnes.forEach(t => { t.isHastende = (Math.random() < 0.1); });
       gameState.tasks = gameState.tasks.concat(newOnes);
+
       document.getElementById('activeTask').innerHTML = '<h2>Aktiv Opgave</h2>';
       gameState.currentTask = null;
       gameState.currentStepIndex = 0;
+
+      // TRIGGER EVENT MELLEM OPGAVER
+      triggerRandomEvent(gameState);
+
       checkGameOverCondition();
     });
   });
@@ -616,19 +599,17 @@ function showPIFeedback() {
     gameState.highscore = totalPoints;
   }
 
-  // Kør event-logik
-  const eventResult = checkForEvents(gameState);
-  let eventMsg = "";
-  if (eventResult.eventOccurred) {
-    eventMsg = `<p style="color:red;">${eventResult.eventMessage}</p>`;
-  }
+  // Kør event-logik i slutningen af PI
+  const eventResult = triggerRandomEvent(gameState); 
+  // triggerRandomEvent() returnerer normalt ikke en streng, men du kan
+  // tilpasse, hvis du vil have feedback her. 
+  // ELLER kald checkForEvents() manuelt og vis resultat.
 
   let feedbackHTML = `
     <h2>PI Feedback</h2>
     <p>Fantastisk arbejde! Du har gennemført 5 opgaver.</p>
     <p>Din score i dette PI: <strong>${totalPoints}</strong></p>
     <p>Din højeste score: <strong>${gameState.highscore}</strong></p>
-    ${eventMsg}
     <p style="margin-top:1rem;">Din score nulstilles nu, og et nyt PI starter.</p>
   `;
   openModal(feedbackHTML, `<button id="continuePI" class="modern-btn">Start Næste PI</button>`);
