@@ -26,7 +26,8 @@ const gameState = {
   totalSecurityChoices: 0,
   totalDevelopmentChoices: 0,
   timePenaltyNextPI: 0,
-  timeBonusNextPI: 0
+  timeBonusNextPI: 0,
+  firstPI: true  // Marker om dette er den allerførste PI
 };
 
 window.gameState = gameState; // Gør gameState global, hvis nødvendigt
@@ -108,8 +109,8 @@ function renderLocations() {
 renderLocations();
 
 /**
- * highlightCorrectLocation – Hvis currentStepIndex er mindre end antallet af trin, så highlight den korrekte lokation.
- * Hvis correctLocation er falsy eller opgaven er fuldført, fjernes highlight.
+ * highlightCorrectLocation – Tjekker først, om correctLocation er defineret,
+ * og fjerner highlight, hvis opgaven er fuldført.
  */
 function highlightCorrectLocation(correctLocation) {
   const buttons = document.querySelectorAll('.location-button');
@@ -126,7 +127,7 @@ function highlightCorrectLocation(correctLocation) {
   });
 }
 
-/** Narrativ feedback */
+/** Narrativ feedback – vis løbende beskeder til spilleren */
 function updateNarrative() {
   const narrativeEl = document.getElementById('narrativeUpdate');
   if (!narrativeEl) return;
@@ -174,7 +175,7 @@ function showHelp() {
       <li>💻 <strong>Point:</strong> Samlet score = opgaver + point (Sikkerhed + Udvikling).</li>
       <li>🚨 <strong>Hastende opgaver:</strong> Giver ekstra bonus (+4), men øger CAB-risiko med 10% – og hvis du vælger let løsning, trækkes 5 point i straf.</li>
       <li>⚖️ <strong>Balance:</strong> Over 65% udviklingsvalg øger risikoen for hackerangreb; under 35% øger ineffektivitet.</li>
-      <li>🔍 <strong>CAB:</strong> Change Advisory Board – et panel af eksperter, der evaluerer dine ændringer. Forkerte valg kan medføre straf.</li>
+      <li>🔍 <strong>CAB:</strong> Et panel af eksperter, der evaluerer dine ændringer. Forkerte valg kan medføre straf.</li>
     </ul>
     <p style="margin-top:1rem;">Held og lykke med IT‑Tycoon!</p>
   `;
@@ -394,7 +395,7 @@ function showStepChoices(step) {
 }
 
 function finishCurrentTask() {
-  // Fjern highlight og marker, at alle trin er gennemført
+  // Når det sidste trin (f.eks. dokumentation) er gennemført:
   highlightCorrectLocation(null);
   gameState.currentStepIndex = gameState.currentTask.steps.length;
   closeModal(() => cabApproval());
@@ -552,9 +553,7 @@ function showTaskSummary() {
   });
   summaryHTML += "</ul>" + bonusNote;
   openModal(summaryHTML, `<button id="afterSummary" class="modern-btn">Fortsæt</button>`);
-  document.getElementById('afterSummary').addEventListener('click', () => 
-    closeModal(() => finishTask())
-  );
+  document.getElementById('afterSummary').addEventListener('click', () => closeModal(() => finishTask()));
 }
 
 function finishTask() {
@@ -583,6 +582,7 @@ function showPIFeedback() {
   if (totalPoints > gameState.highscore) {
     gameState.highscore = totalPoints;
   }
+  // Trigger evt. også et event her
   triggerRandomEvent(gameState);
   let feedbackHTML = `
     <h2>PI Feedback</h2>
@@ -594,6 +594,7 @@ function showPIFeedback() {
   openModal(feedbackHTML, `<button id="continuePI" class="modern-btn">Start Næste PI</button>`);
   document.getElementById('continuePI').addEventListener('click', () => {
     closeModal(() => {
+      // Nulstil PI – starttid sættes til 40
       gameState.tasksCompleted = 0;
       let newTime = 40;
       if (gameState.timePenaltyNextPI > 0) {
@@ -606,6 +607,7 @@ function showPIFeedback() {
         gameState.timeBonusNextPI = 0;
       }
       gameState.time = newTime;
+      // Nulstil KPI og andre variabler
       gameState.security = 0;
       gameState.development = 0;
       gameState.totalSecurityChoices = 0;
@@ -618,6 +620,11 @@ function showPIFeedback() {
       document.getElementById('activeTask').innerHTML = '<h2>Aktiv Opgave</h2>';
       gameState.currentTask = null;
       gameState.currentStepIndex = 0;
+      // Næste PI starter – tutorial vises kun første gang
+      if (gameState.firstPI) {
+        gameState.firstPI = false;
+        // Nu går vi direkte til opgavevalg
+      }
     });
   });
 }
