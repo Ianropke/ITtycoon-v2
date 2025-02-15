@@ -1,7 +1,7 @@
 // scripts/main.js
 import { openModal, closeModal } from './modal.js';
 import { shuffleArray, getIcon } from './utils.js';
-import { checkForEvents } from './events.js';
+import { checkForEvents } from './events.js'; // Event-modul for tilfældige hændelser
 
 /**
  * Global game state
@@ -12,9 +12,9 @@ const gameState = {
   development: 0,
   currentTask: null,
   currentStepIndex: 0,
-  tasksCompleted: 0,            // PI slutter ved 5 opgaver
-  tasksDevelopment: 0,          // Akkumulerede udviklingsvalg
-  tasksSikkerhed: 0,            // Akkumulerede sikkerhedsvalg
+  tasksCompleted: 0,             // PI slutter ved 5 opgaver
+  tasksDevelopment: 0,
+  tasksSikkerhed: 0,
   missionGoals: { security: 22, development: 22 },
   architectHelpUsed: false,
   allTasks: [],
@@ -26,8 +26,8 @@ const gameState = {
   quickChoicesThisPI: 0,
   extraCABRiskNextPI: 0,
   extraCABRiskThisPI: 0,
-  totalSecurityChoices: 0,      // Nye variabler til events
-  totalDevelopmentChoices: 0
+  totalSecurityChoices: 0,       // Tæller sikkerhedsvalg
+  totalDevelopmentChoices: 0     // Tæller udviklingsvalg
 };
 
 /** Lokationsliste */
@@ -96,11 +96,10 @@ function updateDashboard() {
   updateNarrative();
 }
 
-/** Opgaveprogress: “Opgave X / 5” */
 function updateTaskProgress() {
-  const el = document.getElementById('taskProgress');
-  if (el) {
-    el.textContent = `Opgave ${gameState.tasksCompleted} / 5`;
+  const progressEl = document.getElementById('taskProgress');
+  if (progressEl) {
+    progressEl.textContent = `Opgave ${gameState.tasksCompleted} / 5`;
   }
   updateNarrative();
 }
@@ -130,10 +129,10 @@ function renderLocations() {
 }
 renderLocations();
 
-/** Narrativ feedback – uden standardtekst */
+/** Narrativ feedback */
 function updateNarrative() {
-  const nEl = document.getElementById('narrativeUpdate');
-  if (!nEl) return;
+  const narrativeEl = document.getElementById('narrativeUpdate');
+  if (!narrativeEl) return;
   let narrative = "";
   const progress = gameState.tasksCompleted / 5;
   if (progress >= 0.8) {
@@ -141,7 +140,6 @@ function updateNarrative() {
   } else if (progress >= 0.6) {
     narrative = "Du er nu 60% af vejen til at gennemføre PI!";
   }
-  // Eventuel CAB-advarsel baseret på fordelingen af valg
   const total = gameState.totalSecurityChoices + gameState.totalDevelopmentChoices;
   if (total > 0) {
     const ratioDev = gameState.totalDevelopmentChoices / total;
@@ -151,7 +149,7 @@ function updateNarrative() {
       narrative += " CAB advarer: For få udviklingsvalg kan føre til ineffektive arbejdsgange!";
     }
   }
-  nEl.innerHTML = narrative;
+  narrativeEl.innerHTML = narrative;
 }
 
 /** Hjælp-knap */
@@ -162,9 +160,9 @@ function showHelp() {
     <ul style="text-align:left; margin:0 auto; max-width:400px;">
       <li>⚙️ <strong>Formål:</strong> Gennemfør 5 opgaver pr. PI for at få en høj samlet score.</li>
       <li>⌛ <strong>Tid:</strong> Du starter med 50 Tid (hver opgave koster 2 Tid).</li>
-      <li>💻 <strong>Point:</strong> Dine valg giver point – samlet score = antallet af opgaver + point.</li>
+      <li>💻 <strong>Point:</strong> Dine valg giver point – samlet score = opgaver + point.</li>
       <li>🚨 <strong>Hastende opgaver:</strong> Giver +4 bonus, men øger CAB-risiko med 10%.</li>
-      <li>⚖️ <strong>Balance:</strong> Over 65% udviklingsvalg øger risikoen for hackerangreb; under 35% udviklingsvalg medfører ineffektive arbejdsgange.</li>
+      <li>⚖️ <strong>Balance:</strong> Over 65% udviklingsvalg øger risikoen for hackerangreb; under 35% øger ineffektivitet.</li>
     </ul>
     <p style="margin-top:1rem;">Held og lykke med IT‑Tycoon!</p>
   `;
@@ -172,7 +170,7 @@ function showHelp() {
   document.getElementById('closeHelp').addEventListener('click', () => closeModal());
 }
 
-/** Intro – stemningsfuld tekst */
+/** Intro */
 function showIntro() {
   const introText = `
     <h2>Velkommen til IT‑Tycoon!</h2>
@@ -180,7 +178,7 @@ function showIntro() {
       <li>💼 <strong>Rolle:</strong> Du er IT‑forvalter i en stor organisation.</li>
       <li>⌛ <strong>Tidsstyring:</strong> Du starter med 50 Tid, og hver opgave koster 2 Tid.</li>
       <li>⚙️ <strong>Opgaver:</strong> Dine valg giver point – samlet score = opgaver + point.</li>
-      <li>🚨 <strong>Hastende opgaver:</strong> Giver +4 bonus, men øger CAB-risiko med 10%.</li>
+      <li>🚨 <strong>Hastende opgaver:</strong> Giver ekstra bonus (+4), men øger CAB-risiko med 10%.</li>
       <li>🏆 <strong>Mål:</strong> Få den højeste score og slå din highscore!</li>
     </ul>
     <p style="margin-top:1rem;">Klar til at starte? Klik "Start Spillet" for at begynde!</p>
@@ -225,10 +223,10 @@ function startTutorial() {
   document.getElementById('closeTut').addEventListener('click', () => closeModal());
 }
 
-/** “Vælg ny opgave”-knappen */
+/** "Vælg ny opgave"-knap */
 document.getElementById('newTaskBtn').addEventListener('click', openTaskSelectionModal);
 
-/** Opgavevalg – modal */
+/** Opgavevalg – vis opgavelisten i en modal */
 function openTaskSelectionModal() {
   if (gameState.currentTask) {
     openModal("<h2>Advarsel</h2><p>Du har allerede en aktiv opgave!</p>", `<button id="activeWarn" class="modern-btn">OK</button>`);
@@ -283,7 +281,7 @@ function openTaskSelectionModal() {
   });
 }
 
-/** Start opgave */
+/** Start en opgave */
 function startTask(task) {
   gameState.currentTask = task;
   gameState.currentStepIndex = 0;
@@ -370,7 +368,6 @@ function showStepChoices(step) {
 
   document.getElementById('choiceA').addEventListener('click', () => {
     const advChoice = { ...step.choiceA, applyEffect: { ...step.choiceA.applyEffect, timeCost: 2 } };
-    // Opdater tællere for valg
     gameState.totalDevelopmentChoices = (gameState.totalDevelopmentChoices || 0) + 1;
     applyChoice(advChoice);
     gameState.choiceHistory[gameState.currentStepIndex] = { title: step.choiceA.label, advanced: true };
@@ -389,7 +386,6 @@ function showStepChoices(step) {
   document.getElementById('choiceB').addEventListener('click', () => {
     const quickChoice = { ...step.choiceB, applyEffect: { ...step.choiceB.applyEffect, timeCost: 0 } };
     gameState.quickChoicesThisPI++;
-    // Opdater sikkerhedstallet, hvis valg giver sikkerhed (dette skal evt. differentieres)
     gameState.totalSecurityChoices = (gameState.totalSecurityChoices || 0) + 1;
     applyChoice(quickChoice);
     gameState.choiceHistory[gameState.currentStepIndex] = { title: step.choiceB.label, advanced: false };
@@ -459,17 +455,17 @@ function checkGameOverCondition() {
   }
 }
 
-/** PI Feedback */
+/** PI Feedback – defineret én gang */
 function showPIFeedback() {
-  // Før PI feedback, tjek for event-hændelser baseret på balancen af valg
+  const totalPoints = gameState.security + gameState.development;
+  if (totalPoints > gameState.highscore) {
+    gameState.highscore = totalPoints;
+  }
+  // Tjek for ekstra hændelser via events.js
   const eventResult = checkForEvents(gameState);
   let eventMsg = "";
   if (eventResult.eventOccurred) {
     eventMsg = `<p style="color:red;">${eventResult.eventMessage}</p>`;
-  }
-  const totalPoints = gameState.security + gameState.development;
-  if (totalPoints > gameState.highscore) {
-    gameState.highscore = totalPoints;
   }
   let feedbackHTML = `
     <h2>PI Feedback</h2>
@@ -526,7 +522,7 @@ function cabApproval() {
     if (gameState.extraCABRiskThisPI > 0) {
       chance -= gameState.extraCABRiskThisPI;
       if (chance < 0) chance = 0;
-      extraNote += `<p style="color:red;">Ekstra risiko fra forrige PI: +${Math.round(gameState.extraCABRiskThisPI*100)}%.</p>`;
+      extraNote += `<p style="color:red;">Ekstra risiko fra forrige PI: +${Math.round(gameState.extraCABRiskThisPI * 100)}%.</p>`;
     }
     const approvalPct = Math.floor(chance * 100);
     const riskPct = 100 - approvalPct;
@@ -570,7 +566,9 @@ function showRevisionOptions() {
   }
   if (revisableIndices.length === 0) {
     openModal("<h2>Ingen revidérbare trin</h2><p>Alle trin er enten avancerede eller allerede revideret.</p>", `<button id="noRev" class="modern-btn">OK</button>`);
-    document.getElementById('noRev').addEventListener('click', () => closeModal(() => cabApproval()));
+    document.getElementById('noRev').addEventListener('click', () =>
+      closeModal(() => cabApproval())
+    );
     return;
   }
   let listHTML = "<h2>Vælg et trin at revidere</h2><ul>";
@@ -581,7 +579,7 @@ function showRevisionOptions() {
   listHTML += "</ul>";
   openModal(listHTML, "");
   document.querySelectorAll('.revisionBtn').forEach(b => {
-    b.addEventListener('click', (e) => {
+    b.addEventListener('click', e => {
       let chosenIdx = parseInt(e.target.getAttribute('data-idx'));
       gameState.revisionCount[chosenIdx]++;
       gameState.revisionMode = true;
@@ -636,48 +634,17 @@ function finishTask() {
   });
 }
 
-/** PI Feedback – før feedback, tjek for events */
-function showPIFeedback() {
-  // Før feedback, opdater highscore hvis nødvendigt
-  const totalPoints = gameState.security + gameState.development;
-  if (totalPoints > gameState.highscore) {
-    gameState.highscore = totalPoints;
+/** Tjek for game over eller afslut PI */
+function checkGameOverCondition() {
+  if (gameState.time <= 0) {
+    let message = "Tiden er opbrugt!";
+    const totalPoints = gameState.security + gameState.development;
+    message += `<br>Samlet score: ${totalPoints}<br>Highscore: ${gameState.highscore}`;
+    openModal(`<h2>Spillet er slut</h2><p>${message}</p>`, "");
+    setTimeout(() => location.reload(), 4000);
+  } else if (gameState.tasksCompleted >= 5) {
+    showPIFeedback();
   }
-  // Tjek for event-hændelser (fx hackerangreb eller ineffektivitet)
-  const eventResult = checkForEvents(gameState);
-  let eventMsg = "";
-  if (eventResult.eventOccurred) {
-    eventMsg = `<p style="color:red;">${eventResult.eventMessage}</p>`;
-  }
-  let feedbackHTML = `
-    <h2>PI Feedback</h2>
-    <p>Fantastisk arbejde! Du har gennemført 5 opgaver.</p>
-    <p>Din score i dette PI: <strong>${totalPoints}</strong></p>
-    <p>Din højeste score: <strong>${gameState.highscore}</strong></p>
-    ${eventMsg}
-    <p style="margin-top:1rem;">Din score nulstilles nu, og et nyt PI starter.</p>
-  `;
-  openModal(feedbackHTML, `<button id="continuePI" class="modern-btn">Start Næste PI</button>`);
-  document.getElementById('continuePI').addEventListener('click', () => {
-    closeModal(() => {
-      gameState.tasksCompleted = 0;
-      gameState.time = 45;
-      gameState.security = 0;
-      gameState.development = 0;
-      gameState.tasksDevelopment = 0;
-      gameState.tasksSikkerhed = 0;
-      gameState.totalSecurityChoices = 0;
-      gameState.totalDevelopmentChoices = 0;
-      gameState.extraCABRiskThisPI = gameState.extraCABRiskNextPI;
-      gameState.extraCABRiskNextPI = 0;
-      gameState.quickChoicesThisPI = 0;
-      updateDashboard();
-      updateTaskProgress();
-      document.getElementById('activeTask').innerHTML = '<h2>Aktiv Opgave</h2>';
-      gameState.currentTask = null;
-      gameState.currentStepIndex = 0;
-    });
-  });
 }
 
 /** Start spillet med intro */
