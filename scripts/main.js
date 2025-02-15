@@ -91,15 +91,6 @@ function updateTaskProgress() {
 }
 updateTaskProgress();
 
-/** Ingen manuel legend-tekst */
-function renderKpiTooltips() {
-  const kpiInfo = document.getElementById('kpiInfo');
-  if (kpiInfo) {
-    kpiInfo.innerHTML = "";
-  }
-}
-renderKpiTooltips();
-
 /** Render lokationer */
 function renderLocations() {
   const locDiv = document.getElementById('locations');
@@ -116,10 +107,10 @@ function renderLocations() {
 renderLocations();
 
 /**
- * highlightCorrectLocation – Fremhæv kun den korrekte lokation, hvis opgaven ikke er afsluttet.
+ * highlightCorrectLocation – Fremhæv den korrekte lokation, med undtagelse af det sidste trin ("dokumentation").
  */
 function highlightCorrectLocation(correctLocation) {
-  // Hvis der ikke er en aktiv opgave eller vi er på det sidste trin (dokumentation), fjern highlight.
+  // Hvis vi er på det sidste trin, fjern alle highlight-effekter
   if (!gameState.currentTask || gameState.currentStepIndex >= gameState.currentTask.steps.length - 1) {
     document.querySelectorAll('.location-button').forEach(btn => btn.classList.remove('highlight'));
     return;
@@ -308,28 +299,10 @@ function renderActiveTask(task) {
       activeDiv.innerHTML += stepsHTML;
       const currentStep = task.steps[gameState.currentStepIndex];
       activeDiv.innerHTML += `<p><strong>Vælg lokation:</strong> ${currentStep.location.toUpperCase()} ${getIcon(currentStep.location)}</p>`;
-      // Fremhæv den korrekte lokation, med undtagelse af dokumentation hvis opgaven er afsluttet
+      // Fremhæv den korrekte lokation, med undtagelse af sidste trin
       highlightCorrectLocation(currentStep.location);
     }
   }
-}
-
-/**
- * highlightCorrectLocation – Hvis vi er på det sidste trin (dokumentation), fjernes alle highlight-effekter.
- */
-function highlightCorrectLocation(correctLocation) {
-  if (!gameState.currentTask || gameState.currentStepIndex >= gameState.currentTask.steps.length - 1) {
-    document.querySelectorAll('.location-button').forEach(btn => btn.classList.remove('highlight'));
-    return;
-  }
-  const buttons = document.querySelectorAll('.location-button');
-  buttons.forEach(btn => {
-    if (btn.textContent.toLowerCase().includes(correctLocation.toLowerCase())) {
-      btn.classList.add('highlight');
-    } else {
-      btn.classList.remove('highlight');
-    }
-  });
 }
 
 function handleLocationClick(clickedLoc) {
