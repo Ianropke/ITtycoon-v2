@@ -27,7 +27,6 @@
         <button id="helpButton" class="help-btn">Få hjælp</button>
       </div>
     </header>
-
     <div class="container">
       <!-- Venstre kolonne: "Vælg ny opgave"-knap og Lokationer -->
       <div class="left-column">
@@ -39,28 +38,24 @@
           <div id="locations"></div>
         </div>
       </div>
-
       <!-- Højre kolonne: Aktiv opgave, KPI-graf og info -->
       <div class="right-column">
         <!-- Aktiv opgave -->
         <div id="activeTask">
           <h2>Aktiv Opgave</h2>
         </div>
-
         <!-- KPI-graf -->
         <div id="graphContainer">
           <canvas id="kpiChart" width="720" height="300"></canvas>
           <div id="taskProgress" class="task-progress">Opgave 0/5</div>
         </div>
-
-        <!-- Container til KPI-info (legend) og narrativ feedback -->
+        <!-- Container til KPI-info og narrativ feedback -->
         <div id="infoContainer">
           <div id="kpiInfo"></div>
           <div id="narrativeUpdate"></div>
         </div>
       </div>
     </div>
-
     <!-- Modal-vindue -->
     <div id="modal" class="modal hidden">
       <div class="modal-content">
@@ -69,12 +64,11 @@
         <span id="modalClose" class="close">&times;</span>
       </div>
     </div>
-
     <!-- Indlæs opgave-filer -->
     <script src="scripts/tasks/hospitalTasks.js"></script>
     <script src="scripts/tasks/infrastrukturTasks.js"></script>
     <script src="scripts/tasks/cybersikkerhedTasks.js"></script>
-    <!-- Indlæs ES6-moduler -->
+    <!-- ES6-moduler -->
     <script type="module" src="scripts/modal.js"></script>
     <script type="module" src="scripts/utils.js"></script>
     <script type="module" src="scripts/main.js"></script>
