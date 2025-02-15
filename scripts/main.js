@@ -1,7 +1,7 @@
 // scripts/main.js
 import { openModal, closeModal } from './modal.js';
 import { shuffleArray, getIcon } from './utils.js';
-import { triggerRandomEvent } from './events.js'; // <-- Importér din events-funktion her
+import { triggerRandomEvent } from './events.js'; // Filen med dine events
 
 /**
  * Global game state
@@ -365,16 +365,22 @@ function showStepChoices(step) {
     gameState.totalDevelopmentChoices++;
     applyChoice(advChoice);
     gameState.choiceHistory[gameState.currentStepIndex] = { title: step.choiceA.label, advanced: true };
-    closeModal(() => {
-      if (gameState.revisionMode) {
-        gameState.revisionMode = false;
-        cabApproval();
-      } else if (gameState.currentStepIndex === gameState.currentTask.steps.length - 1) {
-        cabApproval();
-      } else {
-        proceedToNextStep();
-      }
-    });
+
+    // Hvis det var sidste trin (dokumentation), fjern highlight og sæt step til "fuldført"
+    if (gameState.currentStepIndex === gameState.currentTask.steps.length - 1) {
+      highlightCorrectLocation(null);
+      gameState.currentStepIndex = gameState.currentTask.steps.length; // marker alle trin som fuldført
+      closeModal(() => cabApproval());
+    } else {
+      closeModal(() => {
+        if (gameState.revisionMode) {
+          gameState.revisionMode = false;
+          cabApproval();
+        } else {
+          proceedToNextStep();
+        }
+      });
+    }
   });
   
   document.getElementById('choiceB').addEventListener('click', () => {
@@ -383,16 +389,21 @@ function showStepChoices(step) {
     gameState.totalSecurityChoices++;
     applyChoice(quickChoice);
     gameState.choiceHistory[gameState.currentStepIndex] = { title: step.choiceB.label, advanced: false };
-    closeModal(() => {
-      if (gameState.revisionMode) {
-        gameState.revisionMode = false;
-        cabApproval();
-      } else if (gameState.currentStepIndex === gameState.currentTask.steps.length - 1) {
-        cabApproval();
-      } else {
-        proceedToNextStep();
-      }
-    });
+
+    if (gameState.currentStepIndex === gameState.currentTask.steps.length - 1) {
+      highlightCorrectLocation(null);
+      gameState.currentStepIndex = gameState.currentTask.steps.length;
+      closeModal(() => cabApproval());
+    } else {
+      closeModal(() => {
+        if (gameState.revisionMode) {
+          gameState.revisionMode = false;
+          cabApproval();
+        } else {
+          proceedToNextStep();
+        }
+      });
+    }
   });
 }
 
@@ -418,7 +429,7 @@ function proceedToNextStep() {
     renderActiveTask(t);
     highlightCorrectLocation(t.steps[gameState.currentStepIndex].location);
 
-    // TRIGGER EVENT MELLEM TRIN (hvis du ønsker det):
+    // TRIGGER EVENT MELLEM TRIN (hvis du ønsker det)
     triggerRandomEvent(gameState);
 
   } else {
@@ -600,10 +611,7 @@ function showPIFeedback() {
   }
 
   // Kør event-logik i slutningen af PI
-  const eventResult = triggerRandomEvent(gameState); 
-  // triggerRandomEvent() returnerer normalt ikke en streng, men du kan
-  // tilpasse, hvis du vil have feedback her. 
-  // ELLER kald checkForEvents() manuelt og vis resultat.
+  triggerRandomEvent(gameState); 
 
   let feedbackHTML = `
     <h2>PI Feedback</h2>
