@@ -115,11 +115,17 @@ function renderLocations() {
 }
 renderLocations();
 
-/** Funktion til at fremhæve den korrekte lokation */
+/**
+ * highlightCorrectLocation – Fremhæv kun den korrekte lokation, hvis opgaven ikke er afsluttet.
+ */
 function highlightCorrectLocation(correctLocation) {
+  // Hvis der ikke er en aktiv opgave eller vi er på det sidste trin (dokumentation), fjern highlight.
+  if (!gameState.currentTask || gameState.currentStepIndex >= gameState.currentTask.steps.length - 1) {
+    document.querySelectorAll('.location-button').forEach(btn => btn.classList.remove('highlight'));
+    return;
+  }
   const buttons = document.querySelectorAll('.location-button');
   buttons.forEach(btn => {
-    // Hvis knappen indeholder den korrekte lokation (case insensitive)
     if (btn.textContent.toLowerCase().includes(correctLocation.toLowerCase())) {
       btn.classList.add('highlight');
     } else {
@@ -190,8 +196,8 @@ function showIntro() {
     <ul style="text-align:left; margin:0 auto; max-width:500px; line-height:1.6;">
       <li>🚀 <strong>Mission:</strong> Du er IT‑forvalter og skal styre komplekse systemer i en digital tidsalder.</li>
       <li>⏱️ <strong>Tidspres:</strong> Hver beslutning påvirker din Tid – vær skarp og handl hurtigt.</li>
-      <li>🎯 <strong>Mål:</strong> Fuldfør opgaver og optimer systemerne for at opnå høj score.</li>
-      <li>💡 <strong>Overraskelser:</strong> Dynamiske hændelser og uventede udfordringer vil teste din strategi.</li>
+      <li>🎯 <strong>Mål:</strong> Fuldfør opgaver og optimer systemerne for at opnå en høj samlet score.</li>
+      <li>💡 <strong>Overraskelser:</strong> Dynamiske hændelser vil teste din strategi undervejs.</li>
     </ul>
     <p style="margin-top:1rem;">Er du klar til at træde ind i rollen som digital strateg?</p>
   `;
@@ -207,7 +213,7 @@ function showTutorial() {
       <li>1️⃣ Klik på “Vælg ny opgave” for at åbne opgavelisten.</li>
       <li>2️⃣ Vælg en opgave – hver opgave koster 2 Tid og giver 3 point (udvikling eller sikkerhed).</li>
       <li>3️⃣ Samlet score = antal opgaver + point (sikkerhed + udvikling).</li>
-      <li>4️⃣ Husk: Over 65% udviklingsvalg øger risikoen for hackerangreb!</li>
+      <li>4️⃣ Over 65% udviklingsvalg øger risikoen for hackerangreb!</li>
       <li>5️⃣ Hastende opgaver giver ekstra bonus, men medfører øget risiko.</li>
     </ul>
     <p style="margin-top:1rem;">Afslut denne tutorial og begynd at vælge opgaver!</p>
@@ -302,10 +308,28 @@ function renderActiveTask(task) {
       activeDiv.innerHTML += stepsHTML;
       const currentStep = task.steps[gameState.currentStepIndex];
       activeDiv.innerHTML += `<p><strong>Vælg lokation:</strong> ${currentStep.location.toUpperCase()} ${getIcon(currentStep.location)}</p>`;
-      // Fremhæv den korrekte lokation i lokationslisten
+      // Fremhæv den korrekte lokation, med undtagelse af dokumentation hvis opgaven er afsluttet
       highlightCorrectLocation(currentStep.location);
     }
   }
+}
+
+/**
+ * highlightCorrectLocation – Hvis vi er på det sidste trin (dokumentation), fjernes alle highlight-effekter.
+ */
+function highlightCorrectLocation(correctLocation) {
+  if (!gameState.currentTask || gameState.currentStepIndex >= gameState.currentTask.steps.length - 1) {
+    document.querySelectorAll('.location-button').forEach(btn => btn.classList.remove('highlight'));
+    return;
+  }
+  const buttons = document.querySelectorAll('.location-button');
+  buttons.forEach(btn => {
+    if (btn.textContent.toLowerCase().includes(correctLocation.toLowerCase())) {
+      btn.classList.add('highlight');
+    } else {
+      btn.classList.remove('highlight');
+    }
+  });
 }
 
 function handleLocationClick(clickedLoc) {
@@ -424,7 +448,6 @@ function proceedToNextStep() {
   if (gameState.currentStepIndex < t.steps.length - 1) {
     gameState.currentStepIndex++;
     renderActiveTask(t);
-    // Når vi går videre til et nyt trin, fremhæv den korrekte lokation
     const currentStep = t.steps[gameState.currentStepIndex];
     highlightCorrectLocation(currentStep.location);
   } else {
@@ -599,7 +622,7 @@ function showPIFeedback() {
   openModal(feedbackHTML, `<button id="continuePI" class="modern-btn">Start Næste PI</button>`);
   document.getElementById('continuePI').addEventListener('click', () => {
     closeModal(() => {
-      // Nulstil PI – starttid sættes nu til 40, og alle strafvariabler nulstilles (ikke bæres over)
+      // Nulstil PI – starttid sættes nu til 40, og alle ekstra risici nulstilles
       gameState.tasksCompleted = 0;
       gameState.time = 40;
       gameState.security = 0;
