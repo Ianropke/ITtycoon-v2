@@ -23,10 +23,10 @@ const gameState = {
   quickChoicesThisPI: 0,
   extraCABRiskNextPI: 0,
   extraCABRiskThisPI: 0,
-  totalSecurityChoices: 0,       // Tæller sikkerhedsvalg
-  totalDevelopmentChoices: 0,    // Tæller udviklingsvalg
-  timePenaltyNextPI: 0,          // Event-straf til næste PI
-  timeBonusNextPI: 0             // Event-bonus til næste PI
+  totalSecurityChoices: 0,
+  totalDevelopmentChoices: 0,
+  timePenaltyNextPI: 0,
+  timeBonusNextPI: 0
 };
 
 window.gameState = gameState; // Gør gameState global, hvis nødvendigt
@@ -92,7 +92,7 @@ function updateTaskProgress() {
 }
 updateTaskProgress();
 
-/** Håndter lokation-knapper */
+/** Render lokationer */
 function renderLocations() {
   const locDiv = document.getElementById('locations');
   locDiv.innerHTML = "";
@@ -108,18 +108,15 @@ function renderLocations() {
 renderLocations();
 
 /**
- * highlightCorrectLocation – Hvis opgaven er i gang, highlight den korrekte lokation.
- * Hvis opgaven er fuldført, fjern highlight.
+ * highlightCorrectLocation – Hvis currentStepIndex er mindre end antallet af trin, så highlight den korrekte lokation.
+ * Hvis correctLocation er falsy eller opgaven er fuldført, fjernes highlight.
  */
 function highlightCorrectLocation(correctLocation) {
-  if (
-    !gameState.currentTask ||
-    gameState.currentStepIndex >= gameState.currentTask.steps.length
-  ) {
-    document.querySelectorAll('.location-button').forEach(btn => btn.classList.remove('highlight'));
+  const buttons = document.querySelectorAll('.location-button');
+  if (!correctLocation || !gameState.currentTask || gameState.currentStepIndex >= gameState.currentTask.steps.length) {
+    buttons.forEach(btn => btn.classList.remove('highlight'));
     return;
   }
-  const buttons = document.querySelectorAll('.location-button');
   buttons.forEach(btn => {
     if (btn.textContent.toLowerCase().includes(correctLocation.toLowerCase())) {
       btn.classList.add('highlight');
@@ -129,7 +126,7 @@ function highlightCorrectLocation(correctLocation) {
   });
 }
 
-/** Narrativ feedback – vis løbende beskeder til spilleren */
+/** Narrativ feedback */
 function updateNarrative() {
   const narrativeEl = document.getElementById('narrativeUpdate');
   if (!narrativeEl) return;
@@ -397,7 +394,7 @@ function showStepChoices(step) {
 }
 
 function finishCurrentTask() {
-  // Når det sidste trin (typisk dokumentation) er gennemført, fjern highlight og marker opgaven som færdig
+  // Fjern highlight og marker, at alle trin er gennemført
   highlightCorrectLocation(null);
   gameState.currentStepIndex = gameState.currentTask.steps.length;
   closeModal(() => cabApproval());
@@ -555,7 +552,9 @@ function showTaskSummary() {
   });
   summaryHTML += "</ul>" + bonusNote;
   openModal(summaryHTML, `<button id="afterSummary" class="modern-btn">Fortsæt</button>`);
-  document.getElementById('afterSummary').addEventListener('click', () => closeModal(() => finishTask()));
+  document.getElementById('afterSummary').addEventListener('click', () => 
+    closeModal(() => finishTask())
+  );
 }
 
 function finishTask() {
