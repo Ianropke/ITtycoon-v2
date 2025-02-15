@@ -13,8 +13,6 @@ const gameState = {
   currentTask: null,
   currentStepIndex: 0,
   tasksCompleted: 0,             // PI slutter ved 5 opgaver
-  tasksDevelopment: 0,
-  tasksSikkerhed: 0,
   missionGoals: { security: 22, development: 22 },
   architectHelpUsed: false,
   allTasks: [],
@@ -52,7 +50,7 @@ gameState.tasks.forEach(task => {
   task.isHastende = (Math.random() < 0.1);
 });
 
-/** Chart.js – viser Tid og Score (stacket Sikkerhed + Udvikling) */
+/** Chart.js – vis Tid og Score (stacket Sikkerhed + Udvikling) */
 const ctx = document.getElementById('kpiChart').getContext('2d');
 const kpiChart = new Chart(ctx, {
   type: 'bar',
@@ -81,9 +79,7 @@ const kpiChart = new Chart(ctx, {
       x: { stacked: true },
       y: { stacked: true, beginAtZero: true }
     },
-    plugins: {
-      legend: { display: true }
-    }
+    plugins: { legend: { display: true } }
   }
 });
 
@@ -226,7 +222,6 @@ function startTutorial() {
 /** "Vælg ny opgave"-knap */
 document.getElementById('newTaskBtn').addEventListener('click', openTaskSelectionModal);
 
-/** Opgavevalg – modal */
 function openTaskSelectionModal() {
   if (gameState.currentTask) {
     openModal("<h2>Advarsel</h2><p>Du har allerede en aktiv opgave!</p>", `<button id="activeWarn" class="modern-btn">OK</button>`);
@@ -281,7 +276,6 @@ function openTaskSelectionModal() {
   });
 }
 
-/** Start opgave */
 function startTask(task) {
   gameState.currentTask = task;
   gameState.currentStepIndex = 0;
@@ -294,7 +288,6 @@ function startTask(task) {
   renderActiveTask(task);
 }
 
-/** Render aktiv opgave */
 function renderActiveTask(task) {
   const activeDiv = document.getElementById('activeTask');
   activeDiv.innerHTML = `<h2>Aktiv Opgave</h2>`;
@@ -317,7 +310,6 @@ function renderActiveTask(task) {
   }
 }
 
-/** Håndter lokationsklik */
 function handleLocationClick(clickedLoc) {
   if (!gameState.currentTask) {
     openModal("<h2>Advarsel</h2><p>Vælg en opgave og forpligt dig først!</p>", `<button id="noTaskOK" class="modern-btn">OK</button>`);
@@ -337,7 +329,6 @@ function handleLocationClick(clickedLoc) {
   }
 }
 
-/** Vis trinvalg */
 function showStepChoices(step) {
   const bodyHTML = `<h2>${step.stepDescription}</h2>${step.stepContext || ""}`;
   
@@ -355,7 +346,7 @@ function showStepChoices(step) {
     footHTML += ` <button id="undoChoice" class="modern-btn">Fortryd</button>`;
   }
   openModal(bodyHTML, footHTML);
-
+  
   const undoBtn = document.getElementById('undoChoice');
   if (undoBtn) {
     undoBtn.addEventListener('click', () => {
@@ -365,7 +356,7 @@ function showStepChoices(step) {
       closeModal(() => showStepChoices(step));
     });
   }
-
+  
   document.getElementById('choiceA').addEventListener('click', () => {
     const advChoice = { ...step.choiceA, applyEffect: { ...step.choiceA.applyEffect, timeCost: 2 } };
     gameState.totalDevelopmentChoices = (gameState.totalDevelopmentChoices || 0) + 1;
@@ -382,7 +373,7 @@ function showStepChoices(step) {
       }
     });
   });
-
+  
   document.getElementById('choiceB').addEventListener('click', () => {
     const quickChoice = { ...step.choiceB, applyEffect: { ...step.choiceB.applyEffect, timeCost: 0 } };
     gameState.quickChoicesThisPI++;
@@ -400,7 +391,7 @@ function showStepChoices(step) {
       }
     });
   });
-
+  
   document.getElementById('archHelpStep').addEventListener('click', () => {
     if (!gameState.architectHelpUsed) {
       gameState.architectHelpUsed = true;
@@ -415,7 +406,6 @@ function showStepChoices(step) {
   });
 }
 
-/** Anvend valg */
 function applyChoice(choice) {
   gameState.time -= choice.applyEffect.timeCost;
   if (gameState.time < 0) gameState.time = 0;
@@ -431,7 +421,6 @@ function applyChoice(choice) {
   }
 }
 
-/** Næste trin */
 function proceedToNextStep() {
   const t = gameState.currentTask;
   if (gameState.currentStepIndex < t.steps.length - 1) {
@@ -442,7 +431,6 @@ function proceedToNextStep() {
   }
 }
 
-/** Tjek for game over eller afslut PI */
 function checkGameOverCondition() {
   if (gameState.time <= 0) {
     let message = "Tiden er opbrugt!";
@@ -455,49 +443,6 @@ function checkGameOverCondition() {
   }
 }
 
-/** PI Feedback */
-function showPIFeedback() {
-  const totalPoints = gameState.security + gameState.development;
-  if (totalPoints > gameState.highscore) {
-    gameState.highscore = totalPoints;
-  }
-  const eventResult = checkForEvents(gameState);
-  let eventMsg = "";
-  if (eventResult.eventOccurred) {
-    eventMsg = `<p style="color:red;">${eventResult.eventMessage}</p>`;
-  }
-  let feedbackHTML = `
-    <h2>PI Feedback</h2>
-    <p>Fantastisk arbejde! Du har gennemført 5 opgaver.</p>
-    <p>Din score i dette PI: <strong>${totalPoints}</strong></p>
-    <p>Din højeste score: <strong>${gameState.highscore}</strong></p>
-    ${eventMsg}
-    <p style="margin-top:1rem;">Din score nulstilles nu, og et nyt PI starter.</p>
-  `;
-  openModal(feedbackHTML, `<button id="continuePI" class="modern-btn">Start Næste PI</button>`);
-  document.getElementById('continuePI').addEventListener('click', () => {
-    closeModal(() => {
-      gameState.tasksCompleted = 0;
-      gameState.time = 45;
-      gameState.security = 0;
-      gameState.development = 0;
-      gameState.tasksDevelopment = 0;
-      gameState.tasksSikkerhed = 0;
-      gameState.totalSecurityChoices = 0;
-      gameState.totalDevelopmentChoices = 0;
-      gameState.extraCABRiskThisPI = gameState.extraCABRiskNextPI;
-      gameState.extraCABRiskNextPI = 0;
-      gameState.quickChoicesThisPI = 0;
-      updateDashboard();
-      updateTaskProgress();
-      document.getElementById('activeTask').innerHTML = '<h2>Aktiv Opgave</h2>';
-      gameState.currentTask = null;
-      gameState.currentStepIndex = 0;
-    });
-  });
-}
-
-/** CAB Approvement */
 function cabApproval() {
   closeModal(() => {
     const t = gameState.currentTask;
@@ -554,7 +499,6 @@ function cabApproval() {
   });
 }
 
-/** Revision Options */
 function showRevisionOptions() {
   let revisableIndices = [];
   for (let i = 0; i < gameState.choiceHistory.length; i++) {
@@ -589,7 +533,6 @@ function showRevisionOptions() {
   });
 }
 
-/** Task Summary */
 function showTaskSummary() {
   let bonusNote = "";
   if (gameState.currentTask.isHastende) {
@@ -615,7 +558,6 @@ function showTaskSummary() {
   );
 }
 
-/** Afslut opgave */
 function finishTask() {
   gameState.tasksCompleted++;
   updateTaskProgress();
@@ -634,25 +576,46 @@ function finishTask() {
   });
 }
 
-/** Tjek for game over eller afslut PI */
-function checkGameOverCondition() {
-  if (gameState.time <= 0) {
-    let message = "Tiden er opbrugt!";
-    const totalPoints = gameState.security + gameState.development;
-    message += `<br>Samlet score: ${totalPoints}<br>Highscore: ${gameState.highscore}`;
-    openModal(`<h2>Spillet er slut</h2><p>${message}</p>`, "");
-    setTimeout(() => location.reload(), 4000);
-  } else if (gameState.tasksCompleted >= 5) {
-    showPIFeedback();
+function showPIFeedback() {
+  const totalPoints = gameState.security + gameState.development;
+  if (totalPoints > gameState.highscore) {
+    gameState.highscore = totalPoints;
   }
+  const eventResult = checkForEvents(gameState);
+  let eventMsg = "";
+  if (eventResult.eventOccurred) {
+    eventMsg = `<p style="color:red;">${eventResult.eventMessage}</p>`;
+  }
+  let feedbackHTML = `
+    <h2>PI Feedback</h2>
+    <p>Fantastisk arbejde! Du har gennemført 5 opgaver.</p>
+    <p>Din score i dette PI: <strong>${totalPoints}</strong></p>
+    <p>Din højeste score: <strong>${gameState.highscore}</strong></p>
+    ${eventMsg}
+    <p style="margin-top:1rem;">Din score nulstilles nu, og et nyt PI starter.</p>
+  `;
+  openModal(feedbackHTML, `<button id="continuePI" class="modern-btn">Start Næste PI</button>`);
+  document.getElementById('continuePI').addEventListener('click', () => {
+    closeModal(() => {
+      gameState.tasksCompleted = 0;
+      gameState.time = 45;
+      gameState.security = 0;
+      gameState.development = 0;
+      gameState.totalSecurityChoices = 0;
+      gameState.totalDevelopmentChoices = 0;
+      gameState.extraCABRiskThisPI = gameState.extraCABRiskNextPI;
+      gameState.extraCABRiskNextPI = 0;
+      gameState.quickChoicesThisPI = 0;
+      updateDashboard();
+      updateTaskProgress();
+      document.getElementById('activeTask').innerHTML = '<h2>Aktiv Opgave</h2>';
+      gameState.currentTask = null;
+      gameState.currentStepIndex = 0;
+    });
+  });
 }
 
 /** Start spillet med intro */
 showIntro();
 
-export {
-  gameState,
-  updateDashboard,
-  openModal,
-  closeModal
-};
+export { gameState, updateDashboard, openModal, closeModal };
