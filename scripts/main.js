@@ -21,19 +21,19 @@ const gameState = {
   choiceHistory: [],
   revisionCount: [],
   revisionMode: false,
-  highscore: 0,            // Highscore (maksimum score opnået på tværs af PI’er)
-  quickChoicesThisPI: 0,   // Antal lette valg (Choice B) i PI
-  extraCABRiskNextPI: 0,   // Ekstra CAB-risiko til næste PI (0.05 hvis >5 lette valg)
-  extraCABRiskThisPI: 0    // Ekstra CAB-risiko gældende for den aktuelle PI
+  highscore: 0,
+  quickChoicesThisPI: 0,
+  extraCABRiskNextPI: 0,
+  extraCABRiskThisPI: 0
 };
 
 /**
- * Lokationsliste – tilgængelig globalt
+ * Lokationsliste
  */
 const locationList = ["hospital", "dokumentation", "leverandør", "infrastruktur", "it‑jura", "cybersikkerhed"];
 
 /**
- * Saml og bland opgaver fra de tre task-filer
+ * Saml og bland opgaver
  */
 gameState.allTasks = [].concat(
   window.hospitalTasks,
@@ -41,49 +41,58 @@ gameState.allTasks = [].concat(
   window.cybersikkerhedTasks
 );
 shuffleArray(gameState.allTasks);
-// Vælg de første 7 opgaver som potentielle
 gameState.tasks = gameState.allTasks.splice(0, 7);
-// Tildel ca. 10% af opgaverne som hastende
 gameState.tasks.forEach(task => {
   task.isHastende = (Math.random() < 0.1);
 });
 
 /**
  * Initialiser KPI-grafen med Chart.js
- * Her vises kun en samlet "Score" (Sikkerhed + Udvikling)
+ * Grafen viser to x-labels: "Tid" og "Score". "Score" er stacket af Sikkerhed og Udvikling.
  */
 const ctx = document.getElementById('kpiChart').getContext('2d');
 const kpiChart = new Chart(ctx, {
   type: 'bar',
   data: {
-    labels: ['Score'],
+    labels: ['Tid', 'Score'],
     datasets: [
       {
-        label: 'Score',
-        data: [gameState.security + gameState.development],
+        label: 'Tid',
+        data: [gameState.time, 0],
+        backgroundColor: '#f39c12'
+      },
+      {
+        label: 'Sikkerhed',
+        data: [0, gameState.security],
+        backgroundColor: '#27ae60'
+      },
+      {
+        label: 'Udvikling',
+        data: [0, gameState.development],
         backgroundColor: '#9b59b6'
       }
     ]
   },
   options: {
     scales: {
-      y: { beginAtZero: true }
+      x: { stacked: true },
+      y: { stacked: true, beginAtZero: true }
     },
     plugins: {
-      legend: { display: false }
+      legend: { display: true }
     }
   }
 });
 
 function updateDashboard() {
-  // Opdater grafen med den samlede score
-  const score = gameState.security + gameState.development;
-  kpiChart.data.datasets[0].data = [score];
+  if (gameState.time < 0) gameState.time = 0;
+  kpiChart.data.datasets[0].data = [gameState.time, 0];
+  kpiChart.data.datasets[1].data = [0, gameState.security];
+  kpiChart.data.datasets[2].data = [0, gameState.development];
   kpiChart.update();
   updateNarrative();
 }
 
-/** Opdater opgaveprogress – vis kun "Opgave X / 5" */
 function updateTaskProgress() {
   const progressEl = document.getElementById('taskProgress');
   if (progressEl) {
@@ -93,16 +102,30 @@ function updateTaskProgress() {
 }
 updateTaskProgress();
 
-/** Fjern KPI tooltips – de gamle etiketter fjernes */
+/** Fjern gamle KPI tooltips */
 function renderKpiTooltips() {
   const kpiInfo = document.getElementById('kpiInfo');
   if (kpiInfo) {
-    kpiInfo.innerHTML = ""; // Ingen tooltip-tekst
+    // Vi bevarer nu legend via Chart.js, men her kan vi evt. tilføje en ekstra forklaring
+    kpiInfo.innerHTML = `
+      <div class="tooltip-item">
+        <strong>Legend:</strong>
+      </div>
+      <div class="tooltip-item">
+        <span style="background-color:#f39c12; padding:0.2rem 0.5rem; border-radius:4px;"></span> Tid (start: 45)
+      </div>
+      <div class="tooltip-item">
+        <span style="background-color:#27ae60; padding:0.2rem 0.5rem; border-radius:4px;"></span> Sikkerhed
+      </div>
+      <div class="tooltip-item">
+        <span style="background-color:#9b59b6; padding:0.2rem 0.5rem; border-radius:4px;"></span> Udvikling
+      </div>
+    `;
   }
 }
 renderKpiTooltips();
 
-/** Render lokationer i venstre side */
+/** Render lokationer */
 function renderLocations() {
   const locDiv = document.getElementById('locations');
   locDiv.innerHTML = "";
@@ -117,7 +140,7 @@ function renderLocations() {
 }
 renderLocations();
 
-/** Dynamisk narrativ feedback – nu uden referencer til KPI-ord */
+/** Dynamisk narrativ feedback – uden teksten "Fortsæt med at fuldføre opgaver..." */
 function updateNarrative() {
   const narrativeEl = document.getElementById('narrativeUpdate');
   if (!narrativeEl) return;
@@ -128,9 +151,8 @@ function updateNarrative() {
   } else if (progress >= 0.6) {
     narrative = "Du er nu 60% af vejen til at gennemføre PI!";
   } else {
-    narrative = "Fortsæt med at fuldføre opgaver for at øge din samlede score.";
+    narrative = "Fortsæt med at løse opgaver.";
   }
-  // Tilføj CAB-advarsel baseret på fordelingen af lette valg
   const total = gameState.tasksDevelopment + gameState.tasksSikkerhed;
   if (total > 0) {
     const ratioDev = gameState.tasksDevelopment / total;
@@ -154,7 +176,7 @@ function showHelp() {
       <li>⌛ <strong>Tid:</strong> Du starter med 50 Tid (hver opgave koster 2 Tid).</li>
       <li>💻 <strong>Point:</strong> Dine valg giver point, som lægges sammen til din samlede score.</li>
       <li>🚨 <strong>Hastende opgaver:</strong> Giver +4 bonus, men øger CAB-risiko med 10%.</li>
-      <li>⚖️ <strong>Balance:</strong> For mange lette valg (Choice B) øger risikoen for afvisning i næste PI med 5%.</li>
+      <li>⚖️ <strong>Balance:</strong> For mange lette valg øger risikoen for CAB-afvisning med 5% i næste PI.</li>
     </ul>
     <p style="margin-top:1rem;">Held og lykke med IT‑Tycoon!</p>
   `;
@@ -162,15 +184,15 @@ function showHelp() {
   document.getElementById('closeHelp').addEventListener('click', () => closeModal());
 }
 
-/** Intro – længere, stemningsfuld tekst med bullets og emojis */
+/** Intro – stemningsfuld tekst med bullets og emojis */
 function showIntro() {
   const introText = `
     <h2>Velkommen til IT‑Tycoon!</h2>
     <ul style="text-align:left; margin:0 auto; max-width:500px; line-height:1.6;">
       <li>💼 <strong>Rolle:</strong> Du er IT‑forvalter i en stor organisation.</li>
-      <li>⌛ <strong>Tidsstyring:</strong> Du har 50 Tid til rådighed, og hver opgave koster 2 Tid.</li>
+      <li>⌛ <strong>Tidsstyring:</strong> Du starter med 50 Tid, og hver opgave koster 2 Tid.</li>
       <li>⚙️ <strong>Opgaver:</strong> Dine valg giver point – din samlede score er antallet af opgaver plus point.</li>
-      <li>🚨 <strong>Hastende opgaver:</strong> Giver ekstra bonus (+4), men øger risikoen for CAB-afvisning med 10%.</li>
+      <li>🚨 <strong>Hastende opgaver:</strong> Giver ekstra bonus (+4), men øger CAB-risiko med 10%.</li>
       <li>🏆 <strong>Mål:</strong> Få den højeste samlede score og slå din highscore!</li>
     </ul>
     <p style="margin-top:1rem;">Klar til at starte? Klik "Start Spillet" for at begynde!</p>
@@ -181,7 +203,7 @@ function showIntro() {
   );
 }
 
-/** PI Planning – med 5 opgaver */
+/** PI Planning */
 function showSprintGoal() {
   const piHTML = `
     <h2>PI Planning</h2>
@@ -189,7 +211,7 @@ function showSprintGoal() {
       Gennemfør 5 opgaver for at afslutte dette PI. Hver opgave koster 2 Tid, og du starter med 45 Tid.
     </p>
     <p>
-      Pas på: Hvis du tager for mange lette løsninger, øges risikoen for CAB-afvisning med 5% i næste PI.
+      Pas på: Hvis du tager for mange lette valg, øges risikoen for CAB-afvisning med 5% i næste PI.
     </p>
   `;
   openModal(piHTML, `<button id="toTutorial" class="modern-btn">Fortsæt</button>`);
@@ -204,10 +226,10 @@ function startTutorial() {
     <h2>Tutorial</h2>
     <p>
       1️⃣ Klik på “Vælg ny opgave” for at åbne opgavelisten.<br>
-      2️⃣ Vælg en opgave – hver opgave koster 2 Tid og giver 3 point (afhængigt af fokus).<br>
-      3️⃣ Din score er antallet af opgaver plus dine point.<br>
+      2️⃣ Vælg en opgave – hver opgave koster 2 Tid og giver 3 point afhængigt af fokus.<br>
+      3️⃣ Din score udgøres af antallet af opgaver plus dine point.<br>
       4️⃣ For mange lette valg øger risikoen for CAB-afvisning i næste PI.<br>
-      5️⃣ Hastende opgaver giver ekstra bonus, men øger risikoen.
+      5️⃣ Hastende opgaver giver ekstra bonus, men medfører øget risiko.
     </p>
     <p>Afslut tutorialen ved at klikke "Luk" og begynd at vælge opgaver!</p>
   `;
@@ -270,7 +292,7 @@ function openTaskSelectionModal() {
   });
 }
 
-/** Start opgave – initialiser task-state */
+/** Start opgave */
 function startTask(task) {
   gameState.currentTask = task;
   gameState.currentStepIndex = 0;
@@ -283,7 +305,7 @@ function startTask(task) {
   renderActiveTask(task);
 }
 
-/** Render aktiv opgave – behold overskriften "Aktiv Opgave" */
+/** Render aktiv opgave */
 function renderActiveTask(task) {
   const activeDiv = document.getElementById('activeTask');
   activeDiv.innerHTML = `<h2>Aktiv Opgave</h2>`;
@@ -326,7 +348,7 @@ function handleLocationClick(clickedLoc) {
   }
 }
 
-/** Vis trinvalg – modal med valg af løsning */
+/** Vis trinvalg */
 function showStepChoices(step) {
   const bodyHTML = `<h2>${step.stepDescription}</h2>${step.stepContext || ""}`;
   
@@ -402,7 +424,7 @@ function showStepChoices(step) {
   });
 }
 
-/** Anvend valg – opdater tid og score */
+/** Anvend valg */
 function applyChoice(choice) {
   gameState.time -= choice.applyEffect.timeCost;
   if (gameState.time < 0) gameState.time = 0;
@@ -429,7 +451,7 @@ function proceedToNextStep() {
   }
 }
 
-/** Tjek game over – tid=0 eller 5 opgaver */
+/** Tjek game over */
 function checkGameOverCondition() {
   if (gameState.time <= 0) {
     let message = "Tiden er opbrugt!";
@@ -442,10 +464,9 @@ function checkGameOverCondition() {
   }
 }
 
-/** PI Feedback – når 5 opgaver er gennemført */
+/** PI Feedback */
 function showPIFeedback() {
   const totalPoints = gameState.security + gameState.development;
-  // Opdater highscore, hvis nødvendigt
   if (totalPoints > gameState.highscore) {
     gameState.highscore = totalPoints;
   }
@@ -457,7 +478,7 @@ function showPIFeedback() {
   `;
   if (gameState.quickChoicesThisPI > 5) {
     gameState.extraCABRiskNextPI = 0.05;
-    feedbackHTML += `<p style="color:red;">Du har taget for mange lette løsninger – næste PI øges CAB-risiko med 5%!</p>`;
+    feedbackHTML += `<p style="color:red;">Du har taget for mange lette valg – næste PI øges CAB-risiko med 5%!</p>`;
   } else {
     gameState.extraCABRiskNextPI = 0;
   }
@@ -465,7 +486,6 @@ function showPIFeedback() {
   openModal(feedbackHTML, `<button id="continuePI" class="modern-btn">Start Næste PI</button>`);
   document.getElementById('continuePI').addEventListener('click', () => {
     closeModal(() => {
-      // Nulstil til næste PI
       gameState.tasksCompleted = 0;
       gameState.time = 45;
       gameState.security = 0;
@@ -485,7 +505,7 @@ function showPIFeedback() {
   });
 }
 
-/** CAB Approvement – vurdering af opgavens kvalitet med rework-straffen på 1 Tid */
+/** CAB Approvement */
 function cabApproval() {
   closeModal(() => {
     const t = gameState.currentTask;
@@ -542,7 +562,7 @@ function cabApproval() {
   });
 }
 
-/** Revision Options – mulighed for at fortryde valg for ikke-avancerede trin */
+/** Revision Options */
 function showRevisionOptions() {
   let revisableIndices = [];
   for (let i = 0; i < gameState.choiceHistory.length; i++) {
@@ -575,7 +595,7 @@ function showRevisionOptions() {
   });
 }
 
-/** Task Summary – opsummering af valg med evt. hastende bonus */
+/** Task Summary */
 function showTaskSummary() {
   let bonusNote = "";
   if (gameState.currentTask.isHastende) {
@@ -599,7 +619,7 @@ function showTaskSummary() {
   document.getElementById('afterSummary').addEventListener('click', () => closeModal(() => finishTask()));
 }
 
-/** Finish Task – afslut opgaven, opdater score og tilføj nye opgaver */
+/** Finish Task */
 function finishTask() {
   gameState.tasksCompleted++;
   updateTaskProgress();
@@ -619,11 +639,10 @@ function finishTask() {
   });
 }
 
-/** Render potentielle opgaver – uden overskriften "Potentielle Opgaver" */
+/** Render potentielle opgaver – uden overskrift */
 function renderPotentialTasks() {
   const potDiv = document.getElementById('potentialTasks');
   if (!potDiv) return;
-  // Fjern overskrift; blot vis opgaverne
   potDiv.innerHTML = "";
   gameState.tasks.forEach((task, idx) => {
     const div = document.createElement('div');
