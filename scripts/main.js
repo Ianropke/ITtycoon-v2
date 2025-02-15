@@ -7,7 +7,7 @@ import { checkForEvents } from './events.js';
  * Global game state
  */
 const gameState = {
-  time: 45,                      // Starttid for første PI (ændres ved PI-feedback)
+  time: 45,                      // Starttid for hver PI
   security: 0,
   development: 0,
   currentTask: null,
@@ -115,11 +115,23 @@ function renderLocations() {
 }
 renderLocations();
 
+/** Funktion til at fremhæve den korrekte lokation */
+function highlightCorrectLocation(correctLocation) {
+  const buttons = document.querySelectorAll('.location-button');
+  buttons.forEach(btn => {
+    // Hvis knappen indeholder den korrekte lokation (case insensitive)
+    if (btn.textContent.toLowerCase().includes(correctLocation.toLowerCase())) {
+      btn.classList.add('highlight');
+    } else {
+      btn.classList.remove('highlight');
+    }
+  });
+}
+
 /** Narrativ feedback */
 function updateNarrative() {
   const narrativeEl = document.getElementById('narrativeUpdate');
   if (!narrativeEl) return;
-
   let narrative = "";
   const progress = gameState.tasksCompleted / 5;
   const total = gameState.totalDevelopmentChoices + gameState.totalSecurityChoices;
@@ -138,11 +150,9 @@ function updateNarrative() {
   } else {
     narrative += "PI er i gang, vælg en opgave for at starte!";
   }
-
   if (gameState.time < 10) {
     narrative += " Pas på! Du er ved at løbe tør for Tid.";
   }
-
   if (total > 0) {
     if (ratioDev > 0.65) {
       narrative += " CAB advarer: Overdreven fokus på udvikling øger risikoen for hackerangreb!";
@@ -152,7 +162,6 @@ function updateNarrative() {
       narrative += " CAB bemærker: Din balance mellem udvikling og sikkerhed ser fornuftig ud.";
     }
   }
-
   narrativeEl.innerHTML = narrative;
 }
 
@@ -165,7 +174,7 @@ function showHelp() {
       <li>⚙️ <strong>Formål:</strong> Gennemfør 5 opgaver pr. PI for at få en høj samlet score.</li>
       <li>⌛ <strong>Tid:</strong> Du starter med 50 Tid (hver opgave koster 2 Tid).</li>
       <li>💻 <strong>Point:</strong> Dine valg giver point – samlet score = opgaver + point.</li>
-      <li>🚨 <strong>Hastende opgaver:</strong> Giver +4 bonus, men øger CAB-risiko med 10%.</li>
+      <li>🚨 <strong>Hastende opgaver:</strong> Giver ekstra bonus (+4), men øger CAB-risiko med 10%.</li>
       <li>⚖️ <strong>Balance:</strong> Over 65% udviklingsvalg øger risikoen for hackerangreb; under 35% øger ineffektivitet.</li>
     </ul>
     <p style="margin-top:1rem;">Held og lykke med IT‑Tycoon!</p>
@@ -174,62 +183,41 @@ function showHelp() {
   document.getElementById('closeHelp').addEventListener('click', () => closeModal());
 }
 
-/** Intro */
+/** Intro – Pop-up 1: Scene-setting */
 function showIntro() {
   const introText = `
     <h2>Velkommen til IT‑Tycoon!</h2>
     <ul style="text-align:left; margin:0 auto; max-width:500px; line-height:1.6;">
-      <li>💼 <strong>Rolle:</strong> Du er IT‑forvalter i en stor organisation.</li>
-      <li>⌛ <strong>Tidsstyring:</strong> Du starter med 50 Tid, og hver opgave koster 2 Tid.</li>
-      <li>⚙️ <strong>Opgaver:</strong> Dine valg giver point – samlet score = opgaver + point.</li>
-      <li>🚨 <strong>Hastende opgaver:</strong> Giver ekstra bonus (+4), men øger CAB-risiko med 10%.</li>
-      <li>🏆 <strong>Mål:</strong> Få den højeste score og slå din highscore!</li>
+      <li>🚀 <strong>Mission:</strong> Du er IT‑forvalter og skal styre komplekse systemer i en digital tidsalder.</li>
+      <li>⏱️ <strong>Tidspres:</strong> Hver beslutning påvirker din Tid – vær skarp og handl hurtigt.</li>
+      <li>🎯 <strong>Mål:</strong> Fuldfør opgaver og optimer systemerne for at opnå høj score.</li>
+      <li>💡 <strong>Overraskelser:</strong> Dynamiske hændelser og uventede udfordringer vil teste din strategi.</li>
     </ul>
-    <p style="margin-top:1rem;">Klar til at starte? Klik "Start Spillet" for at begynde!</p>
+    <p style="margin-top:1rem;">Er du klar til at træde ind i rollen som digital strateg?</p>
   `;
-  openModal(introText, `<button id="startGame" class="modern-btn">Start Spillet</button>`);
-  document.getElementById('startGame').addEventListener('click', () =>
-    closeModal(() => showSprintGoal())
-  );
+  openModal(introText, `<button id="continueIntro" class="modern-btn">Fortsæt</button>`);
+  document.getElementById('continueIntro').addEventListener('click', () => closeModal(() => showTutorial()));
 }
 
-/** PI Planning */
-function showSprintGoal() {
-  const piHTML = `
-    <h2>PI Planning</h2>
-    <p>
-      Gennemfør 5 opgaver for at afslutte dette PI. Hver opgave koster 2 Tid, og du starter med 45 Tid.
-    </p>
-    <p>
-      Pas på: Hvis du tager for mange lette valg, øges risikoen for CAB-afvisning med 5% i næste PI.
-    </p>
-  `;
-  openModal(piHTML, `<button id="toTutorial" class="modern-btn">Fortsæt</button>`);
-  document.getElementById('toTutorial').addEventListener('click', () =>
-    closeModal(() => startTutorial())
-  );
-}
-
-/** Tutorial */
-function startTutorial() {
-  const tutHTML = `
+/** Intro – Pop-up 2: Tutorial */
+function showTutorial() {
+  const tutText = `
     <h2>Tutorial</h2>
-    <p>
-      1️⃣ Klik på “Vælg ny opgave” for at åbne opgavelisten.<br>
-      2️⃣ Vælg en opgave – hver opgave koster 2 Tid og giver 3 point (udvikling eller sikkerhed).<br>
-      3️⃣ Samlet score = opgaver + point.<br>
-      4️⃣ Over 65% udviklingsvalg øger risikoen for hackerangreb; under 35% øger ineffektivitet.<br>
-      5️⃣ Hastende opgaver giver ekstra bonus, men medfører øget risiko.
-    </p>
-    <p>Afslut tutorialen ved at klikke "Luk" og begynd at vælge opgaver!</p>
+    <ul style="text-align:left; margin:0 auto; max-width:500px; line-height:1.6;">
+      <li>1️⃣ Klik på “Vælg ny opgave” for at åbne opgavelisten.</li>
+      <li>2️⃣ Vælg en opgave – hver opgave koster 2 Tid og giver 3 point (udvikling eller sikkerhed).</li>
+      <li>3️⃣ Samlet score = antal opgaver + point (sikkerhed + udvikling).</li>
+      <li>4️⃣ Husk: Over 65% udviklingsvalg øger risikoen for hackerangreb!</li>
+      <li>5️⃣ Hastende opgaver giver ekstra bonus, men medfører øget risiko.</li>
+    </ul>
+    <p style="margin-top:1rem;">Afslut denne tutorial og begynd at vælge opgaver!</p>
   `;
-  openModal(tutHTML, `<button id="closeTut" class="modern-btn">Luk</button>`);
+  openModal(tutText, `<button id="closeTut" class="modern-btn">Luk</button>`);
   document.getElementById('closeTut').addEventListener('click', () => closeModal());
 }
 
 /** "Vælg ny opgave"-knap */
 document.getElementById('newTaskBtn').addEventListener('click', openTaskSelectionModal);
-
 function openTaskSelectionModal() {
   if (gameState.currentTask) {
     openModal("<h2>Advarsel</h2><p>Du har allerede en aktiv opgave!</p>", `<button id="activeWarn" class="modern-btn">OK</button>`);
@@ -314,6 +302,8 @@ function renderActiveTask(task) {
       activeDiv.innerHTML += stepsHTML;
       const currentStep = task.steps[gameState.currentStepIndex];
       activeDiv.innerHTML += `<p><strong>Vælg lokation:</strong> ${currentStep.location.toUpperCase()} ${getIcon(currentStep.location)}</p>`;
+      // Fremhæv den korrekte lokation i lokationslisten
+      highlightCorrectLocation(currentStep.location);
     }
   }
 }
@@ -434,6 +424,9 @@ function proceedToNextStep() {
   if (gameState.currentStepIndex < t.steps.length - 1) {
     gameState.currentStepIndex++;
     renderActiveTask(t);
+    // Når vi går videre til et nyt trin, fremhæv den korrekte lokation
+    const currentStep = t.steps[gameState.currentStepIndex];
+    highlightCorrectLocation(currentStep.location);
   } else {
     cabApproval();
   }
@@ -606,7 +599,7 @@ function showPIFeedback() {
   openModal(feedbackHTML, `<button id="continuePI" class="modern-btn">Start Næste PI</button>`);
   document.getElementById('continuePI').addEventListener('click', () => {
     closeModal(() => {
-      // Nulstil PI – starttid sættes nu til 40, og alle strafvariabler nulstilles
+      // Nulstil PI – starttid sættes nu til 40, og alle strafvariabler nulstilles (ikke bæres over)
       gameState.tasksCompleted = 0;
       gameState.time = 40;
       gameState.security = 0;
@@ -625,7 +618,7 @@ function showPIFeedback() {
   });
 }
 
-/** Start spillet med intro */
+/** Start spillet med intro pop-ups */
 showIntro();
 
 export { gameState, updateDashboard, openModal, closeModal };
