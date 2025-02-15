@@ -27,8 +27,9 @@
         <button id="helpButton" class="help-btn">Få hjælp</button>
       </div>
     </header>
+
     <div class="container">
-      <!-- Venstre kolonne: "Vælg ny opgave"-knap og lokationer -->
+      <!-- Venstre kolonne: "Vælg ny opgave"-knap og Lokationer -->
       <div class="left-column">
         <button id="newTaskBtn" class="big-new-task-btn">
           <i class="fas fa-plus"></i> Vælg ny opgave
@@ -38,24 +39,33 @@
           <div id="locations"></div>
         </div>
       </div>
-      <!-- Højre kolonne: Aktiv opgave, KPI-graf, potentielle opgaver og ekstra info -->
+
+      <!-- Højre kolonne: Aktiv opgave, KPI-graf, infoContainer og potentielle opgaver -->
       <div class="right-column">
+        <!-- Aktiv opgave -->
         <div id="activeTask">
           <h2>Aktiv Opgave</h2>
         </div>
+
+        <!-- KPI-graf -->
         <div id="graphContainer">
           <canvas id="kpiChart"></canvas>
           <div id="taskProgress" class="task-progress">Opgave 0/5</div>
-          <!-- KPI tooltips -->
+        </div>
+
+        <!-- Container til KPI-ikoner og narrativ feedback -->
+        <div id="infoContainer">
           <div id="kpiInfo"></div>
-          <!-- Dynamisk narrativ feedback -->
           <div id="narrativeUpdate"></div>
         </div>
+
+        <!-- Potentielle opgaver -->
         <div id="potentialTasks">
           <h2>Potentielle Opgaver</h2>
         </div>
       </div>
     </div>
+
     <!-- Modal-vindue -->
     <div id="modal" class="modal hidden">
       <div class="modal-content">
@@ -64,11 +74,13 @@
         <span id="modalClose" class="close">&times;</span>
       </div>
     </div>
-    <!-- Indlæs opgave-filer -->
+
+    <!-- Indlæs opgave-filer (Tasks) -->
     <script src="scripts/tasks/hospitalTasks.js"></script>
     <script src="scripts/tasks/infrastrukturTasks.js"></script>
     <script src="scripts/tasks/cybersikkerhedTasks.js"></script>
-    <!-- Indlæs moduler (ES6) -->
+
+    <!-- Moduler (ES6) -->
     <script type="module" src="scripts/modal.js"></script>
     <script type="module" src="scripts/utils.js"></script>
     <script type="module" src="scripts/main.js"></script>
