@@ -50,28 +50,16 @@ gameState.tasks.forEach(task => {
   task.isHastende = (Math.random() < 0.1);
 });
 
-/** Chart.js – vis Tid og Score (stacket Sikkerhed + Udvikling) */
+/** Chart.js – viser Tid og Score (stacket Sikkerhed + Udvikling) */
 const ctx = document.getElementById('kpiChart').getContext('2d');
 const kpiChart = new Chart(ctx, {
   type: 'bar',
   data: {
     labels: ['Tid', 'Score'],
     datasets: [
-      {
-        label: 'Tid',
-        data: [gameState.time, 0],
-        backgroundColor: '#f39c12'
-      },
-      {
-        label: 'Sikkerhed',
-        data: [0, gameState.security],
-        backgroundColor: '#27ae60'
-      },
-      {
-        label: 'Udvikling',
-        data: [0, gameState.development],
-        backgroundColor: '#9b59b6'
-      }
+      { label: 'Tid', data: [gameState.time, 0], backgroundColor: '#f39c12' },
+      { label: 'Sikkerhed', data: [0, gameState.security], backgroundColor: '#27ae60' },
+      { label: 'Udvikling', data: [0, gameState.development], backgroundColor: '#9b59b6' }
     ]
   },
   options: {
@@ -101,7 +89,7 @@ function updateTaskProgress() {
 }
 updateTaskProgress();
 
-/** Fjern manuel legend-tekst */
+/** Ingen manuel legend-tekst */
 function renderKpiTooltips() {
   const kpiInfo = document.getElementById('kpiInfo');
   if (kpiInfo) {
@@ -125,26 +113,50 @@ function renderLocations() {
 }
 renderLocations();
 
-/** Narrativ feedback */
+/** 
+ * updateNarrative() – Tilføjer flere tekstbeskeder 
+ * baseret på fremdrift, tid og (udvikling vs. sikkerhed).
+ */
 function updateNarrative() {
   const narrativeEl = document.getElementById('narrativeUpdate');
   if (!narrativeEl) return;
+
   let narrative = "";
-  const progress = gameState.tasksCompleted / 5;
-  if (progress >= 0.8) {
-    narrative = "Du nærmer dig målet for denne PI – fantastisk!";
+  const progress = gameState.tasksCompleted / 5; // fx 5 opgaver pr. PI
+  const total = gameState.totalDevelopmentChoices + gameState.totalSecurityChoices;
+  const ratioDev = total > 0 ? (gameState.totalDevelopmentChoices / total) : 0;
+
+  // Ekstra beskeder om fremdrift
+  if (progress >= 1.0) {
+    narrative += "Du har fuldført alle opgaver i denne PI – flot arbejde!";
+  } else if (progress >= 0.8) {
+    narrative += "Du nærmer dig målet for denne PI – fantastisk!";
   } else if (progress >= 0.6) {
-    narrative = "Du er nu 60% af vejen til at gennemføre PI!";
+    narrative += "Du er nu 60% af vejen til at gennemføre PI!";
+  } else if (progress >= 0.4) {
+    narrative += "Du er næsten halvvejs – fortsæt den gode indsats!";
+  } else if (progress > 0) {
+    narrative += "Du er kommet i gang, men der er stadig en del at nå.";
+  } else {
+    narrative += "PI er i gang, vælg en opgave for at starte!";
   }
-  const total = gameState.totalSecurityChoices + gameState.totalDevelopmentChoices;
+
+  // Advarsel om lav tid
+  if (gameState.time < 10) {
+    narrative += " Pas på! Du er ved at løbe tør for Tid.";
+  }
+
+  // Bibeholder besked om ratio
   if (total > 0) {
-    const ratioDev = gameState.totalDevelopmentChoices / total;
     if (ratioDev > 0.65) {
       narrative += " CAB advarer: Overdreven fokus på udvikling øger risikoen for hackerangreb!";
     } else if (ratioDev < 0.35) {
       narrative += " CAB advarer: For få udviklingsvalg kan føre til ineffektive arbejdsgange!";
+    } else {
+      narrative += " CAB bemærker: Din balance mellem udvikling og sikkerhed ser fornuftig ud.";
     }
   }
+
   narrativeEl.innerHTML = narrative;
 }
 
@@ -521,7 +533,7 @@ function showRevisionOptions() {
   listHTML += "</ul>";
   openModal(listHTML, "");
   document.querySelectorAll('.revisionBtn').forEach(b => {
-    b.addEventListener('click', e => {
+    b.addEventListener('click', (e) => {
       let chosenIdx = parseInt(e.target.getAttribute('data-idx'));
       gameState.revisionCount[chosenIdx]++;
       gameState.revisionMode = true;
@@ -576,6 +588,7 @@ function finishTask() {
   });
 }
 
+/** Tjek for game over eller afslut PI */
 function showPIFeedback() {
   const totalPoints = gameState.security + gameState.development;
   if (totalPoints > gameState.highscore) {
