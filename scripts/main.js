@@ -32,7 +32,7 @@ const gameState = {
   skipHastendeFlag: false
 };
 
-window.gameState = gameState; // Til debugging
+window.gameState = gameState; // Gør gameState global, hvis nødvendigt
 
 /** Lokationsliste */
 const locationList = [
@@ -54,6 +54,7 @@ shuffleArray(gameState.allTasks);
 gameState.tasks = gameState.allTasks.splice(0, 7);
 assignHastendeFlag(gameState.tasks);
 
+/** Tildel isHastende til ca. 10% af opgaverne */
 function assignHastendeFlag(taskArr) {
   taskArr.forEach(t => {
     t.isHastende = (Math.random() < 0.1);
@@ -99,7 +100,7 @@ function updateTaskProgress() {
 }
 updateTaskProgress();
 
-/** Render lokationer i venstre side */
+/** Render lokationer */
 function renderLocations() {
   const locDiv = document.getElementById('locations');
   locDiv.innerHTML = "";
@@ -130,44 +131,41 @@ function highlightCorrectLocation(correctLocation) {
   });
 }
 
-/** updateNarrative – vis løbende status og advarsler */
+/** updateNarrative – giver løbende feedback til spilleren */
 function updateNarrative() {
   const narrativeEl = document.getElementById('narrativeUpdate');
   if (!narrativeEl) return;
-
   let text = "";
   const progress = gameState.tasksCompleted / 5;
   const total = gameState.totalDevelopmentChoices + gameState.totalSecurityChoices;
   const ratioDev = total > 0 ? (gameState.totalDevelopmentChoices / total) : 0;
 
   if (progress >= 1.0) {
-    text += "Du har fuldført alle opgaver i denne PI – flot arbejde!";
+    text += "🎉 Du har fuldført alle opgaver i denne PI – flot arbejde!";
   } else if (progress >= 0.8) {
-    text += "Du nærmer dig målet for denne PI – fantastisk!";
+    text += "💪 Du nærmer dig målet for denne PI – fantastisk!";
   } else if (progress >= 0.6) {
-    text += "Du er nu 60% af vejen til at gennemføre PI!";
+    text += "🚀 Du er nu 60% af vejen til at gennemføre PI!";
   } else if (progress >= 0.4) {
-    text += "Du er næsten halvvejs – fortsæt den gode indsats!";
+    text += "🤔 Du er næsten halvvejs – fortsæt den gode indsats!";
   } else if (progress > 0) {
-    text += "PI er i gang, du er kommet i gang, men der er stadig en del at nå.";
+    text += "👨‍💻 PI er i gang, vælg en opgave for at komme videre.";
   } else {
-    text += "PI er i gang, vælg en opgave for at starte!";
+    text += "🚦 PI er startet, vælg en opgave for at begynde!";
   }
 
   if (gameState.time < 10) {
-    text += " Pas på! Du er ved at løbe tør for Tid.";
+    text += " ⏰ Pas på! Du er ved at løbe tør for Tid.";
   }
-
   if (total > 0) {
     if (ratioDev > 0.65) {
-      text += " CAB advarer: Overdreven fokus på udvikling øger risikoen for hackerangreb!";
+      text += " ⚠️ CAB advarer: Overdreven fokus på udvikling øger risikoen for hackerangreb!";
     } else if (ratioDev < 0.35) {
-      text += " CAB advarer: For få udviklingsvalg kan føre til ineffektive arbejdsgange!";
+      text += " ⚠️ CAB advarer: For få udviklingsvalg kan føre til ineffektive arbejdsgange!";
     } else {
-      text += " CAB bemærker: Din balance mellem udvikling og sikkerhed ser fornuftig ud.";
+      text += " ✅ CAB bemærker: Din balance mellem udvikling og sikkerhed er fornuftig.";
     }
   }
-
   narrativeEl.innerHTML = text;
 }
 
@@ -175,14 +173,14 @@ function updateNarrative() {
 document.getElementById('helpButton').addEventListener('click', showHelp);
 function showHelp() {
   const helpHTML = `
-    <h2>Hjælp – Opdateret</h2>
+    <h2>Hjælp – IT‑Tycoon</h2>
     <ul style="text-align:left; margin:0 auto; max-width:450px;">
-      <li>⚙️ <strong>Mål:</strong> Gennemfør 5 opgaver pr. PI for at få en høj samlet score.</li>
-      <li>⌛ <strong>Tid:</strong> Du starter med 45 Tid (hver opgave koster 2 Tid). Rework kan koste ekstra tid.</li>
-      <li>⚖️ <strong>Balance:</strong> Vælg både udvikling og sikkerhed. Over 65% udviklingsvalg eller under 35% kan give negative events.</li>
-      <li>🚨 <strong>Hastende opgaver:</strong> Giver +4 bonus, men +10% ekstra risiko for CAB-afvisning. Vælges let, får du -5 point; ignoreres, -3 point straf.</li>
-      <li>❗ <strong>Events:</strong> Udløses tilfældigt mellem trin eller opgaver, med stigende sandsynlighed ved ekstrem fordeling eller lav tid.</li>
-      <li>🔍 <strong>CAB:</strong> Evaluering af dine valg. Fejl giver rework (mister tid).</li>
+      <li>⚙️ <strong>Mål:</strong> Gennemfør 5 opgaver pr. PI for at maksimere din score (opgaver + point).</li>
+      <li>⌛ <strong>Tid:</strong> Du starter med 45 Tid (hver opgave koster 2 Tid). Rework kan koste ekstra Tid.</li>
+      <li>⚖️ <strong>Balance:</strong> Dine valg giver point i Sikkerhed eller Udvikling. For ensidige valg (over 65% udvikling eller under 35% udvikling) øges risikoen for negative events.</li>
+      <li>🚨 <strong>Hastende opgaver:</strong> Giver +4 bonus, men +10% ekstra CAB-risiko. Vælges let løsning, får du straf (-5 point); ignoreres de, får du -3 point i næste CAB.</li>
+      <li>❗ <strong>Events:</strong> Tilfældige hændelser kan ske mellem trin eller opgaver – de påvirker din Tid og score.</li>
+      <li>🔍 <strong>CAB:</strong> Change Advisory Board evaluerer dine valg. Fejl medfører rework (mister Tid).</li>
     </ul>
     <p style="margin-top:1rem;">Held og lykke med IT‑Tycoon!</p>
   `;
@@ -190,18 +188,18 @@ function showHelp() {
   document.getElementById('closeHelp').addEventListener('click', () => closeModal());
 }
 
-/** Intro – Pop-up 1 */
+/** Intro – Pop-up 1: Sæt scenen med emoji og detaljeret tekst */
 function showIntro() {
   const introText = `
-    <h2>Velkommen til IT‑Tycoon!</h2>
+    <h2>Velkommen til IT‑Tycoon! 🚀</h2>
     <ul style="text-align:left; margin:0 auto; max-width:500px; line-height:1.6;">
-      <li>🚀 <strong>Mission:</strong> Du er IT‑forvalter og skal styre komplekse systemer i en digital tidsalder.</li>
+      <li>🌐 <strong>Mission:</strong> Du er IT‑forvalter og skal styre komplekse systemer i en digital tidsalder.</li>
       <li>⏱️ <strong>Tidspres:</strong> Hver beslutning påvirker din Tid – vær skarp og handl hurtigt.</li>
       <li>🎯 <strong>Mål:</strong> Fuldfør opgaver og optimer systemerne for at opnå en høj samlet score.</li>
-      <li>💡 <strong>CAB:</strong> Et panel af eksperter, der evaluerer dine ændringer – forkert valg kan medføre straf.</li>
-      <li>🤖 <strong>Strategi:</strong> Dine valg giver point i enten Udvikling eller Sikkerhed. En afbalanceret strategi er nøglen til succes.</li>
+      <li>💡 <strong>CAB:</strong> Et panel af eksperter, der evaluerer dine ændringer. Forkerte valg medfører straf og rework.</li>
+      <li>🤖 <strong>Strategi:</strong> Dine valg giver point i Sikkerhed og Udvikling. En afbalanceret tilgang er nøglen til succes.</li>
     </ul>
-    <p style="margin-top:1rem;">Er du klar til at træde ind i rollen som digital strateg?</p>
+    <p style="margin-top:1rem;">Er du klar til at træde ind i rollen som digital strateg? 🤔</p>
   `;
   openModal(introText, `<button id="continueIntro" class="modern-btn">Fortsæt</button>`);
   document.getElementById('continueIntro').addEventListener('click', () => closeModal(() => showTutorial()));
@@ -212,14 +210,14 @@ function showTutorial() {
   const tutText = `
     <h2>Tutorial</h2>
     <ul style="text-align:left; margin:0 auto; max-width:500px; line-height:1.6;">
-      <li>1️⃣ Klik på “Vælg ny opgave” for at åbne opgavelisten.</li>
-      <li>2️⃣ Vælg en opgave – hver opgave koster 2 Tid og giver 3 point (udvikling eller sikkerhed).</li>
-      <li>3️⃣ Samlet score = opgaver + point (Sikkerhed + Udvikling).</li>
-      <li>4️⃣ Over 65% udviklingsvalg øger risikoen for hackerangreb!</li>
-      <li>5️⃣ Hastende opgaver giver ekstra bonus (+4), men hvis du vælger let løsning, får du -5 point, og hvis du ignorerer dem, -3 point straf.</li>
-      <li>6️⃣ Events kan udløses mellem trin eller opgaver – vær opmærksom på dem!</li>
+      <li>1️⃣ Klik på “Vælg ny opgave” for at se opgavelisten.</li>
+      <li>2️⃣ Vælg en opgave – hver opgave koster 2 Tid og giver point (Sikkerhed eller Udvikling).</li>
+      <li>3️⃣ Samlet score = antallet af opgaver + point (Sikkerhed + Udvikling).</li>
+      <li>4️⃣ Over 65% udviklingsvalg øger risikoen for hackerangreb, under 35% giver ineffektive processer.</li>
+      <li>5️⃣ Hastende opgaver: +4 bonus, +10% ekstra CAB-risiko, og straf hvis let løsning vælges eller opgaven ignoreres.</li>
+      <li>6️⃣ Events: Tilfældige hændelser kan forekomme mellem trin eller opgaver og påvirker din Tid og score.</li>
     </ul>
-    <p style="margin-top:1rem;">Afslut denne tutorial og begynd at vælge opgaver!</p>
+    <p style="margin-top:1rem;">Afslut denne tutorial og begynd at vælge opgaver! 🎉</p>
   `;
   openModal(tutText, `<button id="closeTut" class="modern-btn">Luk</button>`);
   document.getElementById('closeTut').addEventListener('click', () => closeModal());
@@ -233,9 +231,7 @@ function openTaskSelectionModal() {
     document.getElementById('activeWarn').addEventListener('click', () => closeModal());
     return;
   }
-
   const hastendeExists = gameState.tasks.some(t => t.isHastende);
-
   let tableRows = "";
   gameState.tasks.forEach((task, index) => {
     const type = (task.focus === 'udvikling') ? "Udviklingsopgave" : "Sikkerhedsopgave";
@@ -248,14 +244,12 @@ function openTaskSelectionModal() {
         <td><button class="commit-task-btn modern-btn" data-idx="${index}">Forpligt</button></td>
       </tr>
     `;
-  }
-
+  });
   const hastendeNote = hastendeExists 
     ? `<div style="background-color:#ffe9e9; border:1px solid red; padding:0.5rem;">
          <strong>Hastende opgaver!</strong> (+4 bonus, +10% ekstra risiko, -5 point for let løsning, -3 point straf hvis ignoreret)
        </div>` 
     : "";
-
   const modalBody = `
     <h2>Vælg en opgave</h2>
     ${hastendeNote}
@@ -275,12 +269,10 @@ function openTaskSelectionModal() {
   `;
   openModal(modalBody, `<button id="closeTaskModal" class="modern-btn">Luk</button>`);
   document.getElementById('closeTaskModal').addEventListener('click', () => closeModal());
-
   document.querySelectorAll('.commit-task-btn').forEach(btn => {
     btn.addEventListener('click', e => {
       const idx = e.target.getAttribute('data-idx');
       const chosenTask = gameState.tasks[idx];
-
       if (hastendeExists && chosenTask && !chosenTask.isHastende) {
         gameState.skipHastendeFlag = true;
       }
@@ -347,10 +339,8 @@ function handleLocationClick(clickedLoc) {
 
 function showStepChoices(step) {
   const bodyHTML = `<h2>${step.stepDescription}</h2>${step.stepContext || ""}`;
-  
   let cATxt = step.choiceA.text.replace(/-?\d+\s*tid/, "<span style='color:#f44336; font-weight:bold;'>-2 tid</span>");
   let cBTxt = step.choiceB.text.replace(/-?\d+\s*tid/, "<span style='color:#43A047; font-weight:bold;'>0 tid</span>");
-  
   let footHTML = `
     <button id="choiceA" class="modern-btn">${step.choiceA.label} (${cATxt})</button>
     <button id="choiceB" class="modern-btn">${step.choiceB.label} (${cBTxt})</button>
@@ -437,7 +427,7 @@ function proceedToNextStep() {
     gameState.currentStepIndex++;
     renderActiveTask(t);
     highlightCorrectLocation(t.steps[gameState.currentStepIndex].location);
-    triggerRandomEvent(gameState);
+    triggerRandomEvent(gameState); // Udløs event mellem trin
   } else {
     cabApproval();
   }
@@ -464,34 +454,30 @@ function cabApproval() {
     } else {
       focusKPI = gameState.security;
     }
-
     let skipHastendePenalty = "";
     if (gameState.skipHastendeFlag) {
       focusKPI = Math.max(0, focusKPI - 3);
       skipHastendePenalty = "<p style='color:red;'>Du sprang en hastende opgave over – straf: -3 point!</p>";
       gameState.skipHastendeFlag = false;
     }
-
     let penaltyNote = "";
     if (t.isHastende && gameState.choiceHistory.some(ch => ch && ch.advanced === false)) {
       focusKPI = Math.max(0, focusKPI - 5);
-      penaltyNote = `<p style="color:red;">Du har fået 5 point i straf for at vælge den lette løsning på en hastende opgave.</p>`;
+      penaltyNote = "<p style='color:red;'>Du har fået 5 point i straf for at vælge den lette løsning på en hastende opgave.</p>";
     }
-
     const allAdvanced = gameState.choiceHistory.every(ch => ch && ch.advanced);
     let chance = allAdvanced ? 1 : Math.min(1, focusKPI / 22);
     let extraNote = skipHastendePenalty + penaltyNote;
     if (t.isHastende) {
       chance -= 0.1;
       if (chance < 0) chance = 0;
-      extraNote += `<p style="color:red;">Hastende opgave: +10% ekstra risiko, +4 bonus ved succes.</p>`;
+      extraNote += "<p style='color:red;'>Hastende opgave: +10% ekstra risiko, +4 bonus ved succes.</p>";
     }
     if (gameState.extraCABRiskThisPI > 0) {
       chance -= gameState.extraCABRiskThisPI;
       if (chance < 0) chance = 0;
-      extraNote += `<p style="color:red;">Ekstra risiko fra forrige PI: +${Math.round(gameState.extraCABRiskThisPI * 100)}%.</p>`;
+      extraNote += `<p style='color:red;'>Ekstra risiko fra forrige PI: +${Math.round(gameState.extraCABRiskThisPI * 100)}%.</p>`;
     }
-
     const approvalPct = Math.floor(chance * 100);
     const riskPct = 100 - approvalPct;
     const cabHTML = `
@@ -561,10 +547,10 @@ function showTaskSummary() {
   if (gameState.currentTask.isHastende) {
     if (gameState.currentTask.focus === "udvikling") {
       gameState.development += 4;
-      bonusNote = `<p style="color:green;">Hastende bonus: +4 point!</p>`;
+      bonusNote = "<p style='color:green;'>Hastende bonus: +4 point!</p>";
     } else {
       gameState.security += 4;
-      bonusNote = `<p style="color:green;">Hastende bonus: +4 point!</p>`;
+      bonusNote = "<p style='color:green;'>Hastende bonus: +4 point!</p>";
     }
     updateDashboard();
   }
@@ -599,7 +585,7 @@ function finishTask() {
   });
 }
 
-/** PI Feedback */
+/** PI Feedback – vises, når 5 opgaver er gennemført */
 function showPIFeedback() {
   const totalPoints = gameState.security + gameState.development;
   if (totalPoints > gameState.highscore) {
@@ -648,7 +634,7 @@ function showPIFeedback() {
   });
 }
 
-/** Start spillet */
+/** Start spillet med intro – kun i første PI */
 (function initGame() {
   if (gameState.firstPI) {
     showIntro();
