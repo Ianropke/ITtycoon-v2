@@ -1,197 +1,174 @@
 // scripts/events.js
+import { openModal, closeModal } from './modal.js';
 
-export const eventsList = [
+const eventsList = [
+  // Positive Events
   {
-    name: "Hacker infiltration",
-    condition: (devRatio, secRatio) => secRatio < 0.3,
-    effect: (gameState) => {
-      gameState.time = Math.max(0, gameState.time - 3);
-    },
-    message: "Et hackerangreb infiltrerer dit system! Du mister 3 Tid på at håndtere det."
-  },
-  {
-    name: "Phishing spree",
-    condition: (devRatio, secRatio) => secRatio < 0.4,
-    effect: (gameState) => {
-      gameState.security = Math.max(0, gameState.security - 2);
-    },
-    message: "En bølge af phishing-angreb rammer organisationen! Du mister 2 Sikkerhed."
-  },
-  {
-    name: "Major data breach",
-    condition: (devRatio, secRatio) => secRatio < 0.2,
-    effect: (gameState) => {
-      gameState.time = Math.max(0, gameState.time - 5);
-      gameState.security = Math.max(0, gameState.security - 3);
-    },
-    message: "Et massivt databrud koster dig 5 Tid og 3 Sikkerhed."
-  },
-  {
-    name: "Crypto-miner infiltration",
-    condition: (devRatio, secRatio) => secRatio < 0.3,
-    effect: (gameState) => {
-      gameState.time = Math.max(0, gameState.time - 2);
-      gameState.security = Math.max(0, gameState.security - 1);
-    },
-    message: "Crypto-mining software infiltrerer systemet – du mister 2 Tid og 1 Sikkerhed."
-  },
-  {
-    name: "Botched Dev Release",
-    condition: (devRatio, secRatio) => devRatio > 0.7,
-    effect: (gameState) => {
-      gameState.development = Math.max(0, gameState.development - 2);
-    },
-    message: "Et fejlslagent release rammer markedet – du mister 2 Udvikling."
-  },
-  {
-    name: "Burnout i dev team",
-    condition: (devRatio, secRatio) => devRatio > 0.7,
-    effect: (gameState) => {
-      gameState.time = Math.max(0, gameState.time - 4);
-    },
-    message: "Dev-teamet oplever burnout – du mister 4 Tid på reorganisering."
-  },
-  {
-    name: "Nye Dev Tools",
-    condition: (devRatio, secRatio) => devRatio > 0.5,
-    effect: (gameState) => {
-      gameState.development += 2;
-    },
-    message: "Du får adgang til nye dev-værktøjer – +2 Udvikling!"
-  },
-  {
-    name: "Brugerkritik",
-    condition: (devRatio, secRatio) => devRatio >= 0.3 && devRatio <= 0.7,
-    effect: (gameState) => {
-      gameState.time = Math.max(0, gameState.time - 2);
-    },
-    message: "Brugerne klager over manglende funktioner – du mister 2 Tid."
-  },
-  {
-    name: "Unexpected synergy",
-    condition: (devRatio, secRatio) => devRatio > 0.8,
-    effect: (gameState) => {
-      gameState.development += 3;
-    },
-    message: "Der opstår en fantastisk synergi i dev-teamet – +3 Udvikling!"
-  },
-  {
-    name: "Legal compliance snag",
-    condition: (devRatio, secRatio) => secRatio > 0.8,
-    effect: (gameState) => {
-      gameState.security = Math.max(0, gameState.security - 2);
-      gameState.development = Math.max(0, gameState.development - 1);
-    },
-    message: "Juridiske udfordringer med sikkerheden – du mister 2 Sikkerhed og 1 Udvikling."
-  },
-  {
-    name: "IT meltdown",
-    condition: (devRatio, secRatio) => devRatio > 0.9,
-    effect: (gameState) => {
-      gameState.time = Math.max(0, gameState.time - 6);
-      gameState.development = Math.max(0, gameState.development - 3);
-    },
-    message: "Et IT-meltdown rammer – du mister 6 Tid og 3 Udvikling."
-  },
-  {
-    name: "Massive server crash",
-    condition: (devRatio, secRatio) => secRatio > 0.9,
-    effect: (gameState) => {
-      gameState.time = Math.max(0, gameState.time - 5);
-      gameState.security = Math.max(0, gameState.security - 2);
-    },
-    message: "Serverne bryder sammen – du mister 5 Tid og 2 Sikkerhed."
-  },
-  {
-    name: "Generous sponsor",
-    condition: (devRatio, secRatio) => devRatio > 0.6,
+    name: "Heldigt Gennembrud",
+    condition: (ratioDev, time) => time < 15,
+    message: "Et teammedlem finder en ny metode, der sparer dig 3 tidspunkter!",
     effect: (gameState) => {
       gameState.time += 3;
-    },
-    message: "En sponsor imponeres – +3 Tid!"
+    }
   },
   {
-    name: "Inspiring dev conference",
-    condition: (devRatio, secRatio) => devRatio > 0.5,
+    name: "Sponsorstøtte",
+    condition: (ratioDev, time) => ratioDev > 0.6,
+    message: "En sponsor tilbyder finansiering til din udvikling – du får +2 Udvikling!",
     effect: (gameState) => {
-      gameState.development += 2;
-    },
-    message: "Dev-teamet deltager i en inspirerende konference – +2 Udvikling!"
+      gameState.developmentScore += 2;
+    }
   },
   {
-    name: "Freelance security consultant",
-    condition: (devRatio, secRatio) => secRatio > 0.5,
+    name: "Ekstra Ressourcer",
+    condition: (ratioDev, time) => gameState.time > 30,
+    message: "Ekstra ressourcer er tilgængelige – du får +2 Tid!",
     effect: (gameState) => {
-      gameState.security += 2;
-    },
-    message: "Du hyrer en sikkerhedskonsulent – +2 Sikkerhed!"
+      gameState.time += 2;
+    }
+  },
+
+  // Negative Events
+  {
+    name: "Hackerangreb",
+    condition: (ratioDev, time) => ratioDev > 0.65,
+    message: "Et hackerangreb har kompromitteret dine systemer! Du mister 3 tidspunkter for at løse problemet.",
+    effect: (gameState) => {
+      gameState.time -= 3;
+    }
   },
   {
-    name: "Bureaucratic overhead",
-    condition: (devRatio, secRatio) => Math.random() < 0.3,
+    name: "Utilfredse Brugere",
+    condition: (ratioDev, time) => ratioDev < 0.35,
+    message: "Brugerne klager over ineffektive systemer – du mister 2 Tid for at svare på klagerne.",
     effect: (gameState) => {
-      gameState.time = Math.max(0, gameState.time - 2);
-    },
-    message: "Bureaukrati stjæler tid – du mister 2 Tid."
+      gameState.time -= 2;
+    }
   },
   {
-    name: "Lightning meltdown",
-    condition: (devRatio, secRatio) => devRatio < 0.4,
+    name: "Compliance-problem",
+    condition: (ratioDev, time) => ratioDev < 0.4,
+    message: "Et compliance-problem kræver en hurtig løsning! Du mister 4 Tid.",
     effect: (gameState) => {
-      gameState.development = Math.max(0, gameState.development - 2);
-    },
-    message: "Et lynnedslag lammer dev-teamet – du mister 2 Udvikling."
+      gameState.time -= 4;
+    }
   },
   {
-    name: "Power outage",
-    condition: (devRatio, secRatio) => secRatio < 0.4,
+    name: "Systemfejl",
+    condition: (ratioDev, time) => time < 10,
+    message: "En kritisk systemfejl kræver din opmærksomhed – du mister 5 Tid.",
     effect: (gameState) => {
-      gameState.time = Math.max(0, gameState.time - 3);
-    },
-    message: "Strømsvigt rammer – du mister 3 Tid."
+      gameState.time -= 5;
+    }
+  },
+
+  // Neutrale Events
+  {
+    name: "Feedback-session",
+    condition: (ratioDev, time) => gameState.time > 25,
+    message: "Du holder en feedback-session. Ingen ændringer i score, men medarbejderne er motiverede!",
+    effect: (gameState) => {
+      // Ingen effekt
+    }
   },
   {
-    name: "Public acclaim",
-    condition: (devRatio, secRatio) => devRatio > 0.7,
+    name: "CAB-møde",
+    condition: (ratioDev, time) => ratioDev > 0.5,
+    message: "CAB holder møde om din fremgang. De er tilfredse med balancen mellem udvikling og sikkerhed.",
     effect: (gameState) => {
-      gameState.development += 3;
-    },
-    message: "Offentligheden roser jeres nye features – +3 Udvikling!"
+      // Ingen effekt
+    }
+  },
+
+  // Flere Events
+  {
+    name: "Softwareopdatering",
+    condition: (ratioDev, time) => ratioDev > 0.5,
+    message: "En vigtig softwareopdatering forbedrer din sikkerhed. +1 Sikkerhed!",
+    effect: (gameState) => {
+      gameState.securityScore += 1;
+    }
   },
   {
-    name: "Audit fiasco",
-    condition: (devRatio, secRatio) => secRatio < 0.3,
+    name: "Workflow-optimering",
+    condition: (ratioDev, time) => ratioDev < 0.5,
+    message: "Du optimerer et workflow, hvilket sparer dig 1 Tid.",
     effect: (gameState) => {
-      gameState.security = Math.max(0, gameState.security - 3);
-      gameState.time = Math.max(0, gameState.time - 2);
-    },
-    message: "En audit afslører alvorlige brister – du mister 3 Sikkerhed og 2 Tid."
+      gameState.time += 1;
+    }
+  },
+  {
+    name: "Medarbejder træning",
+    condition: (ratioDev, time) => gameState.time > 20,
+    message: "Medarbejdertræning forbedrer arbejdsmiljøet. +1 Udvikling!",
+    effect: (gameState) => {
+      gameState.developmentScore += 1;
+    }
+  },
+  {
+    name: "Systemhårdhedstest",
+    condition: (ratioDev, time) => ratioDev < 0.4,
+    message: "En hårdhedstest viser sårbarheder i systemet – du mister 2 Tid.",
+    effect: (gameState) => {
+      gameState.time -= 2;
+    }
+  },
+  {
+    name: "Strategimøde",
+    condition: (ratioDev, time) => gameState.time > 30,
+    message: "Et strategimøde sætter kursen for fremtiden. Ingen ændring i score.",
+    effect: (gameState) => {
+      // Ingen effekt
+    }
+  },
+  {
+    name: "Ekstern Audit",
+    condition: (ratioDev, time) => ratioDev < 0.4,
+    message: "En ekstern audit afslører mangler i dokumentation. Du mister 3 Tid.",
+    effect: (gameState) => {
+      gameState.time -= 3;
+    }
+  },
+  {
+    name: "Netværksopgradering",
+    condition: (ratioDev, time) => ratioDev > 0.6,
+    message: "En netværksopgradering øger systemets robusthed. +1 Sikkerhed!",
+    effect: (gameState) => {
+      gameState.securityScore += 1;
+    }
+  },
+  {
+    name: "Brugerundersøgelse",
+    condition: (ratioDev, time) => ratioDev > 0.5,
+    message: "En brugerundersøgelse viser stor tilfredshed med systemet. Ingen effekt.",
+    effect: (gameState) => {
+      // Ingen effekt
+    }
   }
 ];
 
 /**
- * triggerRandomEvent – Vælger et tilfældigt event, hvis betingelserne er opfyldt, og udløser effekten.
+ * triggerRandomEvent(gameState)
+ * Tjekker betingelser og udløser en tilfældig event baseret på spillerens nuværende spiltilstand.
  */
 export function triggerRandomEvent(gameState) {
-  const eventChance = 0.25;
+  const eventChance = 0.5; // 50% chance for at et event sker
   if (Math.random() > eventChance) return;
 
-  const totalPoints = gameState.security + gameState.development;
-  if (totalPoints === 0) return;
+  const total = gameState.totalDevelopmentChoices + gameState.totalSecurityChoices;
+  if (total === 0) return;
 
-  const devRatio = gameState.development / totalPoints;
-  const secRatio = gameState.security / totalPoints;
-
-  const possibleEvents = eventsList.filter(ev => ev.condition(devRatio, secRatio));
+  const ratioDev = gameState.totalDevelopmentChoices / total;
+  const possibleEvents = eventsList.filter(ev => ev.condition(ratioDev, gameState.time));
   if (possibleEvents.length === 0) return;
 
   const chosenEvent = possibleEvents[Math.floor(Math.random() * possibleEvents.length)];
   chosenEvent.effect(gameState);
 
-  // Vis pop-up – her antages, at openModal/closeModal er globale eller tilgængelige via import i main.js
-  const eventMsg = `<h2>Hændelse!</h2><p>${chosenEvent.message}</p>`;
-  openModal(eventMsg, `<button id="eventOk" class="modern-btn">OK</button>`);
-  document.getElementById('eventOk').addEventListener('click', () => closeModal());
-  
-  return { eventOccurred: true, eventMessage: chosenEvent.message };
+  openModal(
+    `<h2>Hændelse!</h2><p>${chosenEvent.message}</p>`,
+    `<button id="eventOk" class="modern-btn">OK</button>`
+  );
+
+  document.getElementById('eventOk').addEventListener('click', closeModal);
 }
