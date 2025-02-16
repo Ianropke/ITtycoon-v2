@@ -1,174 +1,211 @@
 // scripts/events.js
 import { openModal, closeModal } from './modal.js';
 
+/**
+ * Definerer 20 hændelser, som relaterer sig til specifikke opgavetyper.
+ * Hver hændelse har en condition, som typisk tjekker gameState.currentTask.title (i små bogstaver),
+ * samt gameState.currentStepIndex og den samlede events-tæller for PI.
+ */
 const eventsList = [
-  // Positive Events
+  // Hospital-opgaver (udvikling)
   {
-    name: "Heldigt Gennembrud",
-    condition: (ratioDev, time) => time < 15,
-    message: "Et teammedlem finder en ny metode, der sparer dig 3 tidspunkter!",
-    effect: (gameState) => {
-      gameState.time += 3;
-    }
+    name: "Patientjournalfejl",
+    condition: (gameState) => gameState.currentTask.title.toLowerCase().includes("lims"),
+    message: "Patientjournalen afslører skjulte fejl – du mister 2 Tid for at rette op på det.",
+    effect: (gameState) => { gameState.time -= 2; }
   },
   {
-    name: "Sponsorstøtte",
-    condition: (ratioDev, time) => ratioDev > 0.6,
-    message: "En sponsor tilbyder finansiering til din udvikling – du får +2 Udvikling!",
-    effect: (gameState) => {
-      gameState.developmentScore += 2;
-    }
+    name: "EHR-nedbrud",
+    condition: (gameState) => gameState.currentTask.title.toLowerCase().includes("ehr"),
+    message: "Det elektroniske patientjournalssystem fejler pludseligt – du mister 3 Tid.",
+    effect: (gameState) => { gameState.time -= 3; }
   },
   {
-    name: "Ekstra Ressourcer",
-    condition: (ratioDev, time) => gameState.time > 30,
-    message: "Ekstra ressourcer er tilgængelige – du får +2 Tid!",
-    effect: (gameState) => {
-      gameState.time += 2;
-    }
-  },
-
-  // Negative Events
-  {
-    name: "Hackerangreb",
-    condition: (ratioDev, time) => ratioDev > 0.65,
-    message: "Et hackerangreb har kompromitteret dine systemer! Du mister 3 tidspunkter for at løse problemet.",
-    effect: (gameState) => {
-      gameState.time -= 3;
-    }
+    name: "Telemedicin-forbindelse",
+    condition: (gameState) => gameState.currentTask.title.toLowerCase().includes("telemedicin"),
+    message: "Netværksforbindelsen svigter under telemedicin – du mister 2 Tid.",
+    effect: (gameState) => { gameState.time -= 2; }
   },
   {
-    name: "Utilfredse Brugere",
-    condition: (ratioDev, time) => ratioDev < 0.35,
-    message: "Brugerne klager over ineffektive systemer – du mister 2 Tid for at svare på klagerne.",
-    effect: (gameState) => {
-      gameState.time -= 2;
-    }
+    name: "Effektiv Patientflow",
+    condition: (gameState) => gameState.currentTask.title.toLowerCase().includes("patientflow"),
+    message: "Patientflow er optimeret – du vinder 2 Tid bonus!",
+    effect: (gameState) => { gameState.time += 2; }
   },
   {
-    name: "Compliance-problem",
-    condition: (ratioDev, time) => ratioDev < 0.4,
-    message: "Et compliance-problem kræver en hurtig løsning! Du mister 4 Tid.",
-    effect: (gameState) => {
-      gameState.time -= 4;
-    }
-  },
-  {
-    name: "Systemfejl",
-    condition: (ratioDev, time) => time < 10,
-    message: "En kritisk systemfejl kræver din opmærksomhed – du mister 5 Tid.",
-    effect: (gameState) => {
-      gameState.time -= 5;
-    }
+    name: "Digitalisering af recepter",
+    condition: (gameState) => gameState.currentTask.title.toLowerCase().includes("recepter"),
+    message: "Det digitale system for recepter fungerer strømlinet – du vinder 1 Tid bonus!",
+    effect: (gameState) => { gameState.time += 1; }
   },
 
-  // Neutrale Events
+  // Infrastruktur-opgaver (sikkerhed)
   {
-    name: "Feedback-session",
-    condition: (ratioDev, time) => gameState.time > 25,
-    message: "Du holder en feedback-session. Ingen ændringer i score, men medarbejderne er motiverede!",
-    effect: (gameState) => {
-      // Ingen effekt
-    }
+    name: "Netværksfejl",
+    condition: (gameState) => gameState.currentTask.title.toLowerCase().includes("netværksopgradering"),
+    message: "En fejl i netværksinfrastrukturen opstår – du mister 3 Tid for at udbedre den.",
+    effect: (gameState) => { gameState.time -= 3; }
   },
   {
-    name: "CAB-møde",
-    condition: (ratioDev, time) => ratioDev > 0.5,
-    message: "CAB holder møde om din fremgang. De er tilfredse med balancen mellem udvikling og sikkerhed.",
-    effect: (gameState) => {
-      // Ingen effekt
-    }
+    name: "Server Overbelastning",
+    condition: (gameState) => gameState.currentTask.title.toLowerCase().includes("serveropgradering"),
+    message: "Serverne bliver overbelastede – du mister 3 Tid.",
+    effect: (gameState) => { gameState.time -= 3; }
+  },
+  {
+    name: "Datacenter Strømsvigt",
+    condition: (gameState) => gameState.currentTask.title.toLowerCase().includes("datacenter"),
+    message: "Et kortvarigt strømsvigt rammer datacentret – du mister 4 Tid.",
+    effect: (gameState) => { gameState.time -= 4; }
+  },
+  {
+    name: "Virtualiseringsfejl",
+    condition: (gameState) => gameState.currentTask.title.toLowerCase().includes("virtualisering"),
+    message: "Virtualiseringsprocessen fejler midlertidigt – du mister 2 Tid.",
+    effect: (gameState) => { gameState.time -= 2; }
+  },
+  {
+    name: "Backup-problem",
+    condition: (gameState) => gameState.currentTask.title.toLowerCase().includes("backup"),
+    message: "Backup-systemet svigter under test – du mister 3 Tid.",
+    effect: (gameState) => { gameState.time -= 3; }
+  },
+  {
+    name: "Switch Ustabilitet",
+    condition: (gameState) => gameState.currentTask.title.toLowerCase().includes("switch"),
+    message: "Switch-optimeringen medfører midlertidig ustabilitet – du mister 2 Tid.",
+    effect: (gameState) => { gameState.time -= 2; }
+  },
+  {
+    name: "Routerfejl",
+    condition: (gameState) => gameState.currentTask.title.toLowerCase().includes("router"),
+    message: "En fejl i routerkonfigurationen forårsager forstyrrelser – du mister 2 Tid.",
+    effect: (gameState) => { gameState.time -= 2; }
+  },
+  {
+    name: "Cloud Forstyrrelser",
+    condition: (gameState) => gameState.currentTask.title.toLowerCase().includes("cloud migration"),
+    message: "Skyen oplever forstyrrelser – du mister 2 Tid.",
+    effect: (gameState) => { gameState.time -= 2; }
   },
 
-  // Flere Events
+  // Cybersikkerhed-opgaver
   {
-    name: "Softwareopdatering",
-    condition: (ratioDev, time) => ratioDev > 0.5,
-    message: "En vigtig softwareopdatering forbedrer din sikkerhed. +1 Sikkerhed!",
-    effect: (gameState) => {
-      gameState.securityScore += 1;
-    }
+    name: "Netværkssårbarhed",
+    condition: (gameState) => gameState.currentTask.title.toLowerCase().includes("netværkssikkerhed"),
+    message: "En uventet sårbarhed i netværket opdages – du mister 3 Tid.",
+    effect: (gameState) => { gameState.time -= 3; }
   },
   {
-    name: "Workflow-optimering",
-    condition: (ratioDev, time) => ratioDev < 0.5,
-    message: "Du optimerer et workflow, hvilket sparer dig 1 Tid.",
-    effect: (gameState) => {
-      gameState.time += 1;
-    }
+    name: "Opdateringsfejl",
+    condition: (gameState) => gameState.currentTask.title.toLowerCase().includes("sikkerhedsopdatering"),
+    message: "Sikkerhedsopdateringerne fejler kritisk – du mister 2 Tid.",
+    effect: (gameState) => { gameState.time -= 2; }
   },
   {
-    name: "Medarbejder træning",
-    condition: (ratioDev, time) => gameState.time > 20,
-    message: "Medarbejdertræning forbedrer arbejdsmiljøet. +1 Udvikling!",
-    effect: (gameState) => {
-      gameState.developmentScore += 1;
-    }
+    name: "Phishing-angreb",
+    condition: (gameState) => gameState.currentTask.title.toLowerCase().includes("phishing"),
+    message: "Et vellykket phishing-angreb medfører tab af 3 Tid.",
+    effect: (gameState) => { gameState.time -= 3; }
   },
   {
-    name: "Systemhårdhedstest",
-    condition: (ratioDev, time) => ratioDev < 0.4,
-    message: "En hårdhedstest viser sårbarheder i systemet – du mister 2 Tid.",
-    effect: (gameState) => {
-      gameState.time -= 2;
-    }
+    name: "To-faktor Fejl",
+    condition: (gameState) => gameState.currentTask.title.toLowerCase().includes("to-faktor"),
+    message: "Implementeringen af to-faktor autentifikation oplever problemer – du mister 2 Tid.",
+    effect: (gameState) => { gameState.time -= 2; }
   },
   {
-    name: "Strategimøde",
-    condition: (ratioDev, time) => gameState.time > 30,
-    message: "Et strategimøde sætter kursen for fremtiden. Ingen ændring i score.",
-    effect: (gameState) => {
-      // Ingen effekt
-    }
+    name: "Incident Krise",
+    condition: (gameState) => gameState.currentTask.title.toLowerCase().includes("incident response"),
+    message: "En kritisk hændelse eskalerer – du mister 4 Tid.",
+    effect: (gameState) => { gameState.time -= 4; }
   },
   {
-    name: "Ekstern Audit",
-    condition: (ratioDev, time) => ratioDev < 0.4,
-    message: "En ekstern audit afslører mangler i dokumentation. Du mister 3 Tid.",
-    effect: (gameState) => {
-      gameState.time -= 3;
-    }
+    name: "SIEM Overbelastning",
+    condition: (gameState) => gameState.currentTask.title.toLowerCase().includes("siem"),
+    message: "SIEM-systemet overbelastes – du mister 2 Tid.",
+    effect: (gameState) => { gameState.time -= 2; }
   },
   {
-    name: "Netværksopgradering",
-    condition: (ratioDev, time) => ratioDev > 0.6,
-    message: "En netværksopgradering øger systemets robusthed. +1 Sikkerhed!",
-    effect: (gameState) => {
-      gameState.securityScore += 1;
-    }
+    name: "Ekstern Trusselsmonitorering",
+    condition: (gameState) => gameState.currentTask.title.toLowerCase().includes("eksterne trusler"),
+    message: "Eksterne cybertrusler intensiveres – du mister 2 Tid.",
+    effect: (gameState) => { gameState.time -= 2; }
   },
   {
-    name: "Brugerundersøgelse",
-    condition: (ratioDev, time) => ratioDev > 0.5,
-    message: "En brugerundersøgelse viser stor tilfredshed med systemet. Ingen effekt.",
-    effect: (gameState) => {
-      // Ingen effekt
-    }
+    name: "Penetrationstest Resultat",
+    condition: (gameState) => gameState.currentTask.title.toLowerCase().includes("penetrationstest"),
+    message: "Penetrationstesten afslører alvorlige sårbarheder – du mister 3 Tid.",
+    effect: (gameState) => { gameState.time -= 3; }
+  },
+  {
+    name: "Zero Trust Udfordring",
+    condition: (gameState) => gameState.currentTask.title.toLowerCase().includes("zero trust"),
+    message: "Implementeringen af Zero Trust skaber midlertidig usikkerhed – du mister 2 Tid.",
+    effect: (gameState) => { gameState.time -= 2; }
+  },
+
+  // Generiske events baseret på fokus
+  {
+    name: "Innovationsspræng",
+    condition: (gameState) => gameState.currentTask.focus === "udvikling",
+    message: "Din innovative tilgang giver et gennembrud – du vinder 2 Tid bonus!",
+    effect: (gameState) => { gameState.time += 2; }
+  },
+  {
+    name: "Sikkerhedsforbedring",
+    condition: (gameState) => gameState.currentTask.focus === "cybersikkerhed" || gameState.currentTask.focus === "sikkerhed",
+    message: "Din fokuserede sikkerhedsstrategi betaler sig – du vinder 2 Tid bonus!",
+    effect: (gameState) => { gameState.time += 2; }
   }
 ];
 
 /**
  * triggerRandomEvent(gameState)
- * Tjekker betingelser og udløser en tilfældig event baseret på spillerens nuværende spiltilstand.
+ * Udløser en event, hvis betingelserne er opfyldte.
+ * - Ingen event udløses i første runde af en opgave (currentStepIndex === 0).
+ * - Maksimalt 2 events per PI (gameState.eventsThisPI).
  */
 export function triggerRandomEvent(gameState) {
-  const eventChance = 0.5; // 50% chance for at et event sker
-  if (Math.random() > eventChance) return;
+  // Init events counter, hvis den ikke er defineret
+  if (typeof gameState.eventsThisPI === "undefined") {
+    gameState.eventsThisPI = 0;
+  }
+  
+  // Regel 1: Ingen event i første trin
+  if (gameState.currentStepIndex === 0) return;
+  // Regel 2: Maksimalt 2 events per PI
+  if (gameState.eventsThisPI >= 2) return;
 
-  const total = gameState.totalDevelopmentChoices + gameState.totalSecurityChoices;
-  if (total === 0) return;
+  const totalChoices = gameState.totalDevelopmentChoices + gameState.totalSecurityChoices;
+  if (totalChoices === 0) return;
+  const ratioDev = gameState.totalDevelopmentChoices / totalChoices;
 
-  const ratioDev = gameState.totalDevelopmentChoices / total;
-  const possibleEvents = eventsList.filter(ev => ev.condition(ratioDev, gameState.time));
+  const possibleEvents = eventsList.filter(ev => ev.condition(gameState, ratioDev, gameState.time));
   if (possibleEvents.length === 0) return;
 
+  // Vælg én event tilfældigt
   const chosenEvent = possibleEvents[Math.floor(Math.random() * possibleEvents.length)];
   chosenEvent.effect(gameState);
 
+  // Øg events-tælleren for denne PI
+  gameState.eventsThisPI++;
+
   openModal(
-    `<h2>Hændelse!</h2><p>${chosenEvent.message}</p>`,
+    `<h2>Hændelse: ${chosenEvent.name}</h2><p>${chosenEvent.message}</p>`,
     `<button id="eventOk" class="modern-btn">OK</button>`
   );
 
-  document.getElementById('eventOk').addEventListener('click', closeModal);
+  // Tilføj pulserende effekt til event-modalen
+  const modalContent = document.querySelector('.modal-content');
+  if (modalContent) {
+    modalContent.classList.add('event-modal');
+  }
+
+  document.getElementById('eventOk').addEventListener('click', () => {
+    if (modalContent) {
+      modalContent.classList.remove('event-modal');
+    }
+    closeModal();
+  });
 }
